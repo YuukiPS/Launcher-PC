@@ -33,7 +33,7 @@
             this.GetHost = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.GetPort = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.UseHTTPS = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btStart
@@ -70,7 +70,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(142, 109);
+            this.label2.Location = new System.Drawing.Point(21, 159);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(106, 28);
             this.label2.TabIndex = 4;
@@ -79,29 +79,31 @@
             // GetPort
             // 
             this.GetPort.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.GetPort.Location = new System.Drawing.Point(142, 140);
+            this.GetPort.Location = new System.Drawing.Point(122, 159);
             this.GetPort.Name = "GetPort";
-            this.GetPort.Size = new System.Drawing.Size(66, 35);
+            this.GetPort.Size = new System.Drawing.Size(53, 35);
             this.GetPort.TabIndex = 5;
             this.GetPort.Text = "8184";
             // 
-            // checkBox1
+            // UseHTTPS
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.checkBox1.Location = new System.Drawing.Point(21, 162);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(92, 34);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "HTTPS";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.UseHTTPS.AutoSize = true;
+            this.UseHTTPS.Checked = true;
+            this.UseHTTPS.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.UseHTTPS.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.UseHTTPS.Location = new System.Drawing.Point(234, 157);
+            this.UseHTTPS.Name = "UseHTTPS";
+            this.UseHTTPS.Size = new System.Drawing.Size(92, 34);
+            this.UseHTTPS.TabIndex = 6;
+            this.UseHTTPS.Text = "HTTPS";
+            this.UseHTTPS.UseVisualStyleBackColor = true;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 274);
-            this.Controls.Add(this.checkBox1);
+            this.ClientSize = new System.Drawing.Size(324, 198);
+            this.Controls.Add(this.UseHTTPS);
             this.Controls.Add(this.GetPort);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.GetHost);
@@ -122,6 +124,6 @@
         private TextBox GetHost;
         private Label label2;
         private TextBox GetPort;
-        private CheckBox checkBox1;
+        private CheckBox UseHTTPS;
     }
 }

@@ -3,15 +3,42 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
+    
     <RootNamespace>YuukiPS_Launcher</RootNamespace>
+    
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
+    
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>YuukiPS_Launcher.Program</StartupObject>
+    
     <ErrorReport>prompt</ErrorReport>
+    
+    <Platforms>AnyCPU;x64</Platforms>
+    
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>True</Optimize>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Optimize>True</Optimize>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RestSharp" Version="108.0.1" />
     <PackageReference Include="System.Management" Version="6.0.0" />
     <PackageReference Include="Titanium.Web.Proxy" Version="3.1.1450" />
   </ItemGroup>

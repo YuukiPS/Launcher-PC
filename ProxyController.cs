@@ -12,11 +12,13 @@ namespace YuukiPS_Launcher
 
         private int port;
         private string ps;
+        private bool usehttps;
 
-        public ProxyController(int port, string host)
+        public ProxyController(int port, string host, bool usehttps)
         {
             this.port = port;
             this.ps = host;
+            this.usehttps = usehttps;
         }
 
         [Obsolete]
@@ -124,12 +126,17 @@ namespace YuukiPS_Launcher
 
                 Console.WriteLine("Request Original: " + url);
 
-                var urlps = url.Replace(q.Host, ps);
+                if (!usehttps)
+                {
+                    url = url.Replace("https", "http");
+                }
 
-                Console.WriteLine("Request Private: " + urlps);
+                url = url.Replace(q.Host, ps);
+
+                Console.WriteLine("Request Private: " + url);
 
                 // Set
-                e.HttpClient.Request.Url = urlps;
+                e.HttpClient.Request.Url = url;
 
             }
             return Task.CompletedTask;
