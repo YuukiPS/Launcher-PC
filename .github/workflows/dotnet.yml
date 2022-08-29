@@ -25,14 +25,14 @@ jobs:
     - name: Build Exe
       run: dotnet build --no-restore --configuration Release /clp:ErrorsOnly
 
-    - uses: bbonkr/get-version-action@v1.0.4
-      id: get_version
+    - uses: kzrnm/get-net-sdk-project-versions-action@v1
+      id: get-version
       with:
-       project: "./YuukiPS Launcher.csproj"
+       proj-path: "YuukiPS Launcher.csproj"
 
     - name: logging
       run: |
-       echo "Version=${{ steps.get_version.outputs.version }}"
+       echo "Version=${{steps.get-version.outputs.assembly-version}}"
 
     - name: Build Zip
       run: |
@@ -44,8 +44,8 @@ jobs:
       env:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-       tag_name: ${{ steps.get_version.outputs.version }}
-       release_name: Release ${{ steps.get_version.outputs.version }}
+       tag_name: ${{steps.get-version.outputs.assembly-version}}
+       release_name: Release ${{steps.get-version.outputs.assembly-version}}
        draft: false
        prerelease: true
 
