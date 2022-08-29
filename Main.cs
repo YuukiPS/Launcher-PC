@@ -139,9 +139,8 @@ namespace YuukiPS_Launcher
                 var GetDataUpdate = API.GetUpdate();
                 if (GetDataUpdate != null)
                 {
-                    // If versions are not same, try asking user to update?
-                    var name_version = GetDataUpdate.name; // version
-                    var judul = GetDataUpdate.tag_name; // is dev or nightly
+                    var judul = GetDataUpdate.name; // is dev or nightly or name update
+                    var name_version = GetDataUpdate.tag_name; // version name
                     var infobody = GetDataUpdate.body; // info
 
                     var version1 = new Version(name_version);
@@ -153,7 +152,7 @@ namespace YuukiPS_Launcher
                     {
                         // versi 1 lebih besar
                         Set_Version.Text = "Version: " + ver + " (New Update: " + name_version + " )";
-                        var tes = MessageBox.Show(infobody, "Version " + judul + " Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        var tes = MessageBox.Show(infobody, judul, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (tes == DialogResult.Yes)
                         {
                             var url_dl = "";

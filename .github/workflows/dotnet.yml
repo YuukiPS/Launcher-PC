@@ -49,11 +49,10 @@ jobs:
       env:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-       tag_name: "nightly"
-       release_name: ${{steps.get-version.outputs.assembly-version}}
+       tag_name: ${{steps.get-version.outputs.assembly-version}}
+       release_name: Nightly ${{steps.get-version.outputs.assembly-version}}
        draft: false
        body: |
-        Update ${{steps.get-version.outputs.assembly-version}} Available
         ${{ github.event.head_commit.message }}
        prerelease: false
 
