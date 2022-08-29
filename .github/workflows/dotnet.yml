@@ -25,18 +25,23 @@ jobs:
     - name: Build Exe
       run: dotnet build --no-restore --configuration Release /clp:ErrorsOnly
 
-    - uses: kzrnm/get-net-sdk-project-versions-action@v1
+    - name: Check Version
+      uses: kzrnm/get-net-sdk-project-versions-action@v1
       id: get-version
       with:
        proj-path: "YuukiPS Launcher.csproj"
 
-    - name: logging
+    - name: Get Version
       run: |
        echo "Version=${{steps.get-version.outputs.assembly-version}}"
 
-    - name: Build Zip
-      run: |
-          zip --junk-paths YuukiPS ./bin/Release/net6.0-windows/*
+    - name: Get Zip Release
+      uses: thedoctor0/zip-release@main
+      with:
+        path: './bin/Release/net6.0-windows/' 
+        type: 'zip'
+        filename: 'YuukiPS.zip'
+        exclusions: '*.git*'
 
     - name: Create Release
       id: create_release
