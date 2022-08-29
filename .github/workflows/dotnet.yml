@@ -52,6 +52,9 @@ jobs:
        tag_name: ${{steps.get-version.outputs.assembly-version}}
        release_name: Release ${{steps.get-version.outputs.assembly-version}}
        draft: false
+       body: |
+        Update ${{steps.get-version.outputs.assembly-version}} Available
+        ${{ github.event.head_commit.message }}
        prerelease: true
 
     - name: Upload Release Asset

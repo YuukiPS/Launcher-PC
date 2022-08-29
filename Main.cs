@@ -69,7 +69,7 @@ namespace YuukiPS_Launcher
                     var name_version = GetDataUpdate.tag_name;
                     var infobody = GetDataUpdate.body;
 
-                    var version1 = new Version("2022.8.29.107");
+                    var version1 = new Version(name_version);
                     var version2 = new Version(ver);
 
                     var result = version1.CompareTo(version2);
