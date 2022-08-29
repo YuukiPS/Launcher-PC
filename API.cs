@@ -32,6 +32,24 @@ namespace YuukiPS_Launcher
             return JsonConvert.DeserializeObject<ServerList>(getme);
         }
 
+        public static VersionGS? GetServerStatus(string url)
+        {
+            var client = new RestClient(url);
+            var request = new RestRequest();
+
+            var response = client.Execute(request);
+            var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
+            if (getme != null)
+            {
+                var tes = JsonConvert.DeserializeObject<VersionGS>(getme);
+                if (tes != null)
+                {
+                    return tes;
+                }
+            }
+            return null;
+        }
+
         public static Update? GetUpdate()
         {
             var client = new RestClient(API_GITHUB);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
 using System.Management;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using YuukiPS_Launcher.json;
 
@@ -10,6 +11,9 @@ namespace YuukiPS_Launcher
     {
         private ProxyController? proxy;
         private Process? progress;
+
+        Thread thServerList;
+        List<List> ListServer;
 
         private string TES_API = "https://drive.yuuki.me/api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/3.0.0/Release/Global/Patch/";
         // https://nightly.link/akbaryahya/YuukiPS-Launcher/actions/runs/2947968074/YuukiPS.zip
@@ -30,26 +34,97 @@ namespace YuukiPS_Launcher
         {
             CheckUpdate();
             GetServerList();
+            UpdateServerListTimer();
         }
 
         public void GetServerList()
         {
             var GetDataServerList = API.ServerList();
-            var TR = GetDataServerList.list;
+            ListServer = GetDataServerList.list;
 
             ServerList.BeginUpdate();
             ServerList.Items.Clear();
 
-            for (int i = 0; i < TR.Count; i++)
+            for (int i = 0; i < ListServer.Count; i++)
             {
                 ListViewItem lvi = new ListViewItem();
-                lvi.Text = TR[i].name;
-                lvi.SubItems.Add(TR[i].host);
+                lvi.Text = ListServer[i].name;
+                lvi.SubItems.Add(ListServer[i].host);
                 lvi.SubItems.Add("N/A");
-                lvi.SubItems.Add(TR[i].version + "");
+                lvi.SubItems.Add("N/A");
+                lvi.SubItems.Add("N/A");
                 ServerList.Items.Add(lvi);
             }
+
             ServerList.EndUpdate();
+        }
+
+        public void UpdateServerListTimer()
+        {
+            Debug.Print("Start update..");
+            if (thServerList != null)
+            {
+                thServerList.Interrupt();
+            }
+            thServerList = new Thread(() =>
+            {
+                for (int i = 0; i < ListServer.Count; i++)
+                {
+                    int s = i;
+                    new Thread(() =>
+                    {
+                        try
+                        {
+                            var host = ListServer[s].host;
+                            Debug.Print("Start update.. " + host);
+
+                            if (host == "official")
+                            {
+                                return;
+                            }
+
+                            string url_server_api = "https://" + host + "/status/server";
+                            VersionGS ig = API.GetServerStatus(url_server_api);
+                            ServerList.Invoke((Action)delegate
+                            {
+                                if (ig != null)
+                                {
+                                    ServerList.Items[s].SubItems[2].Text = ig.status.playerCount.ToString();
+                                    ServerList.Items[s].SubItems[3].Text = ig.status.Version.ToString();
+                                }
+                                else
+                                {
+                                    ServerList.Items[s].SubItems[2].Text = "N/A";
+                                    ServerList.Items[s].SubItems[3].Text = "N/A";
+                                }
+                                try
+                                {
+                                    PingReply reply = new Ping().Send(host, 1000);
+                                    if (reply.Status == IPStatus.Success)
+                                        ServerList.Items[s].SubItems[4].Text = reply.RoundtripTime + "ms";
+                                }
+                                catch
+                                {
+                                    ServerList.Items[s].SubItems[4].Text = "N/A";
+                                }
+                            });
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            Debug.Print("Error NullReferenceException:" + e.Message);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.Print("Error:" + e.Message);
+                        }
+                        finally
+                        {
+                            //
+                        }
+                    }).Start();
+                }
+            });
+            thServerList.Start();
         }
 
         public void CheckUpdate()
@@ -139,8 +214,7 @@ namespace YuukiPS_Launcher
                     }
                     else if (result < 0)
                     {
-                        //MessageBox.Show("versi2 lebih besar", "tes", MessageBoxButtons.OK, MessageBoxIcon.Question);
-                        Set_Version.Text = "Version: " + ver + " (latest nightly) (Official: " + name_version + " )";
+                        Set_Version.Text = "Version: " + ver + " (latest nightly) (Official: " + name_version + ")";
                     }
                     else
                     {
@@ -631,6 +705,11 @@ namespace YuukiPS_Launcher
         private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("https://ps.yuuki.me/") { UseShellExecute = true });
+        }
+
+        private void CekUpdateTT_Tick(object sender, EventArgs e)
+        {
+            UpdateServerListTimer();
         }
     }
 }

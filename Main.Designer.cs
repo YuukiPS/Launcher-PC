@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "Yuuki",
             "tes.yuuki.me",
-            "900",
-            "6.9"}, -1);
+            "N/A",
+            "N/A",
+            "N/A"}, -1);
             this.btStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.GetHost = new System.Windows.Forms.TextBox();
@@ -49,6 +51,7 @@
             this.ServerList_GetHost = new System.Windows.Forms.ColumnHeader();
             this.ServerList_GetOnline = new System.Windows.Forms.ColumnHeader();
             this.ServerList_GetVersion = new System.Windows.Forms.ColumnHeader();
+            this.ServerList_GetPing = new System.Windows.Forms.ColumnHeader();
             this.btReloadServer = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -67,6 +70,7 @@
             this.linkDiscord = new System.Windows.Forms.LinkLabel();
             this.linkGithub = new System.Windows.Forms.LinkLabel();
             this.linkWeb = new System.Windows.Forms.LinkLabel();
+            this.CekUpdateTT = new System.Windows.Forms.Timer(this.components);
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -148,7 +152,7 @@
             this.TabMain.Location = new System.Drawing.Point(0, 0);
             this.TabMain.Name = "TabMain";
             this.TabMain.SelectedIndex = 0;
-            this.TabMain.Size = new System.Drawing.Size(579, 309);
+            this.TabMain.Size = new System.Drawing.Size(660, 309);
             this.TabMain.TabIndex = 7;
             // 
             // tabPage1
@@ -163,7 +167,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(571, 281);
+            this.tabPage1.Size = new System.Drawing.Size(652, 281);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Connect";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -212,7 +216,8 @@
             this.ServerList_GetName,
             this.ServerList_GetHost,
             this.ServerList_GetOnline,
-            this.ServerList_GetVersion});
+            this.ServerList_GetVersion,
+            this.ServerList_GetPing});
             this.ServerList.FullRowSelect = true;
             this.ServerList.GridLines = true;
             this.ServerList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
@@ -221,7 +226,7 @@
             this.ServerList.MultiSelect = false;
             this.ServerList.Name = "ServerList";
             this.ServerList.ShowGroups = false;
-            this.ServerList.Size = new System.Drawing.Size(322, 239);
+            this.ServerList.Size = new System.Drawing.Size(401, 239);
             this.ServerList.TabIndex = 8;
             this.ServerList.UseCompatibleStateImageBehavior = false;
             this.ServerList.View = System.Windows.Forms.View.Details;
@@ -230,6 +235,7 @@
             // ServerList_GetName
             // 
             this.ServerList_GetName.Text = "Name";
+            this.ServerList_GetName.Width = 90;
             // 
             // ServerList_GetHost
             // 
@@ -244,9 +250,13 @@
             // 
             this.ServerList_GetVersion.Text = "Version";
             // 
+            // ServerList_GetPing
+            // 
+            this.ServerList_GetPing.Text = "Ping";
+            // 
             // btReloadServer
             // 
-            this.btReloadServer.Location = new System.Drawing.Point(490, 11);
+            this.btReloadServer.Location = new System.Drawing.Point(569, 12);
             this.btReloadServer.Name = "btReloadServer";
             this.btReloadServer.Size = new System.Drawing.Size(75, 23);
             this.btReloadServer.TabIndex = 10;
@@ -270,7 +280,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(571, 281);
+            this.tabPage2.Size = new System.Drawing.Size(652, 281);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Server";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -290,7 +300,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(571, 281);
+            this.tabPage3.Size = new System.Drawing.Size(652, 281);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Command";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -300,7 +310,7 @@
             this.tabPage4.Controls.Add(this.TabConfig);
             this.tabPage4.Location = new System.Drawing.Point(4, 24);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(571, 281);
+            this.tabPage4.Size = new System.Drawing.Size(652, 281);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -314,7 +324,7 @@
             this.TabConfig.Location = new System.Drawing.Point(0, 0);
             this.TabConfig.Name = "TabConfig";
             this.TabConfig.SelectedIndex = 0;
-            this.TabConfig.Size = new System.Drawing.Size(571, 281);
+            this.TabConfig.Size = new System.Drawing.Size(652, 281);
             this.TabConfig.TabIndex = 0;
             // 
             // tabPage5
@@ -322,7 +332,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(563, 253);
+            this.tabPage5.Size = new System.Drawing.Size(644, 253);
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Launcher";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -335,7 +345,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 24);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(563, 253);
+            this.tabPage6.Size = new System.Drawing.Size(644, 253);
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "Metadata";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -370,7 +380,7 @@
             // 
             this.tabPage7.Location = new System.Drawing.Point(4, 24);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(563, 253);
+            this.tabPage7.Size = new System.Drawing.Size(644, 253);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "UserAssembly";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -379,7 +389,7 @@
             // 
             this.tabPage8.Location = new System.Drawing.Point(4, 24);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Size = new System.Drawing.Size(571, 281);
+            this.tabPage8.Size = new System.Drawing.Size(652, 281);
             this.tabPage8.TabIndex = 4;
             this.tabPage8.Text = "Account";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -397,7 +407,7 @@
             // linkDiscord
             // 
             this.linkDiscord.AutoSize = true;
-            this.linkDiscord.Location = new System.Drawing.Point(528, 308);
+            this.linkDiscord.Location = new System.Drawing.Point(605, 308);
             this.linkDiscord.Name = "linkDiscord";
             this.linkDiscord.Size = new System.Drawing.Size(47, 15);
             this.linkDiscord.TabIndex = 13;
@@ -408,7 +418,7 @@
             // linkGithub
             // 
             this.linkGithub.AutoSize = true;
-            this.linkGithub.Location = new System.Drawing.Point(479, 308);
+            this.linkGithub.Location = new System.Drawing.Point(556, 308);
             this.linkGithub.Name = "linkGithub";
             this.linkGithub.Size = new System.Drawing.Size(43, 15);
             this.linkGithub.TabIndex = 14;
@@ -419,7 +429,7 @@
             // linkWeb
             // 
             this.linkWeb.AutoSize = true;
-            this.linkWeb.Location = new System.Drawing.Point(442, 309);
+            this.linkWeb.Location = new System.Drawing.Point(519, 309);
             this.linkWeb.Name = "linkWeb";
             this.linkWeb.Size = new System.Drawing.Size(31, 15);
             this.linkWeb.TabIndex = 15;
@@ -427,11 +437,17 @@
             this.linkWeb.Text = "Web";
             this.linkWeb.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkWeb_LinkClicked);
             // 
+            // CekUpdateTT
+            // 
+            this.CekUpdateTT.Enabled = true;
+            this.CekUpdateTT.Interval = 5000;
+            this.CekUpdateTT.Tick += new System.EventHandler(this.CekUpdateTT_Tick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(579, 328);
+            this.ClientSize = new System.Drawing.Size(660, 328);
             this.Controls.Add(this.linkWeb);
             this.Controls.Add(this.linkGithub);
             this.Controls.Add(this.linkDiscord);
@@ -492,5 +508,7 @@
         private Label label4;
         private TabPage tabPage7;
         private TabPage tabPage8;
+        private ColumnHeader ServerList_GetPing;
+        private System.Windows.Forms.Timer CekUpdateTT;
     }
 }
