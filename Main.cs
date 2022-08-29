@@ -65,9 +65,9 @@ namespace YuukiPS_Launcher
                 if (GetDataUpdate != null)
                 {
                     // If versions are not same, try asking user to update?
-                    var judul = GetDataUpdate.name;
-                    var name_version = GetDataUpdate.tag_name;
-                    var infobody = GetDataUpdate.body;
+                    var name_version = GetDataUpdate.name; // version
+                    var judul = GetDataUpdate.tag_name; // is dev or nightly
+                    var infobody = GetDataUpdate.body; // info
 
                     var version1 = new Version(name_version);
                     var version2 = new Version(ver);
@@ -77,8 +77,8 @@ namespace YuukiPS_Launcher
                     if (result > 0)
                     {
                         // versi 1 lebih besar
-                        Set_Version.Text = "Version: " + ver + " (New " + name_version + ")";
-                        var tes = MessageBox.Show(infobody, judul, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        Set_Version.Text = "Version: " + ver + " (New Update: " + name_version + " )";
+                        var tes = MessageBox.Show(infobody, "Version " + judul + " Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (tes == DialogResult.Yes)
                         {
                             var url_dl = "";
@@ -140,11 +140,11 @@ namespace YuukiPS_Launcher
                     else if (result < 0)
                     {
                         //MessageBox.Show("versi2 lebih besar", "tes", MessageBoxButtons.OK, MessageBoxIcon.Question);
-                        Set_Version.Text = "Version: " + ver + " (latest developer version)";
+                        Set_Version.Text = "Version: " + ver + " (latest nightly) (Official: " + name_version + " )";
                     }
                     else
                     {
-                        Set_Version.Text = "Version: " + ver + " (latest public version)";
+                        Set_Version.Text = "Version: " + ver + " (latest public)";
                     }
                 }
             }

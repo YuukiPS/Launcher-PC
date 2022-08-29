@@ -38,7 +38,7 @@ jobs:
     - name: Get Zip Release
       uses: thedoctor0/zip-release@main
       with:
-        path: './bin/Release/net6.0-windows/' 
+        path: './bin/Release/net6.0-windows/*' 
         type: 'zip'
         filename: 'YuukiPS.zip'
         exclusions: '*.git*'
@@ -49,13 +49,13 @@ jobs:
       env:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-       tag_name: ${{steps.get-version.outputs.assembly-version}}
-       release_name: Release ${{steps.get-version.outputs.assembly-version}}
+       tag_name: "nightly"
+       release_name: ${{steps.get-version.outputs.assembly-version}}
        draft: false
        body: |
         Update ${{steps.get-version.outputs.assembly-version}} Available
         ${{ github.event.head_commit.message }}
-       prerelease: true
+       prerelease: false
 
     - name: Upload Release Asset
       id: upload-release-asset 
