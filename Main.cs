@@ -13,9 +13,143 @@ namespace YuukiPS_Launcher
 
         private string TES_API = "https://drive.yuuki.me/api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/3.0.0/Release/Global/Patch/";
 
+        public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
+        //private static string DataConfig = Path.Combine(CurrentlyPath, "data");
+
         public Main()
         {
+            // Create missing Files
+            //Directory.CreateDirectory(DataConfig);
+
             InitializeComponent();
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+            CheckUpdate();
+            GetServerList();
+        }
+
+        public void GetServerList()
+        {
+            var GetDataServerList = API.ServerList();
+            var TR = GetDataServerList.list;
+
+            ServerList.BeginUpdate();
+            ServerList.Items.Clear();
+
+            for (int i = 0; i < TR.Count; i++)
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Text = TR[i].name;
+                lvi.SubItems.Add(TR[i].host);
+                lvi.SubItems.Add("N/A");
+                lvi.SubItems.Add(TR[i].version + "");
+                ServerList.Items.Add(lvi);
+            }
+            ServerList.EndUpdate();
+        }
+
+        public void CheckUpdate()
+        {
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            Console.WriteLine(version);
+            string ver = "";
+            if (version != null)
+            {
+                ver = version.ToString();
+                Set_Version.Text = "Version: " + ver;
+                var GetDataUpdate = API.GetUpdate();
+                if (GetDataUpdate != null)
+                {
+                    // If versions are not same, try asking user to update?
+                    var judul = GetDataUpdate.name;
+                    var name_version = GetDataUpdate.tag_name;
+                    var infobody = GetDataUpdate.body;
+
+                    var version1 = new Version("2022.8.29.107");
+                    var version2 = new Version(ver);
+
+                    var result = version1.CompareTo(version2);
+
+                    if (result > 0)
+                    {
+                        // versi 1 lebih besar
+                        Set_Version.Text = "Version: " + ver + " (New " + name_version + ")";
+                        var tes = MessageBox.Show(infobody, judul, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (tes == DialogResult.Yes)
+                        {
+                            var url_dl = "";
+                            foreach (var file in GetDataUpdate.assets)
+                            {
+                                if (file.name == "YuukiPSLauncherPC.zip" || file.name == "YuukiPS.zip" || file.name == "update.zip")
+                                {
+                                    url_dl = file.browser_download_url;
+                                    break;
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(url_dl))
+                            {
+                                var DL1 = new Download(url_dl, CurrentlyPath + @"\update.zip");
+                                if (DL1.ShowDialog() == DialogResult.OK)
+                                {
+                                    // update
+                                    var file_update = CurrentlyPath + @"\update.bat";
+                                    try
+                                    {
+                                        //buat bat
+                                        var w = new StreamWriter(file_update);
+                                        w.WriteLine("@echo off");
+
+                                        //kill all
+                                        w.WriteLine("Taskkill /IM YuukiPS.exe /F");
+                                        w.WriteLine("Taskkill /IM YuukiPS.vshost.exe /F");
+
+                                        // Unzip file
+                                        w.WriteLine("echo unzip file...");
+                                        w.WriteLine("tar -xf update.zip");
+
+                                        //delete file old
+                                        w.WriteLine("echo delete file old");
+                                        w.WriteLine("del update.zip");
+
+                                        //start bot
+                                        w.WriteLine("echo Update done, start back...");
+                                        w.WriteLine("timeout 5 > NUL");
+                                        w.WriteLine("start YuukiPS.exe");
+                                        w.WriteLine("del Update.bat");
+                                        w.Close();
+                                        //open bat
+                                        Process.Start(file_update);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show(ex.Message);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // update batal
+                            }
+
+                        }
+                    }
+                    else if (result < 0)
+                    {
+                        //MessageBox.Show("versi2 lebih besar", "tes", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                        Set_Version.Text = "Version: " + ver + " (latest developer version)";
+                    }
+                    else
+                    {
+                        Set_Version.Text = "Version: " + ver + " (latest public version)";
+                    }
+                }
+            }
+            else
+            {
+                Set_Version.Text = "Version: Unknown";
+            }
         }
 
         // Check Launcher
@@ -115,11 +249,17 @@ namespace YuukiPS_Launcher
         [Obsolete]
         private void btStart_Click(object sender, EventArgs e)
         {
+            string set_server_host = GetHost.Text;
+            if (string.IsNullOrEmpty(set_server_host))
+            {
+                MessageBox.Show("Please select a server first, you can click on one in server list");
+                return;
+            }
+
             GS api;
 
-            string set_server_host = GetHost.Text;
             int set_proxy_port = int.Parse(GetPort.Text);
-            bool set_server_https = UseHTTPS.Checked;
+            bool set_server_https = CheckProxyUseHTTPS.Checked;
 
             string Folder_Game_Now = "";
 
@@ -183,7 +323,7 @@ namespace YuukiPS_Launcher
                 PathfileGame = os;
                 PathMetadata = Path.Combine(Folder_Game_Now, "GenshinImpact_Data", "Managed", "Metadata");
                 Metadata_API_Original_MD5 = "809de2b9cd7a0f8cdd8687e3a8291cbb";
-                Metadata_API_Patches_MD5 = "6edd177848f05b0f9200a033aac8479c";
+                Metadata_API_Patches_MD5 = "1307d55022167856879b284084f43426";
             }
             else
             {
@@ -198,6 +338,8 @@ namespace YuukiPS_Launcher
             string PathfileMetadata_Now = Path.Combine(PathMetadata, "global-metadata.dat");
             string PathfileMetadata_Patched = Path.Combine(PathMetadata, "global-metadata-patched.dat");
             string PathfileMetadata_Original = Path.Combine(PathMetadata, "global-metadata-original.dat");
+
+            SetInputMetadata.Text = PathfileMetadata_Now;
 
             if (!File.Exists(PathfileMetadata_Now))
             {
@@ -221,50 +363,71 @@ namespace YuukiPS_Launcher
             Console.WriteLine("Metadata_LOC_Original_MD5: " + Metadata_LOC_Original_MD5);
             Console.WriteLine("Game_LOC_Original_MD5: " + Game_LOC_Original_MD5);
 
+            // here should start patching process
+
             // If game doesn't run, check patch
             if (progress == null)
             {
-                // If Metadata_API_Patches_MD5 doesn't match Metadata_LOC_Now_MD5
-                if (Metadata_API_Patches_MD5 != Metadata_LOC_Now_MD5)
+
+                // If original backup file is not found, start backup process
+                if (!File.Exists(PathfileMetadata_Original))
                 {
-                    Console.WriteLine("Metadata doesn't match, patch it...");
-
-                    // Check original file
-                    if (!File.Exists(PathfileMetadata_Original))
+                    // Check if Metadata_API_Original_MD5 (original file from api) matches Metadata_LOC_Now_MD5 (file in current use)
+                    if (Metadata_API_Original_MD5 == Metadata_LOC_Now_MD5)
                     {
-                        // Check if Metadata_API_Original_MD5 (original file from api) matches Metadata_LOC_Now_MD5 (file in current use)
-                        if (Metadata_API_Original_MD5 == Metadata_LOC_Now_MD5)
+                        Console.WriteLine("Backup Metadata Original");
+                        try
                         {
-                            Console.WriteLine("Backup Metadata Original");
-                            try
-                            {
-                                File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
-                            }
-                            catch (Exception ignore)
-                            {
-                                MessageBox.Show(ignore.Message, "Failed: Backup Metadata Original");
-                                return;
-                            }
-
+                            File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
                         }
-                        else
+                        catch (Exception ignore)
                         {
-                            var DL3 = new Download(TES_API + "global-metadata-original.dat", PathfileMetadata_Original);
-                            if (DL3.ShowDialog() != DialogResult.OK)
-                            {
-                                Console.WriteLine("Original Backup failed because md5 doesn't match");
-                                return;
-                            }
+                            MessageBox.Show(ignore.Message, "Failed: Backup Metadata Original");
+                            return;
+                        }
+
+                    }
+                    else
+                    {
+                        // Download original metadata
+                        var DL3 = new Download(TES_API + "global-metadata-original.dat", PathfileMetadata_Original);
+                        if (DL3.ShowDialog() != DialogResult.OK)
+                        {
+                            MessageBox.Show("Original Backup failed because md5 doesn't match");
+                            return;
                         }
                     }
+                }
 
+
+                if (set_server_host == "official")
+                {
+                    // If Metadata_API_Original_MD5 doesn't match Metadata_LOC_Now_MD5
+                    if (Metadata_API_Original_MD5 != Metadata_LOC_Now_MD5)
+                    {
+                        Console.WriteLine("Metadata_API_Original_MD5 doesn't match with Metadata_LOC_Now_MD5, backup it....");
+                        try
+                        {
+                            File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
+                        }
+                        catch (Exception ignore)
+                        {
+                            MessageBox.Show(ignore.Message, "Failed: Backup Metadata Original");
+                            return;
+                        }
+                    }
+                }
+                else if (Metadata_API_Patches_MD5 != Metadata_LOC_Now_MD5)
+                {
+                    // If Metadata_API_Patches_MD5 doesn't match Metadata_LOC_Now_MD5
                     if (!File.Exists(PathfileMetadata_Patched))
                     {
+                        // If you don't have PathfileMetadata_Patched, download it
                         var DL2 = new Download(TES_API + "global-metadata-patched.dat", PathfileMetadata_Patched);
                         if (DL2.ShowDialog() != DialogResult.OK)
                         {
                             // If PathfileMetadata_Patched (Patched file) doesn't exist
-                            Console.WriteLine("No Found Patch file....");
+                            MessageBox.Show("No Found Patch file....");
                             return;
                         }
                     }
@@ -273,11 +436,11 @@ namespace YuukiPS_Launcher
                         // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
                         if (Metadata_API_Patches_MD5 == Metadata_LOC_Patched_MD5)
                         {
-                            // Patch to PathfileMetadata_Now
-                            Console.WriteLine("Patch done...");
+                            // Patch to PathfileMetadata_Now                            
                             try
                             {
                                 File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
+                                Console.WriteLine("Patch done...");
                             }
                             catch (Exception ignore)
                             {
@@ -287,7 +450,7 @@ namespace YuukiPS_Launcher
                         }
                         else
                         {
-                            Console.WriteLine("Failed because file doesn't match from md5 api");
+                            MessageBox.Show("Failed because file doesn't match from md5 api");
                             return;
                         }
                     }
@@ -305,15 +468,24 @@ namespace YuukiPS_Launcher
             // For Proxy
             if (proxy == null)
             {
-                proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
-                proxy.Start();
-                btStart.Text = "Stop";
+                // skip proxy if official
+                if (set_server_host != "official")
+                {
+                    proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
+                    if (!proxy.Start())
+                    {
+                        MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
+                        proxy = null;
+                        return;
+                    }
+                    stIsRunProxy.Text = "Status: ON";
+                }
             }
             else
             {
                 proxy.Stop();
                 proxy = null;
-                btStart.Text = "Launch";
+                stIsRunProxy.Text = "Status: OFF";
             }
 
             // For Game
@@ -327,12 +499,14 @@ namespace YuukiPS_Launcher
                 try
                 {
                     progress.Start();
+                    btStart.Text = "Stop";
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error");
                     progress.Dispose();
                     progress = null;
+                    btStart.Text = "Launch";
 
                 }
             }
@@ -348,7 +522,10 @@ namespace YuukiPS_Launcher
                 }
                 progress.WaitForExit();
                 progress = null;
+
                 Console.WriteLine("Game Stop!");
+
+                btStart.Text = "Launch";
 
                 if (File.Exists(PathfileMetadata_Now))
                 {
@@ -412,5 +589,46 @@ namespace YuukiPS_Launcher
             }
         }
 
+        private void btStartServer_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("Still PR :)");
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btReloadServer_Click(object sender, EventArgs e)
+        {
+            GetServerList();
+        }
+
+        private void ServerList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var item = ServerList.GetItemAt(e.X, e.Y);
+            if (item == null)
+            {
+                return;
+            }
+            var name_server = item.SubItems[0].Text;
+            var host_server = item.SubItems[1].Text;
+            GetHost.Text = host_server;
+        }
+
+        private void linkDiscord_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("http://discord.yuuki.me/") { UseShellExecute = true });
+        }
+
+        private void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://github.com/akbaryahya/YuukiPS-Launcher") { UseShellExecute = true });
+        }
+
+        private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://ps.yuuki.me/") { UseShellExecute = true });
+        }
     }
 }

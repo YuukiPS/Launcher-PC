@@ -22,7 +22,7 @@ namespace YuukiPS_Launcher
         }
 
         [Obsolete]
-        public void Start()
+        public Boolean Start()
         {
             proxyServer = new ProxyServer();
 
@@ -35,14 +35,42 @@ namespace YuukiPS_Launcher
 
             proxyServer.ServerCertificateValidationCallback += OnCertificateValidation;
 
+            try
+            {
+                //Tool.findAndKillProcessRuningOn("" + port + "");
+            }
+            catch (Exception ex)
+            {
+                // skip
+            }
+
             explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, true);
 
             // Fired when a CONNECT request is received
             explicitEndPoint.BeforeTunnelConnectRequest += OnBeforeTunnelConnectRequest;
 
             // An explicit endpoint is where the client knows about the existence of a proxy So client sends request in a proxy friendly manner
-            proxyServer.AddEndPoint(explicitEndPoint);
-            proxyServer.Start();
+            try
+            {
+                proxyServer.AddEndPoint(explicitEndPoint);
+                proxyServer.Start();
+            }
+            catch (Exception ex)
+            {
+                // https://stackoverflow.com/a/41340197/3095372
+                // https://stackoverflow.com/a/69051680/3095372
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Error Start Proxy: {0}", ex.InnerException.Message);
+                }
+                else
+                {
+                    Console.WriteLine("Error Start Proxy: {0}", ex.Message);
+                }
+
+                return false;
+            }
+
 
             foreach (var endPoint in proxyServer.ProxyEndPoints)
             {
@@ -52,6 +80,8 @@ namespace YuukiPS_Launcher
             // Only explicit proxies can be set as system proxy!
             proxyServer.SetAsSystemHttpProxy(explicitEndPoint);
             proxyServer.SetAsSystemHttpsProxy(explicitEndPoint);
+
+            return true;
 
         }
 

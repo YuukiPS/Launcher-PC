@@ -102,7 +102,7 @@
             this.Controls.Add(this.GetNameDownload);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DLBar);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Download";
             this.Text = "Download";
             this.Load += new System.EventHandler(this.Download_Load);
