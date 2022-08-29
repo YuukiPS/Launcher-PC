@@ -28,7 +28,7 @@ jobs:
     - uses: bbonkr/get-version-action@v1.0.4
       id: get_version
       with:
-       project: "./'YuukiPS Launcher.csproj'"
+       project: "./YuukiPS Launcher.csproj"
 
     - name: logging
       run: |
