@@ -1,31 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>   
     
-    <RootNamespace>YuukiPS_Launcher</RootNamespace>
-    
+    <RootNamespace>YuukiPS_Launcher</RootNamespace>    
     <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    
+    <UseWindowsForms>true</UseWindowsForms>    
     <ImplicitUsings>enable</ImplicitUsings>
-    <StartupObject></StartupObject>
     
-    <ErrorReport>none</ErrorReport>
+    <Platforms>AnyCPU;x64</Platforms>    
     
-    <Platforms>AnyCPU;x64</Platforms>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-    
-    <AssemblyVersion>2022.8.29.0944</AssemblyVersion>
-    
+    <AssemblyVersion>2022.8.29.1004</AssemblyVersion>    
     <FileVersion>0.0.0.1</FileVersion>
-
+    
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
-
-    <IsPublishable>False</IsPublishable>
-
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
