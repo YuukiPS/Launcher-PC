@@ -20,9 +20,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: Application_Artifact
-        path: /home/runner/work/YuukiPS Launcher/YuukiPS Launcher/release/
+        name: YuukiPS
+        path: /home/runner/work/YuukiPS Launcher/bin/Release/net6.0-windows
