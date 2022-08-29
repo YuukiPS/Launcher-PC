@@ -22,12 +22,40 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build
+    - name: Build Exe
       run: dotnet build --no-restore --configuration Release /clp:ErrorsOnly
 
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v2
+    - uses: bbonkr/get-version-action@v1.0.4
+      id: get_version
       with:
-        name: YuukiPS
-        path: ./bin/Release/net6.0-windows/*
-        if-no-files-found: error
+      project: "./'YuukiPS Launcher.csproj'"
+
+    - name: logging
+      run: |
+       echo "Version=${{ steps.get_version.outputs.version }}"
+
+    - name: Build Zip
+      run: |
+          zip --junk-paths YuukiPS ./bin/Release/net6.0-windows/*
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       with:
+        tag_name: ${{ steps.get_version.outputs.version }}
+        release_name: Release ${{ steps.get_version.outputs.version }}
+        draft: false
+        prerelease: true
+
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./YuukiPS.zip
+        asset_name: YuukiPS.zip
+        asset_content_type: application/zip

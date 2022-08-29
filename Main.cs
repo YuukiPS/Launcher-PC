@@ -12,6 +12,8 @@ namespace YuukiPS_Launcher
         private Process? progress;
 
         private string TES_API = "https://drive.yuuki.me/api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/3.0.0/Release/Global/Patch/";
+        // https://nightly.link/akbaryahya/YuukiPS-Launcher/actions/runs/2947968074/YuukiPS.zip
+        // https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/actions/artifacts
 
         public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
         //private static string DataConfig = Path.Combine(CurrentlyPath, "data");
