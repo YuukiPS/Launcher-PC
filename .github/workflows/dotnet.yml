@@ -41,21 +41,21 @@ jobs:
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
-       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       with:
-        tag_name: ${{ steps.get_version.outputs.version }}
-        release_name: Release ${{ steps.get_version.outputs.version }}
-        draft: false
-        prerelease: true
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+       tag_name: ${{ steps.get_version.outputs.version }}
+       release_name: Release ${{ steps.get_version.outputs.version }}
+       draft: false
+       prerelease: true
 
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
-       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./YuukiPS.zip
-        asset_name: YuukiPS.zip
-        asset_content_type: application/zip
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+       upload_url: ${{ steps.create_release.outputs.upload_url }}
+       asset_path: ./YuukiPS.zip
+       asset_name: YuukiPS.zip
+       asset_content_type: application/zip
