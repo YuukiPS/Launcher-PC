@@ -20,9 +20,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --no-restore --configuration Release /clp:ErrorsOnly
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v2
       with:
         name: YuukiPS
-        path: /home/runner/work/YuukiPS Launcher/bin/Release/net6.0-windows
+        path: ./bin/Release/*
+        if-no-files-found: error
