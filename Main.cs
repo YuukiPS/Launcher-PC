@@ -385,16 +385,16 @@ namespace YuukiPS_Launcher
                 //api = API.GS_DL("cn");
                 PathfileGame = cn;
                 PathMetadata = Path.Combine(Folder_Game_Now, "YuanShen_Data", "Managed", "Metadata");
-                Metadata_API_Original_MD5 = "idk";
-                Metadata_API_Patches_MD5 = "";
+                Metadata_API_Original_MD5 = "BACD1E9DE1888F4896DABA0216C3D829".ToLower();
+                Metadata_API_Patches_MD5 = "007E1AA68590878BE9B05AC79440E987".ToLower();
             }
             else if (File.Exists(os))
             {
                 //api = API.GS_DL();
                 PathfileGame = os;
                 PathMetadata = Path.Combine(Folder_Game_Now, "GenshinImpact_Data", "Managed", "Metadata");
-                Metadata_API_Original_MD5 = "809de2b9cd7a0f8cdd8687e3a8291cbb";
-                Metadata_API_Patches_MD5 = "1307d55022167856879b284084f43426";
+                Metadata_API_Original_MD5 = "809de2b9cd7a0f8cdd8687e3a8291cbb".ToLower();
+                Metadata_API_Patches_MD5 = "1307D55022167856879B284084F43426".ToLower();
             }
             else
             {
