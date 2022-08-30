@@ -15,7 +15,6 @@ namespace YuukiPS_Launcher
         Thread thServerList;
         List<List> ListServer;
 
-        private string TES_API = "https://drive.yuuki.me/api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/3.0.0/Release/Global/Patch/";
         // https://nightly.link/akbaryahya/YuukiPS-Launcher/actions/runs/2947968074/YuukiPS.zip
         // https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/actions/artifacts
 
@@ -327,8 +326,6 @@ namespace YuukiPS_Launcher
                 return;
             }
 
-            GS api;
-
             int set_proxy_port = int.Parse(GetPort.Text);
             bool set_server_https = CheckProxyUseHTTPS.Checked;
 
@@ -380,21 +377,31 @@ namespace YuukiPS_Launcher
             string Metadata_API_Original_MD5;
             string Metadata_API_Patches_MD5;
 
+            //GS api;
+            KeyGS last_key_api = API.GSKEY();
+            if (last_key_api == null)
+            {
+                MessageBox.Show("Error Get Key");
+                return;
+            }
+
+            string TES_API = "https://drive.yuuki.me/api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + last_key_api.Original.MetaData.version + "/Release/Global/Patch/";
+
             if (File.Exists(cn))
             {
                 //api = API.GS_DL("cn");
                 PathfileGame = cn;
                 PathMetadata = Path.Combine(Folder_Game_Now, "YuanShen_Data", "Managed", "Metadata");
-                Metadata_API_Original_MD5 = "BACD1E9DE1888F4896DABA0216C3D829".ToLower();
-                Metadata_API_Patches_MD5 = "007E1AA68590878BE9B05AC79440E987".ToLower();
+                Metadata_API_Original_MD5 = last_key_api.Original.MetaData.md5_cn.ToLower();
+                Metadata_API_Patches_MD5 = last_key_api.Patched.MetaData.md5_cn.ToLower();
             }
             else if (File.Exists(os))
             {
                 //api = API.GS_DL();
                 PathfileGame = os;
                 PathMetadata = Path.Combine(Folder_Game_Now, "GenshinImpact_Data", "Managed", "Metadata");
-                Metadata_API_Original_MD5 = "809de2b9cd7a0f8cdd8687e3a8291cbb".ToLower();
-                Metadata_API_Patches_MD5 = "1307D55022167856879B284084F43426".ToLower();
+                Metadata_API_Original_MD5 = last_key_api.Original.MetaData.md5_os.ToLower();
+                Metadata_API_Patches_MD5 = last_key_api.Patched.MetaData.md5_os.ToLower();
             }
             else
             {

@@ -23,6 +23,33 @@ namespace YuukiPS_Launcher
             return JsonConvert.DeserializeObject<GS>(getme);
         }
 
+        public static KeyGS? GSKEY()
+        {
+            var client = new RestClient(API_DL_WB);
+            var request = new RestRequest("genshin/key/latest");
+
+            var response = client.Execute(request);
+            //var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
+            //return JsonConvert.DeserializeObject<KeyGS>(getme);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var getme = response.Content;
+                if (getme != null)
+                {
+                    var tes = JsonConvert.DeserializeObject<KeyGS>(getme);
+                    if (tes != null)
+                    {
+                        return tes;
+                    }
+                }
+            }
+            else
+            {
+                Debug.Print("Error: " + response.StatusCode);
+            }
+            return null;
+        }
+
         public static ServerList ServerList()
         {
             var client = new RestClient(API_DL_WB);
