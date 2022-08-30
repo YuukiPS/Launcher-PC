@@ -73,18 +73,18 @@ namespace YuukiPS_Launcher
                     int s = i;
                     new Thread(() =>
                     {
+                        var host = ListServer[s].host;
                         try
                         {
-                            var host = ListServer[s].host;
-                            Debug.Print("Start update.. " + host);
-
                             if (host == "official")
                             {
                                 return;
                             }
 
+                            Debug.Print("Start update.. " + host);
+
                             string url_server_api = "https://" + host + "/status/server";
-                            VersionGS ig = API.GetServerStatus(url_server_api);
+                            VersionGS? ig = API.GetServerStatus(url_server_api);
                             ServerList.Invoke((Action)delegate
                             {
                                 if (ig != null)
@@ -109,13 +109,9 @@ namespace YuukiPS_Launcher
                                 }
                             });
                         }
-                        catch (NullReferenceException e)
-                        {
-                            Debug.Print("Error NullReferenceException:" + e.Message);
-                        }
                         catch (Exception e)
                         {
-                            Debug.Print("Error:" + e.Message);
+                            Debug.Print("Error Host " + host + "" + e.Message);
                         }
                         finally
                         {

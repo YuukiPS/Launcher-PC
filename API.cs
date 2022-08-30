@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using System.Diagnostics;
 using System.Net;
 using YuukiPS_Launcher.json;
 
@@ -34,18 +35,30 @@ namespace YuukiPS_Launcher
 
         public static VersionGS? GetServerStatus(string url)
         {
-            var client = new RestClient(url);
+            var s = new RestClientOptions(url)
+            {
+                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            };
+            var client = new RestClient(s);
             var request = new RestRequest();
 
             var response = client.Execute(request);
-            var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            if (getme != null)
+
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                var tes = JsonConvert.DeserializeObject<VersionGS>(getme);
-                if (tes != null)
+                var getme = response.Content;
+                if (getme != null)
                 {
-                    return tes;
+                    var tes = JsonConvert.DeserializeObject<VersionGS>(getme);
+                    if (tes != null)
+                    {
+                        return tes;
+                    }
                 }
+            }
+            else
+            {
+                Debug.Print("Error Host " + url + ": " + response.StatusCode);
             }
             return null;
         }
