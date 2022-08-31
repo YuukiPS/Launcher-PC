@@ -2,10 +2,8 @@
 
 on:
   push:
-    branches: [ "master" ]
-    paths-ignore:
-     - '**/README.md'
-     - '**/docs/**'
+    paths:
+     - 'YuukiPS Launcher.csproj'
 
 jobs:
   build:
