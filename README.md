@@ -17,11 +17,10 @@ A simple Launcher that run several anime games.
 
 ### Installation
 
-For Nightly Releases on [HERE](https://github.com/akbaryahya/YuukiPS-Launcher/releases)
+For Nightly Releases [Download here](https://github.com/akbaryahya/YuukiPS-Launcher/releases)
 
-Supports
-
- * .NET 6.0
+Required
+ * [.NET 6.0 Runtime (Desktop)](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)
 
 ### Screenshot
 
