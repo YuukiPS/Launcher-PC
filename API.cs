@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using System.Diagnostics;
 using System.Net;
 using YuukiPS_Launcher.json;
 
@@ -29,35 +28,56 @@ namespace YuukiPS_Launcher
             var request = new RestRequest("genshin/key/latest");
 
             var response = client.Execute(request);
-            //var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            //return JsonConvert.DeserializeObject<KeyGS>(getme);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var getme = response.Content;
-                if (getme != null)
+                try
                 {
-                    var tes = JsonConvert.DeserializeObject<KeyGS>(getme);
-                    if (tes != null)
+                    if (response.Content != null)
                     {
-                        return tes;
+                        var tes = JsonConvert.DeserializeObject<KeyGS>(response.Content);
+                        if (tes != null)
+                        {
+                            return tes;
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: ", ex);
                 }
             }
             else
             {
-                Debug.Print("Error: " + response.StatusCode);
+                Console.WriteLine("Error: " + response.StatusCode);
             }
             return null;
         }
 
-        public static ServerList ServerList()
+        public static ServerList? ServerList()
         {
             var client = new RestClient(API_DL_WB);
             var request = new RestRequest("launcher/server");
-
             var response = client.Execute(request);
-            var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            return JsonConvert.DeserializeObject<ServerList>(getme);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                if (response.Content != null)
+                {
+                    try
+                    {
+                        var tes = JsonConvert.DeserializeObject<ServerList>(response.Content);
+                        if (tes != null)
+                        {
+                            return tes;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: ", ex);
+                    }
+
+                }
+            }
+            return null;
         }
 
         public static VersionGS? GetServerStatus(string url)
@@ -73,19 +93,25 @@ namespace YuukiPS_Launcher
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var getme = response.Content;
-                if (getme != null)
+                if (response.Content != null)
                 {
-                    var tes = JsonConvert.DeserializeObject<VersionGS>(getme);
-                    if (tes != null)
+                    try
                     {
-                        return tes;
+                        var tes = JsonConvert.DeserializeObject<VersionGS>(response.Content);
+                        if (tes != null)
+                        {
+                            return tes;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: ", ex);
                     }
                 }
             }
             else
             {
-                Debug.Print("Error Host " + url + ": " + response.StatusCode);
+                Console.WriteLine("Error Host " + url + ": " + response.StatusCode);
             }
             return null;
         }
@@ -94,16 +120,29 @@ namespace YuukiPS_Launcher
         {
             var client = new RestClient(API_GITHUB);
             var request = new RestRequest("releases");
-
             var response = client.Execute(request);
-            var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            if (getme != null)
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                var tes = JsonConvert.DeserializeObject<List<Update>>(getme);
-                if (tes != null)
+                if (response.Content != null)
                 {
-                    return tes[0];
+                    try
+                    {
+                        var tes = JsonConvert.DeserializeObject<List<Update>>(response.Content);
+                        if (tes != null)
+                        {
+                            return tes[0];
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error GetUpdate1: ", ex);
+                    }
+
                 }
+            }
+            else
+            {
+                Console.WriteLine("Error GetUpdate2: " + response.StatusCode);
             }
             return null;
         }

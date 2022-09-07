@@ -43,6 +43,8 @@
             this.CheckProxyUseHTTPS = new System.Windows.Forms.CheckBox();
             this.TabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.Extra_AkebiGC = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.stIsRunProxy = new System.Windows.Forms.Label();
             this.CheckProxyEnable = new System.Windows.Forms.CheckBox();
@@ -73,6 +75,7 @@
             this.CekUpdateTT = new System.Windows.Forms.Timer(this.components);
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -157,6 +160,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.ServerList);
             this.tabPage1.Controls.Add(this.btReloadServer);
@@ -172,6 +176,26 @@
             this.tabPage1.Text = "Connect";
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.Extra_AkebiGC);
+            this.groupBox2.Location = new System.Drawing.Point(8, 206);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(176, 72);
+            this.groupBox2.TabIndex = 12;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Extra";
+            // 
+            // Extra_AkebiGC
+            // 
+            this.Extra_AkebiGC.AutoSize = true;
+            this.Extra_AkebiGC.Location = new System.Drawing.Point(6, 22);
+            this.Extra_AkebiGC.Name = "Extra_AkebiGC";
+            this.Extra_AkebiGC.Size = new System.Drawing.Size(77, 19);
+            this.Extra_AkebiGC.TabIndex = 0;
+            this.Extra_AkebiGC.Text = "Akebi-GC";
+            this.Extra_AkebiGC.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -456,10 +480,13 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Main";
             this.Text = "YuukiPS Launcher";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
             this.TabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
@@ -510,5 +537,7 @@
         private TabPage tabPage8;
         private ColumnHeader ServerList_GetPing;
         private System.Windows.Forms.Timer CekUpdateTT;
+        private GroupBox groupBox2;
+        private CheckBox Extra_AkebiGC;
     }
 }

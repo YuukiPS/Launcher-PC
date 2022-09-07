@@ -19,18 +19,32 @@ namespace YuukiPS_Launcher
         // https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/actions/artifacts
 
         public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
-        //private static string DataConfig = Path.Combine(CurrentlyPath, "data");
+
+        private static string DataConfig = Path.Combine(CurrentlyPath, "data");
+        private static string Modfolder = Path.Combine(CurrentlyPath, "mod");
 
         public Main()
         {
-            // Create missing Files
-            //Directory.CreateDirectory(DataConfig);
-
             InitializeComponent();
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
+            // Create missing Files
+            Directory.CreateDirectory(DataConfig);
+            Directory.CreateDirectory(Modfolder);
+
+            // Before starting make sure proxy is turned off
+            try
+            {
+                RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
+                registry.SetValue("ProxyEnable", 0);
+            }
+            catch (Exception ex)
+            {
+                // skip
+            }
+
             CheckUpdate();
             GetServerList();
             UpdateServerListTimer();
@@ -39,6 +53,12 @@ namespace YuukiPS_Launcher
         public void GetServerList()
         {
             var GetDataServerList = API.ServerList();
+            if (GetDataServerList == null)
+            {
+                MessageBox.Show("Error get server list");
+                return;
+            }
+
             ListServer = GetDataServerList.list;
 
             ServerList.BeginUpdate();
@@ -67,6 +87,10 @@ namespace YuukiPS_Launcher
             }
             thServerList = new Thread(() =>
             {
+                if (ListServer == null)
+                {
+                    return;
+                }
                 for (int i = 0; i < ListServer.Count; i++)
                 {
                     int s = i;
@@ -319,6 +343,8 @@ namespace YuukiPS_Launcher
         [Obsolete]
         private void btStart_Click(object sender, EventArgs e)
         {
+            bool isAkebiGC = Extra_AkebiGC.Checked;
+
             string set_server_host = GetHost.Text;
             if (string.IsNullOrEmpty(set_server_host))
             {
@@ -561,9 +587,71 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                proxy.Stop();
-                proxy = null;
-                stIsRunProxy.Text = "Status: OFF";
+                StopProxy();
+            }
+
+            if (isAkebiGC)
+            {
+                var set_AkebiGC = Path.Combine(Modfolder, "AkebiGC");
+                Directory.CreateDirectory(set_AkebiGC);
+                string get_AkebiGC = Path.Combine(set_AkebiGC, "injector.exe");
+                string get_AkebiGC_zip = Path.Combine(set_AkebiGC, "update.zip");
+
+                if (!File.Exists(get_AkebiGC))
+                {
+                    var DL2 = new Download("https://github.com/Akebi-Group/Akebi-GC/releases/download/v0.95/akebi-gc-v0.95-g3.0-binaries-global.zip", get_AkebiGC_zip);
+                    if (DL2.ShowDialog() != DialogResult.OK)
+                    {
+                        MessageBox.Show("No Akebi");
+                        return;
+                    }
+                    else
+                    {
+                        // if download done....
+                        var file_update_AkebiGC = set_AkebiGC + @"\update.bat";
+                        try
+                        {
+                            // Make bat file for update
+                            var w = new StreamWriter(file_update_AkebiGC);
+                            w.WriteLine("@echo off");
+
+                            w.WriteLine("cd \"" + set_AkebiGC + "\" ");
+
+                            // Kill Akebi
+                            w.WriteLine("Taskkill /IM injector.exe /F");
+
+                            // Unzip file
+                            w.WriteLine("echo unzip file...");
+                            w.WriteLine("tar -xvf update.zip");
+
+                            //delete file old
+                            w.WriteLine("echo delete file zip");
+                            w.WriteLine("del /F update.zip");
+
+                            // del update
+                            w.WriteLine("del /F update.bat");
+                            w.Close();
+
+                            //open bat
+                            //Process.Start(file_update_AkebiGC);
+
+                            ProcessStartInfo pInfo = new ProcessStartInfo();
+                            pInfo.FileName = file_update_AkebiGC;
+                            Process p = Process.Start(pInfo);
+                            //p.WaitForInputIdle();
+                            p.WaitForExit();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+
+                    }
+                }
+
+                PathfileGame = get_AkebiGC;
+                Console.WriteLine("RUN: " + PathfileGame);
             }
 
             // For Game
@@ -583,27 +671,30 @@ namespace YuukiPS_Launcher
                 {
                     MessageBox.Show(ex.Message, "Error");
                     progress.Dispose();
-                    progress = null;
+                    StopProxy();
                     btStart.Text = "Launch";
 
                 }
             }
             else
             {
+
                 try
                 {
                     KillProcessAndChildrens(progress.Id);
+                    progress.WaitForExit();
+                    EndTask("GenshinImpact");
+                    EndTask("YuanShen");
                 }
                 catch (Exception exx)
                 {
-                    //skip
+                    Console.WriteLine("Error: ", exx);
                 }
-                progress.WaitForExit();
+
                 progress = null;
+                btStart.Text = "Launch";
 
                 Console.WriteLine("Game Stop!");
-
-                btStart.Text = "Launch";
 
                 if (File.Exists(PathfileMetadata_Now))
                 {
@@ -619,14 +710,12 @@ namespace YuukiPS_Launcher
                             }
                             catch (Exception ignore)
                             {
-                                MessageBox.Show(ignore.Message, "Failed Revert to original version");
-                                return;
+                                Console.WriteLine("Failed Revert to original version");
                             }
                         }
                         else
                         {
                             Console.WriteLine("Because this is still using original version");
-                            return;
                         }
                     }
                     catch (Exception xc)
@@ -636,8 +725,29 @@ namespace YuukiPS_Launcher
 
                 }
 
+
             }
 
+        }
+
+        [Obsolete]
+        public void StopProxy()
+        {
+            if (proxy != null)
+            {
+                proxy.Stop();
+                proxy = null;
+                stIsRunProxy.Text = "Status: OFF";
+            }
+        }
+
+        public void EndTask(string taskname)
+        {
+            var chromeDriverProcesses = Process.GetProcesses().Where(pr => pr.ProcessName == taskname);
+            foreach (var process in chromeDriverProcesses)
+            {
+                process.Kill();
+            }
         }
 
         private static void KillProcessAndChildrens(int pid)
@@ -713,5 +823,19 @@ namespace YuukiPS_Launcher
         {
             UpdateServerListTimer();
         }
+
+        [Obsolete]
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Currently proxy is still running do you want to cancel exit?", "a good question", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                StopProxy();
+            }
+        }
+
     }
 }
