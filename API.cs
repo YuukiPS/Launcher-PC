@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using System.Diagnostics;
 using System.Net;
 using YuukiPS_Launcher.json;
 
@@ -20,6 +21,37 @@ namespace YuukiPS_Launcher
             var response = client.Execute(request);
             var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
             return JsonConvert.DeserializeObject<GS>(getme);
+        }
+
+        public static VersionGenshin? GetMD5VersionGS(string md5)
+        {
+            var client = new RestClient(API_DL_WB);
+            var request = new RestRequest("genshin/version?md5=" + md5.ToUpper());
+
+            var response = client.Execute(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                try
+                {
+                    if (response.Content != null)
+                    {
+                        var tes = JsonConvert.DeserializeObject<VersionGenshin>(response.Content);
+                        if (tes != null)
+                        {
+                            return tes;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: ", ex);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error: " + response.StatusCode);
+            }
+            return null;
         }
 
         public static KeyGS? GSKEY()
@@ -80,7 +112,7 @@ namespace YuukiPS_Launcher
             return null;
         }
 
-        public static VersionGS? GetServerStatus(string url)
+        public static VersionServer? GetServerStatus(string url)
         {
             var s = new RestClientOptions(url)
             {
@@ -97,7 +129,7 @@ namespace YuukiPS_Launcher
                 {
                     try
                     {
-                        var tes = JsonConvert.DeserializeObject<VersionGS>(response.Content);
+                        var tes = JsonConvert.DeserializeObject<VersionServer>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -111,7 +143,7 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                Console.WriteLine("Error Host " + url + ": " + response.StatusCode);
+                Debug.Print("Error Host " + url + ": " + response.StatusCode);
             }
             return null;
         }

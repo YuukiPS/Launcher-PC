@@ -1,6 +1,6 @@
 ﻿namespace YuukiPS_Launcher.json
 {
-    public class VersionGS
+    public class VersionServer
     {
         public int retcode { get; set; }
         public Status status { get; set; }

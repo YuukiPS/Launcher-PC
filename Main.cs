@@ -23,31 +23,375 @@ namespace YuukiPS_Launcher
         private static string DataConfig = Path.Combine(CurrentlyPath, "data");
         private static string Modfolder = Path.Combine(CurrentlyPath, "mod");
 
+        // TODO: hapus nanti ini
+
+
+        // TODO: hapus nanti ini
+        //string PathfileGame = "";
+        //string PathMetadata = "";
+        //string PathUA = "";
+
+        //string DL_Patch = "";
+
+        string VersionGame = "";
+        string WatchFile = "";
+        bool IsGameRun = false;
+        bool DoneCheck = true;
+        bool ShouldIcheck = false;
+        int GameMode = 0; // 0 - tanpa patch, 1 - patch
+        int GameChannel = 0;
+
         public Main()
         {
             InitializeComponent();
         }
 
+        [Obsolete]
         private void Main_Load(object sender, EventArgs e)
         {
+            Console.WriteLine("Loading....");
+
             // Create missing Files
             Directory.CreateDirectory(DataConfig);
             Directory.CreateDirectory(Modfolder);
 
             // Before starting make sure proxy is turned off
-            try
-            {
-                RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
-                registry.SetValue("ProxyEnable", 0);
-            }
-            catch (Exception ex)
-            {
-                // skip
-            }
+            CheckProxy(true);
 
             CheckUpdate();
+            CheckVersionGame();
+
+            // Server List
             GetServerList();
             UpdateServerListTimer();
+        }
+
+        public bool CheckVersionGame()
+        {
+            var cst_folder_game = Set_LA_GameFolder.Text;
+            // Jika user tidak punya game folder
+            if (String.IsNullOrEmpty(cst_folder_game))
+            {
+                // cari otomatis launcher
+                var Get_Launcher = GetLauncherPath();
+                Console.WriteLine("Folder Launcher: " + Get_Launcher);
+
+                // Jika tidak ada launcher
+                if (string.IsNullOrEmpty(Get_Launcher))
+                {
+                    Console.WriteLine("Please find game install folder!");
+                    return false;
+                }
+                else
+                {
+                    // jika ada launcher, cari game path
+                    cst_folder_game = GetGamePath(Get_Launcher);
+                }
+            }
+
+            // Check sekali lagi
+            if (string.IsNullOrEmpty(cst_folder_game))
+            {
+                Console.WriteLine("Please find game install folder!");
+                return false;
+            }
+            if (!Directory.Exists(cst_folder_game))
+            {
+                Console.WriteLine("Please find game install folder! (2)");
+                return false;
+            }
+
+            Console.WriteLine("Folder Game: " + cst_folder_game);
+
+            string cn = Path.Combine(cst_folder_game, "YuanShen.exe");
+            string os = Path.Combine(cst_folder_game, "GenshinImpact.exe");
+
+            // Path
+            string PathfileGame;
+            string PathMetadata;
+            string PathUA;
+
+            // Pilih Channel
+            if (File.Exists(cn))
+            {
+                // Jika game versi cina
+                WatchFile = "YuanShen";
+                GameChannel = 2;
+                PathfileGame = cn;
+                PathMetadata = Path.Combine(cst_folder_game, "YuanShen_Data", "Managed", "Metadata");
+                PathUA = Path.Combine(cst_folder_game, "YuanShen_Data", "Native");
+            }
+            else if (File.Exists(os))
+            {
+                // jika game versi global
+                WatchFile = "GenshinImpact";
+                GameChannel = 1;
+                PathfileGame = os;
+                PathMetadata = Path.Combine(cst_folder_game, "GenshinImpact_Data", "Managed", "Metadata");
+                PathUA = Path.Combine(cst_folder_game, "GenshinImpact_Data", "Native");
+            }
+            else
+            {
+                // jika game versi tidak di dukung atau tidak ada file
+                Console.WriteLine("No game files found!!!");
+                return false;
+            }
+
+            // Check MD5 Game
+            string Game_LOC_Original_MD5 = CalculateMD5(PathfileGame).ToUpper();
+
+            // Check MD5 in Server API
+            VersionGenshin get_version = API.GetMD5VersionGS(Game_LOC_Original_MD5);
+            if (get_version == null)
+            {
+                //0.0.0
+                Console.WriteLine("Could not find version via API Check");
+                return false;
+            }
+            if (get_version.version == "0.0.0")
+            {
+                Console.WriteLine("Version not supported: MD5 " + Game_LOC_Original_MD5);
+                return false;
+            }
+
+            // Set Folder Patch
+            Set_Metadata_Folder.Text = PathMetadata;
+            Set_UA_Folder.Text = PathUA;
+            Set_LA_GameFile.Text = PathfileGame;
+
+            // IF ALL OK
+            Set_LA_GameFolder.Text = cst_folder_game;
+
+            // Set Version
+            Get_LA_Version.Text = "Version: " + get_version.version;
+            Get_LA_CH.Text = "Channel: " + get_version.channel;
+            Get_LA_REL.Text = "Release: " + get_version.release;
+            Get_LA_Metode.Text = "Metode: " + get_version.metode;
+            Get_LA_MD5.Text = "MD5: " + get_version.md5;
+
+            VersionGame = get_version.version;
+
+            Console.WriteLine("Currently using version game " + VersionGame);
+
+            Console.WriteLine("Folder PathMetadata: " + PathMetadata);
+            Console.WriteLine("File Game: " + PathfileGame);
+
+            Console.WriteLine("MD5 Game Currently: " + Game_LOC_Original_MD5);
+            return true;
+        }
+
+        public bool PatchGame(bool patchit = true, bool online = false, int metode = 1, int ch = 1)
+        {
+            var cst_folder_game = Set_LA_GameFolder.Text;
+            if (String.IsNullOrEmpty(cst_folder_game))
+            {
+                Console.WriteLine("No game folder found (1)");
+                return false;
+            }
+            if (!Directory.Exists(cst_folder_game))
+            {
+                Console.WriteLine("No game folder found (2)");
+                return false;
+            }
+
+            var cst_folder_metadata = Set_Metadata_Folder.Text;
+            if (String.IsNullOrEmpty(cst_folder_metadata))
+            {
+                Console.WriteLine("No metadata folder found (1)");
+                return false;
+            }
+            if (!Directory.Exists(cst_folder_metadata))
+            {
+                Console.WriteLine("No metadata folder found (2)");
+                return false;
+            }
+
+            // Ambil key terbaru
+            KeyGS last_key_api = API.GSKEY();
+            if (last_key_api == null)
+            {
+                Console.WriteLine("Error Get Key");
+                return false;
+            }
+
+            //TODO: get better func or remove
+            if (VersionGame != last_key_api.Patched.MetaData.version)
+            {
+                Console.WriteLine("This Game Version is not compatible with this method patch");
+                return false;
+            }
+
+            // Check file metadata
+            string PathfileMetadata_Now = Path.Combine(cst_folder_metadata, "global-metadata.dat");
+            string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
+            string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
+
+            // API
+            string MD5_Metadata_API_Original;
+            string MD5_Metadata_API_Patched;
+
+            // LOC
+            string MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+            string MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+            string MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
+
+            var cno = "Global";
+            if (ch == 1)
+            {
+                // Global
+                MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_os.ToUpper();
+                MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_os.ToUpper();
+            }
+            else if (ch == 2)
+            {
+                // Chinese
+                MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_cn.ToUpper();
+                MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_cn.ToUpper();
+                cno = "Chinese";
+            }
+            else
+            {
+                Console.WriteLine("This Game Version is not compatible with this method patch (2)");
+                return false;
+            }
+
+            var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/Release/" + cno + "/Patch/";
+
+            // If original backup file is not found, start backup process
+            if (!File.Exists(PathfileMetadata_Original))
+            {
+                // Check if MD5_Metadata_API_Original (original file from api) matches MD5_Metadata_LOC_Currently (file in current use)
+                if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Currently)
+                {
+                    try
+                    {
+                        File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
+                        MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                        Console.WriteLine("Backup Metadata Original");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Failed: Backup Metadata Original1", ex);
+                        return false;
+                    }
+
+                }
+                else
+                {
+                    // Download Original MetaData
+                    var DL3 = new Download(DL_Patch + "global-metadata-original.dat", PathfileMetadata_Original);
+                    if (DL3.ShowDialog() != DialogResult.OK)
+                    {
+                        Console.WriteLine("Original Backup failed because md5 doesn't match");
+                        return false;
+                    }
+                    else
+                    {
+                        MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                    }
+                }
+            }
+
+            // Jika file metadata sekarang tidak ada gunakan global-metadata-original.dat
+            if (!File.Exists(PathfileMetadata_Now))
+            {
+                try
+                {
+                    File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
+                    MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                    Console.WriteLine("Get Backup Original");
+                }
+                catch (Exception exx)
+                {
+                    Console.WriteLine("Error Get Backup Original", exx);
+                    return false;
+                }
+            }
+
+            // Jik User tidak ingin patch kembalikan ke aslinya. (If MD5_Metadata_API_Original doesn't match MD5_Metadata_LOC_Currently)
+            if (!patchit)
+            {
+                if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
+                {
+                    try
+                    {
+                        File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
+                        MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                        Console.WriteLine(MD5_Metadata_API_Original + " doesn't match with " + MD5_Metadata_LOC_Currently + ", backup it....");
+                    }
+                    catch (Exception exx)
+                    {
+                        Console.WriteLine("Failed: Backup Metadata Original", exx);
+                        return false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Skip, it's up-to-date");
+                }
+            }
+            else if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Currently)
+            {
+
+                // Jika User pilih patch (MD5_Metadata_API_Patched doesn't match MD5_Metadata_LOC_Currently)
+                if (!File.Exists(PathfileMetadata_Patched))
+                {
+                    // If you don't have PathfileMetadata_Patched, download it
+                    var DL2 = new Download(DL_Patch + "global-metadata-patched.dat", PathfileMetadata_Patched);
+                    if (DL2.ShowDialog() != DialogResult.OK)
+                    {
+                        // If PathfileMetadata_Patched (Patched file) doesn't exist
+                        Console.WriteLine("No Found Patch file....");
+                        return false;
+                    }
+                    else
+                    {
+                        MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
+                    }
+                }
+
+                // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
+                if (MD5_Metadata_API_Patched == MD5_Metadata_LOC_Patched)
+                {
+                    // Patch to PathfileMetadata_Now                            
+                    try
+                    {
+                        File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
+                        MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                        Console.WriteLine("Patch done...");
+                    }
+                    catch (Exception x)
+                    {
+                        Console.WriteLine("Failed Patch: ", x);
+                        return false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Failed because file doesn't match from md5 api");
+                    return false;
+                }
+            }
+            else
+            {
+                // If Metadata_API_Patches_MD5 match Metadata_LOC_Now_MD5
+            }
+
+            return true;
+        }
+
+        private void Set_LA_Select_Click(object sender, EventArgs e)
+        {
+            var Folder_Game_Now = SelectGamePath();
+            if (!string.IsNullOrEmpty(Folder_Game_Now))
+            {
+                Set_LA_GameFolder.Text = Folder_Game_Now;
+                CheckVersionGame();// TODO: hapus nanti
+            }
+            else
+            {
+                MessageBox.Show("No game folder found");
+            }
         }
 
         public void GetServerList()
@@ -107,7 +451,7 @@ namespace YuukiPS_Launcher
                             Debug.Print("Start update.. " + host);
 
                             string url_server_api = "https://" + host + "/status/server";
-                            VersionGS? ig = API.GetServerStatus(url_server_api);
+                            VersionServer? ig = API.GetServerStatus(url_server_api);
                             ServerList.Invoke((Action)delegate
                             {
                                 if (ig != null)
@@ -148,8 +492,8 @@ namespace YuukiPS_Launcher
 
         public void CheckUpdate()
         {
+            Console.WriteLine("Cek update...");
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            Console.WriteLine(version);
             string ver = "";
             if (version != null)
             {
@@ -335,7 +679,7 @@ namespace YuukiPS_Launcher
             }
             catch (Exception)
             {
-                return "uk";
+                return "Unknown";
             }
 
         }
@@ -343,8 +687,10 @@ namespace YuukiPS_Launcher
         [Obsolete]
         private void btStart_Click(object sender, EventArgs e)
         {
+            // Get Extra
             bool isAkebiGC = Extra_AkebiGC.Checked;
 
+            // Get Host
             string set_server_host = GetHost.Text;
             if (string.IsNullOrEmpty(set_server_host))
             {
@@ -352,227 +698,54 @@ namespace YuukiPS_Launcher
                 return;
             }
 
+            // Get Proxy
             int set_proxy_port = int.Parse(GetPort.Text);
             bool set_server_https = CheckProxyUseHTTPS.Checked;
 
-            string Folder_Game_Now = "";
-
-            var Get_Launcher = GetLauncherPath();
-            Console.WriteLine("Folder Launcher: " + Get_Launcher);
-            if (string.IsNullOrEmpty(Get_Launcher))
+            // Get Game
+            var cst_gamefile = Set_LA_GameFile.Text;
+            if (String.IsNullOrEmpty(cst_gamefile))
             {
-                MessageBox.Show("Please find game install folder!", "Launcher Not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No game file config found");
+                return;
             }
-            else
+            if (!File.Exists(cst_gamefile))
             {
-                Folder_Game_Now = GetGamePath(Get_Launcher);
-                if (string.IsNullOrEmpty(Folder_Game_Now))
-                {
-                    MessageBox.Show("Please find game install folder!", "Game Folder Install Not found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-
-            // debug
-            //Folder_Game_Now = "";
-
-            // jika masih belum dapat bukan pilih folder
-            if (string.IsNullOrEmpty(Folder_Game_Now))
-            {
-                Folder_Game_Now = SelectGamePath();
-                if (string.IsNullOrEmpty(Folder_Game_Now))
-                {
-                    MessageBox.Show("Because it can't find the folder so it can't run", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                else
-                {
-                    // TODO: save config for next run
-                }
-            }
-
-            Console.WriteLine("Folder Game: " + Folder_Game_Now);
-
-            string cn = Path.Combine(Folder_Game_Now, "YuanShen.exe");
-            string os = Path.Combine(Folder_Game_Now, "GenshinImpact.exe");
-
-            // Path
-            string PathfileGame;
-            string PathMetadata;
-
-            // TODO: add api check md5
-            string Metadata_API_Original_MD5;
-            string Metadata_API_Patches_MD5;
-
-            //GS api;
-            KeyGS last_key_api = API.GSKEY();
-            if (last_key_api == null)
-            {
-                MessageBox.Show("Error Get Key");
+                MessageBox.Show("Please find game install folder!");
                 return;
             }
 
-            string TES_API = "https://drive.yuuki.me/api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + last_key_api.Original.MetaData.version + "/Release/Global/Patch/";
+            bool patch = true;
 
-            if (File.Exists(cn))
+            // Check progress
+            if (!IsGameRun)
             {
-                //api = API.GS_DL("cn");
-                PathfileGame = cn;
-                PathMetadata = Path.Combine(Folder_Game_Now, "YuanShen_Data", "Managed", "Metadata");
-                Metadata_API_Original_MD5 = last_key_api.Original.MetaData.md5_cn.ToLower();
-                Metadata_API_Patches_MD5 = last_key_api.Patched.MetaData.md5_cn.ToLower();
-            }
-            else if (File.Exists(os))
-            {
-                //api = API.GS_DL();
-                PathfileGame = os;
-                PathMetadata = Path.Combine(Folder_Game_Now, "GenshinImpact_Data", "Managed", "Metadata");
-                Metadata_API_Original_MD5 = last_key_api.Original.MetaData.md5_os.ToLower();
-                Metadata_API_Patches_MD5 = last_key_api.Patched.MetaData.md5_os.ToLower();
-            }
-            else
-            {
-                MessageBox.Show("No game files found!!!");
-                return;
-            }
+                // if game is not running
 
-            Console.WriteLine("Folder PathMetadata: " + PathMetadata);
-            Console.WriteLine("File Game: " + PathfileGame);
-
-            // Check file metadata
-            string PathfileMetadata_Now = Path.Combine(PathMetadata, "global-metadata.dat");
-            string PathfileMetadata_Patched = Path.Combine(PathMetadata, "global-metadata-patched.dat");
-            string PathfileMetadata_Original = Path.Combine(PathMetadata, "global-metadata-original.dat");
-
-            SetInputMetadata.Text = PathfileMetadata_Now;
-
-            if (!File.Exists(PathfileMetadata_Now))
-            {
-                // Download global-metadata-original.dat to global-metadata.dat
-                var DL1 = new Download(TES_API + "global-metadata-original.dat", PathfileMetadata_Now);
-                if (DL1.ShowDialog() != DialogResult.OK)
-                {
-                    MessageBox.Show("Metadata file not found");
-                    return;
-                }
-            }
-
-            // Get MD5
-            string Metadata_LOC_Now_MD5 = CalculateMD5(PathfileMetadata_Now);
-            string Metadata_LOC_Patched_MD5 = CalculateMD5(PathfileMetadata_Patched);
-            string Metadata_LOC_Original_MD5 = CalculateMD5(PathfileMetadata_Original);
-            string Game_LOC_Original_MD5 = CalculateMD5(PathfileGame);
-
-            Console.WriteLine("Metadata_LOC_Now_MD5: " + Metadata_LOC_Now_MD5);
-            Console.WriteLine("Metadata_LOC_Patched_MD5: " + Metadata_LOC_Patched_MD5);
-            Console.WriteLine("Metadata_LOC_Original_MD5: " + Metadata_LOC_Original_MD5);
-            Console.WriteLine("Game_LOC_Original_MD5: " + Game_LOC_Original_MD5);
-
-            // here should start patching process
-
-            // If game doesn't run, check patch
-            if (progress == null)
-            {
-
-                // If original backup file is not found, start backup process
-                if (!File.Exists(PathfileMetadata_Original))
-                {
-                    // Check if Metadata_API_Original_MD5 (original file from api) matches Metadata_LOC_Now_MD5 (file in current use)
-                    if (Metadata_API_Original_MD5 == Metadata_LOC_Now_MD5)
-                    {
-                        Console.WriteLine("Backup Metadata Original");
-                        try
-                        {
-                            File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
-                        }
-                        catch (Exception ignore)
-                        {
-                            MessageBox.Show(ignore.Message, "Failed: Backup Metadata Original");
-                            return;
-                        }
-
-                    }
-                    else
-                    {
-                        // Download original metadata
-                        var DL3 = new Download(TES_API + "global-metadata-original.dat", PathfileMetadata_Original);
-                        if (DL3.ShowDialog() != DialogResult.OK)
-                        {
-                            MessageBox.Show("Original Backup failed because md5 doesn't match");
-                            return;
-                        }
-                    }
-                }
-
-
+                // if server is official 
                 if (set_server_host == "official")
                 {
-                    // If Metadata_API_Original_MD5 doesn't match Metadata_LOC_Now_MD5
-                    if (Metadata_API_Original_MD5 != Metadata_LOC_Now_MD5)
-                    {
-                        Console.WriteLine("Metadata_API_Original_MD5 doesn't match with Metadata_LOC_Now_MD5, backup it....");
-                        try
-                        {
-                            File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                        }
-                        catch (Exception ignore)
-                        {
-                            MessageBox.Show(ignore.Message, "Failed: Backup Metadata Original");
-                            return;
-                        }
-                    }
+                    patch = false;
                 }
-                else if (Metadata_API_Patches_MD5 != Metadata_LOC_Now_MD5)
+
+                // run patch
+                if (!PatchGame(patch, true, 1, GameChannel))
                 {
-                    // If Metadata_API_Patches_MD5 doesn't match Metadata_LOC_Now_MD5
-                    if (!File.Exists(PathfileMetadata_Patched))
-                    {
-                        // If you don't have PathfileMetadata_Patched, download it
-                        var DL2 = new Download(TES_API + "global-metadata-patched.dat", PathfileMetadata_Patched);
-                        if (DL2.ShowDialog() != DialogResult.OK)
-                        {
-                            // If PathfileMetadata_Patched (Patched file) doesn't exist
-                            MessageBox.Show("No Found Patch file....");
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
-                        if (Metadata_API_Patches_MD5 == Metadata_LOC_Patched_MD5)
-                        {
-                            // Patch to PathfileMetadata_Now                            
-                            try
-                            {
-                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
-                                Console.WriteLine("Patch done...");
-                            }
-                            catch (Exception ignore)
-                            {
-                                MessageBox.Show(ignore.Message, "Failed Patch");
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed because file doesn't match from md5 api");
-                            return;
-                        }
-                    }
-                }
-                else
-                {
-                    // If Metadata_API_Patches_MD5 match Metadata_LOC_Now_MD5
+                    MessageBox.Show("Error patch...");
+                    return;
                 }
             }
             else
             {
                 // if game is running
+                //MessageBox.Show("Can't patch because game is still running, please close it first");
+                //return;
             }
 
             // For Proxy
             if (proxy == null)
             {
-                // skip proxy if official
+                // skip proxy if official server
                 if (set_server_host != "official")
                 {
                     proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
@@ -582,12 +755,11 @@ namespace YuukiPS_Launcher
                         proxy = null;
                         return;
                     }
-                    stIsRunProxy.Text = "Status: ON";
                 }
             }
             else
             {
-                StopProxy();
+                Console.WriteLine("Proxy is still running...");
             }
 
             if (isAkebiGC)
@@ -649,9 +821,9 @@ namespace YuukiPS_Launcher
 
                     }
                 }
-
-                PathfileGame = get_AkebiGC;
-                Console.WriteLine("RUN: " + PathfileGame);
+                cst_gamefile = get_AkebiGC;
+                //WatchFile = "injector";
+                Console.WriteLine("RUN: " + cst_gamefile);
             }
 
             // For Game
@@ -660,74 +832,77 @@ namespace YuukiPS_Launcher
                 progress = new Process();
                 progress.StartInfo = new ProcessStartInfo
                 {
-                    FileName = PathfileGame
+                    FileName = cst_gamefile
                 };
                 try
                 {
                     progress.Start();
-                    btStart.Text = "Stop";
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error");
-                    progress.Dispose();
-                    StopProxy();
-                    btStart.Text = "Launch";
-
+                    AllStop();
                 }
             }
             else
             {
-
-                try
-                {
-                    KillProcessAndChildrens(progress.Id);
-                    progress.WaitForExit();
-                    EndTask("GenshinImpact");
-                    EndTask("YuanShen");
-                }
-                catch (Exception exx)
-                {
-                    Console.WriteLine("Error: ", exx);
-                }
-
-                progress = null;
-                btStart.Text = "Launch";
-
-                Console.WriteLine("Game Stop!");
-
-                if (File.Exists(PathfileMetadata_Now))
-                {
-                    try
-                    {
-                        // If md5 file from api doesn't match current file
-                        if (Metadata_API_Original_MD5 != Metadata_LOC_Now_MD5)
-                        {
-                            Console.WriteLine("Revert to original version...");
-                            try
-                            {
-                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                            }
-                            catch (Exception ignore)
-                            {
-                                Console.WriteLine("Failed Revert to original version");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Because this is still using original version");
-                        }
-                    }
-                    catch (Exception xc)
-                    {
-                        Console.WriteLine("Failed to return to the original version because the game has not been closed");
-                    }
-
-                }
-
-
+                Console.WriteLine("Game is still running so let's stop it?");
+                AllStop();
             }
 
+        }
+
+        [Obsolete]
+        private void CheckGameRun_Tick(object sender, EventArgs e)
+        {
+            if (VersionGame == "0.0.0")
+            {
+                IsGameRun = false;
+                btStart.Text = "Launch";
+                return;
+            }
+            if (string.IsNullOrEmpty(WatchFile))
+            {
+                IsGameRun = false;
+                btStart.Text = "Launch";
+                return;
+            }
+            var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == "YuanShen" || pr.ProcessName == "GenshinImpact" || pr.ProcessName == "injector");
+            if (!isrun.Any())
+            {
+                // Jika Game tidak berjalan....
+                IsGameRun = false;
+                btStart.Text = "Launch";
+
+                AllStop();
+
+                // Revert to original version every game close
+                if (!DoneCheck)
+                {
+                    Console.WriteLine("Game Exit, Back to original");
+                    StopGame();
+                    if (!PatchGame(false, true, 1, GameChannel))
+                    {
+                        Console.WriteLine("Failed to return to original");
+                    }
+                    DoneCheck = true;
+                }
+            }
+            else
+            {
+                // jika game jalan
+                IsGameRun = true;
+                btStart.Text = "Stop";
+                DoneCheck = false;
+                ShouldIcheck = true;
+            }
+        }
+
+        [Obsolete]
+        public void AllStop()
+        {
+            StopProxy();
+            StopGame();
         }
 
         [Obsolete]
@@ -737,7 +912,29 @@ namespace YuukiPS_Launcher
             {
                 proxy.Stop();
                 proxy = null;
-                stIsRunProxy.Text = "Status: OFF";
+                Console.WriteLine("Proxy Stop....");
+
+            }
+        }
+
+        public void StopGame()
+        {
+            if (progress != null)
+            {
+                try
+                {
+                    // normal kill
+                    KillProcessAndChildrens(progress.Id);
+                    progress.WaitForExit();
+                    // foce kill
+                    EndTask(WatchFile);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                progress = null;
+                Console.WriteLine("Game Stop.....");
             }
         }
 
@@ -821,21 +1018,84 @@ namespace YuukiPS_Launcher
 
         private void CekUpdateTT_Tick(object sender, EventArgs e)
         {
-            UpdateServerListTimer();
+            if (Is_ServerList_Autocheck.Checked)
+            {
+                UpdateServerListTimer();
+            }
         }
 
         [Obsolete]
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (MessageBox.Show("Currently proxy is still running do you want to cancel exit?", "a good question", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            // Jika Proxy atau game masih berjalan
+            /*
+            if (proxy != null)
             {
-                e.Cancel = true;
+                if (MessageBox.Show("Currently proxy is still running do you want to cancel exit?", "a good question", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+
+                }
             }
-            else
-            {
-                StopProxy();
-            }
+            */
         }
 
+        private void tabPage5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Set_LA_Save_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        [Obsolete]
+        private void CheckProxyRun_Tick(object sender, EventArgs e)
+        {
+            CheckProxy(false);
+        }
+
+        [Obsolete]
+        void CheckProxy(bool force_off = false)
+        {
+            // Before starting make sure proxy is turned off
+            try
+            {
+                // Metode 1
+                RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
+
+                if ((int)registry.GetValue("ProxyEnable") == 1)
+                {
+                    if (force_off)
+                    {
+                        registry.SetValue("ProxyEnable", 0);
+                    }
+
+                    // Metode 2
+                    if (proxy != null)
+                    {
+                        stIsRunProxy.Text = "Status: ON (Internal)";
+                    }
+                    else
+                    {
+                        stIsRunProxy.Text = "Status: ON (External)";
+                    }
+
+                }
+                else
+                {
+                    StopProxy();
+                    stIsRunProxy.Text = "Status: OFF";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Does not support proxy check support? ", ex);
+            }
+        }
     }
 }

@@ -35,6 +35,7 @@
             "N/A",
             "N/A",
             "N/A"}, -1);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.btStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.GetHost = new System.Windows.Forms.TextBox();
@@ -43,6 +44,7 @@
             this.CheckProxyUseHTTPS = new System.Windows.Forms.CheckBox();
             this.TabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.Is_ServerList_Autocheck = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.Extra_AkebiGC = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -62,17 +64,33 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.TabConfig = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.Set_LA_GameFile = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.Set_LA_Select = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.Get_LA_Version = new System.Windows.Forms.Label();
+            this.Get_LA_MD5 = new System.Windows.Forms.Label();
+            this.Get_LA_CH = new System.Windows.Forms.Label();
+            this.Get_LA_Metode = new System.Windows.Forms.Label();
+            this.Get_LA_REL = new System.Windows.Forms.Label();
+            this.Set_LA_Save = new System.Windows.Forms.Button();
+            this.Set_LA_GameFolder = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.btSetInputMetadata = new System.Windows.Forms.Button();
-            this.SetInputMetadata = new System.Windows.Forms.TextBox();
+            this.Set_Metadata_Folder = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.Set_UA_Folder = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.Set_Version = new System.Windows.Forms.Label();
             this.linkDiscord = new System.Windows.Forms.LinkLabel();
             this.linkGithub = new System.Windows.Forms.LinkLabel();
             this.linkWeb = new System.Windows.Forms.LinkLabel();
             this.CekUpdateTT = new System.Windows.Forms.Timer(this.components);
+            this.CheckGameRun = new System.Windows.Forms.Timer(this.components);
+            this.CheckProxyRun = new System.Windows.Forms.Timer(this.components);
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -80,7 +98,10 @@
             this.tabPage2.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.TabConfig.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.tabPage6.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // btStart
@@ -160,6 +181,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.Is_ServerList_Autocheck);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.ServerList);
@@ -177,12 +199,24 @@
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
+            // Is_ServerList_Autocheck
+            // 
+            this.Is_ServerList_Autocheck.AutoSize = true;
+            this.Is_ServerList_Autocheck.Checked = true;
+            this.Is_ServerList_Autocheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Is_ServerList_Autocheck.Location = new System.Drawing.Point(472, 14);
+            this.Is_ServerList_Autocheck.Name = "Is_ServerList_Autocheck";
+            this.Is_ServerList_Autocheck.Size = new System.Drawing.Size(91, 19);
+            this.Is_ServerList_Autocheck.TabIndex = 13;
+            this.Is_ServerList_Autocheck.Text = "Auto Reload";
+            this.Is_ServerList_Autocheck.UseVisualStyleBackColor = true;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.Extra_AkebiGC);
             this.groupBox2.Location = new System.Drawing.Point(8, 206);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(176, 72);
+            this.groupBox2.Size = new System.Drawing.Size(226, 72);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Extra";
@@ -206,7 +240,7 @@
             this.groupBox1.Controls.Add(this.GetPort);
             this.groupBox1.Location = new System.Drawing.Point(6, 133);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(178, 67);
+            this.groupBox1.Size = new System.Drawing.Size(228, 67);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proxy";
@@ -353,6 +387,13 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.Set_LA_GameFile);
+            this.tabPage5.Controls.Add(this.label7);
+            this.tabPage5.Controls.Add(this.Set_LA_Select);
+            this.tabPage5.Controls.Add(this.groupBox3);
+            this.tabPage5.Controls.Add(this.Set_LA_Save);
+            this.tabPage5.Controls.Add(this.Set_LA_GameFolder);
+            this.tabPage5.Controls.Add(this.label5);
             this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -360,11 +401,132 @@
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Launcher";
             this.tabPage5.UseVisualStyleBackColor = true;
+            this.tabPage5.Click += new System.EventHandler(this.tabPage5_Click);
+            // 
+            // Set_LA_GameFile
+            // 
+            this.Set_LA_GameFile.Location = new System.Drawing.Point(233, 91);
+            this.Set_LA_GameFile.Name = "Set_LA_GameFile";
+            this.Set_LA_GameFile.ReadOnly = true;
+            this.Set_LA_GameFile.Size = new System.Drawing.Size(405, 23);
+            this.Set_LA_GameFile.TabIndex = 11;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label7.Location = new System.Drawing.Point(229, 66);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(86, 21);
+            this.label7.TabIndex = 10;
+            this.label7.Text = "Game files:";
+            // 
+            // Set_LA_Select
+            // 
+            this.Set_LA_Select.Location = new System.Drawing.Point(337, 13);
+            this.Set_LA_Select.Name = "Set_LA_Select";
+            this.Set_LA_Select.Size = new System.Drawing.Size(75, 23);
+            this.Set_LA_Select.TabIndex = 9;
+            this.Set_LA_Select.Text = "Choose";
+            this.Set_LA_Select.UseVisualStyleBackColor = true;
+            this.Set_LA_Select.Click += new System.EventHandler(this.Set_LA_Select_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.Get_LA_Version);
+            this.groupBox3.Controls.Add(this.Get_LA_MD5);
+            this.groupBox3.Controls.Add(this.Get_LA_CH);
+            this.groupBox3.Controls.Add(this.Get_LA_Metode);
+            this.groupBox3.Controls.Add(this.Get_LA_REL);
+            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(217, 177);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Game";
+            // 
+            // Get_LA_Version
+            // 
+            this.Get_LA_Version.AutoSize = true;
+            this.Get_LA_Version.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Get_LA_Version.Location = new System.Drawing.Point(6, 19);
+            this.Get_LA_Version.Name = "Get_LA_Version";
+            this.Get_LA_Version.Size = new System.Drawing.Size(136, 21);
+            this.Get_LA_Version.TabIndex = 3;
+            this.Get_LA_Version.Text = "Version: Unknown";
+            // 
+            // Get_LA_MD5
+            // 
+            this.Get_LA_MD5.AutoSize = true;
+            this.Get_LA_MD5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Get_LA_MD5.Location = new System.Drawing.Point(7, 145);
+            this.Get_LA_MD5.Name = "Get_LA_MD5";
+            this.Get_LA_MD5.Size = new System.Drawing.Size(118, 21);
+            this.Get_LA_MD5.TabIndex = 7;
+            this.Get_LA_MD5.Text = "MD5: Unknown";
+            // 
+            // Get_LA_CH
+            // 
+            this.Get_LA_CH.AutoSize = true;
+            this.Get_LA_CH.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Get_LA_CH.Location = new System.Drawing.Point(6, 50);
+            this.Get_LA_CH.Name = "Get_LA_CH";
+            this.Get_LA_CH.Size = new System.Drawing.Size(141, 21);
+            this.Get_LA_CH.TabIndex = 4;
+            this.Get_LA_CH.Text = "Channel: Unknown";
+            // 
+            // Get_LA_Metode
+            // 
+            this.Get_LA_Metode.AutoSize = true;
+            this.Get_LA_Metode.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Get_LA_Metode.Location = new System.Drawing.Point(6, 114);
+            this.Get_LA_Metode.Name = "Get_LA_Metode";
+            this.Get_LA_Metode.Size = new System.Drawing.Size(141, 21);
+            this.Get_LA_Metode.TabIndex = 6;
+            this.Get_LA_Metode.Text = "Metode:  Unknown";
+            // 
+            // Get_LA_REL
+            // 
+            this.Get_LA_REL.AutoSize = true;
+            this.Get_LA_REL.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Get_LA_REL.Location = new System.Drawing.Point(6, 83);
+            this.Get_LA_REL.Name = "Get_LA_REL";
+            this.Get_LA_REL.Size = new System.Drawing.Size(137, 21);
+            this.Get_LA_REL.TabIndex = 5;
+            this.Get_LA_REL.Text = "Release: Unknown";
+            // 
+            // Set_LA_Save
+            // 
+            this.Set_LA_Save.Location = new System.Drawing.Point(565, 229);
+            this.Set_LA_Save.Name = "Set_LA_Save";
+            this.Set_LA_Save.Size = new System.Drawing.Size(75, 21);
+            this.Set_LA_Save.TabIndex = 2;
+            this.Set_LA_Save.Text = "Save";
+            this.Set_LA_Save.UseVisualStyleBackColor = true;
+            this.Set_LA_Save.Click += new System.EventHandler(this.Set_LA_Save_Click);
+            // 
+            // Set_LA_GameFolder
+            // 
+            this.Set_LA_GameFolder.Location = new System.Drawing.Point(229, 40);
+            this.Set_LA_GameFolder.Name = "Set_LA_GameFolder";
+            this.Set_LA_GameFolder.ReadOnly = true;
+            this.Set_LA_GameFolder.Size = new System.Drawing.Size(409, 23);
+            this.Set_LA_GameFolder.TabIndex = 1;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label5.Location = new System.Drawing.Point(229, 13);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(102, 21);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Game Folder:";
             // 
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.btSetInputMetadata);
-            this.tabPage6.Controls.Add(this.SetInputMetadata);
+            this.tabPage6.Controls.Add(this.Set_Metadata_Folder);
             this.tabPage6.Controls.Add(this.label4);
             this.tabPage6.Location = new System.Drawing.Point(4, 24);
             this.tabPage6.Name = "tabPage6";
@@ -376,38 +538,59 @@
             // 
             // btSetInputMetadata
             // 
-            this.btSetInputMetadata.Location = new System.Drawing.Point(8, 60);
+            this.btSetInputMetadata.Location = new System.Drawing.Point(126, 4);
             this.btSetInputMetadata.Name = "btSetInputMetadata";
             this.btSetInputMetadata.Size = new System.Drawing.Size(75, 23);
             this.btSetInputMetadata.TabIndex = 5;
-            this.btSetInputMetadata.Text = "Select file";
+            this.btSetInputMetadata.Text = "Choose";
             this.btSetInputMetadata.UseVisualStyleBackColor = true;
             // 
-            // SetInputMetadata
+            // Set_Metadata_Folder
             // 
-            this.SetInputMetadata.Location = new System.Drawing.Point(8, 31);
-            this.SetInputMetadata.Name = "SetInputMetadata";
-            this.SetInputMetadata.Size = new System.Drawing.Size(546, 23);
-            this.SetInputMetadata.TabIndex = 4;
+            this.Set_Metadata_Folder.Location = new System.Drawing.Point(8, 31);
+            this.Set_Metadata_Folder.Name = "Set_Metadata_Folder";
+            this.Set_Metadata_Folder.ReadOnly = true;
+            this.Set_Metadata_Folder.Size = new System.Drawing.Size(630, 23);
+            this.Set_Metadata_Folder.TabIndex = 4;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label4.Location = new System.Drawing.Point(3, 3);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(91, 25);
+            this.label4.Size = new System.Drawing.Size(126, 21);
             this.label4.TabIndex = 3;
-            this.label4.Text = "Input file:";
+            this.label4.Text = "Metadata Folder:";
             // 
             // tabPage7
             // 
+            this.tabPage7.Controls.Add(this.Set_UA_Folder);
+            this.tabPage7.Controls.Add(this.label6);
             this.tabPage7.Location = new System.Drawing.Point(4, 24);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Size = new System.Drawing.Size(644, 253);
             this.tabPage7.TabIndex = 2;
             this.tabPage7.Text = "UserAssembly";
             this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // Set_UA_Folder
+            // 
+            this.Set_UA_Folder.Location = new System.Drawing.Point(4, 24);
+            this.Set_UA_Folder.Name = "Set_UA_Folder";
+            this.Set_UA_Folder.ReadOnly = true;
+            this.Set_UA_Folder.Size = new System.Drawing.Size(636, 23);
+            this.Set_UA_Folder.TabIndex = 1;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label6.Location = new System.Drawing.Point(4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(160, 21);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "UserAssembly Folder:";
             // 
             // tabPage8
             // 
@@ -467,6 +650,18 @@
             this.CekUpdateTT.Interval = 5000;
             this.CekUpdateTT.Tick += new System.EventHandler(this.CekUpdateTT_Tick);
             // 
+            // CheckGameRun
+            // 
+            this.CheckGameRun.Enabled = true;
+            this.CheckGameRun.Interval = 1000;
+            this.CheckGameRun.Tick += new System.EventHandler(this.CheckGameRun_Tick);
+            // 
+            // CheckProxyRun
+            // 
+            this.CheckProxyRun.Enabled = true;
+            this.CheckProxyRun.Interval = 1000;
+            this.CheckProxyRun.Tick += new System.EventHandler(this.CheckProxyRun_Tick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -477,7 +672,9 @@
             this.Controls.Add(this.linkDiscord);
             this.Controls.Add(this.Set_Version);
             this.Controls.Add(this.TabMain);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Main";
             this.Text = "YuukiPS Launcher";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
@@ -492,8 +689,14 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.TabConfig.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
+            this.tabPage7.ResumeLayout(false);
+            this.tabPage7.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -531,7 +734,7 @@
         private TabPage tabPage5;
         private TabPage tabPage6;
         private Button btSetInputMetadata;
-        private TextBox SetInputMetadata;
+        private TextBox Set_Metadata_Folder;
         private Label label4;
         private TabPage tabPage7;
         private TabPage tabPage8;
@@ -539,5 +742,22 @@
         private System.Windows.Forms.Timer CekUpdateTT;
         private GroupBox groupBox2;
         private CheckBox Extra_AkebiGC;
+        private TextBox Set_LA_GameFolder;
+        private Label label5;
+        private Button Set_LA_Save;
+        private GroupBox groupBox3;
+        private Label Get_LA_MD5;
+        private Label Get_LA_Metode;
+        private Label Get_LA_REL;
+        private Label Get_LA_CH;
+        private Label Get_LA_Version;
+        private Button Set_LA_Select;
+        private TextBox Set_UA_Folder;
+        private Label label6;
+        private TextBox Set_LA_GameFile;
+        private Label label7;
+        private CheckBox Is_ServerList_Autocheck;
+        private System.Windows.Forms.Timer CheckGameRun;
+        private System.Windows.Forms.Timer CheckProxyRun;
     }
 }

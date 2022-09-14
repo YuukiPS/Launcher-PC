@@ -44,6 +44,7 @@ namespace YuukiPS_Launcher
                 dl.DownloadProgressChanged += DLProgress;
                 try
                 {
+                    Console.WriteLine("Start Download: " + set_download);
                     dl.DownloadFileAsync(new Uri(set_download), set_folder);
                 }
                 catch (Exception ek)
