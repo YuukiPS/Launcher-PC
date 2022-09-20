@@ -12,13 +12,14 @@
     
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <AssemblyVersion>2022.9.14.2223</AssemblyVersion>    
-    <FileVersion>2022.9.14.2223</FileVersion>
+    <AssemblyVersion>2022.9.20.1232</AssemblyVersion>    
+    <FileVersion>2022.9.20.1232</FileVersion>
     
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
     <OutputType>Exe</OutputType>
     <ApplicationIcon>yuuki.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -80,6 +81,12 @@
 
   <ItemGroup>
     <None Include=".github\workflows\dotnet.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MetadataConverter">
+      <HintPath>lib\MetadataConverter.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

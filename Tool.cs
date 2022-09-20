@@ -177,5 +177,12 @@ namespace YuukiPS_Launcher
             return "";
         }
 
+        public static void Logger(string message, ConsoleColor c = ConsoleColor.White)
+        {
+            Console.ForegroundColor = c;
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " :" + message);
+            Console.ResetColor();
+        }
+
     }
 }

@@ -38,8 +38,10 @@ namespace YuukiPS_Launcher
         bool IsGameRun = false;
         bool DoneCheck = true;
         bool ShouldIcheck = false;
+
         int GameMode = 0; // 0 - tanpa patch, 1 - patch
         int GameChannel = 0;
+        int GameMetode = 1;
 
         public Main()
         {
@@ -148,9 +150,23 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("Could not find version via API Check");
                 return false;
             }
-            if (get_version.version == "0.0.0")
+
+            VersionGame = get_version.version;
+
+            if (VersionGame == "0.0.0")
             {
                 Console.WriteLine("Version not supported: MD5 " + Game_LOC_Original_MD5);
+
+                Set_Metadata_Folder.Text = "";
+                Set_UA_Folder.Text = "";
+                Set_LA_GameFile.Text = "";
+
+                Get_LA_Version.Text = "Version: Unknown";
+                Get_LA_CH.Text = "Channel: Unknown";
+                Get_LA_REL.Text = "Release: Unknown";
+                Get_LA_Metode.Text = "Metode: Unknown";
+                Get_LA_MD5.Text = "MD5: Unknown";
+
                 return false;
             }
 
@@ -169,7 +185,15 @@ namespace YuukiPS_Launcher
             Get_LA_Metode.Text = "Metode: " + get_version.metode;
             Get_LA_MD5.Text = "MD5: " + get_version.md5;
 
-            VersionGame = get_version.version;
+            // Pilih Metode
+            if (get_version.metode == "Metadata")
+            {
+                GameMetode = 1;
+            }
+            else if (get_version.metode == "UserAssembly")
+            {
+                GameMetode = 2;
+            }
 
             Console.WriteLine("Currently using version game " + VersionGame);
 
@@ -180,8 +204,9 @@ namespace YuukiPS_Launcher
             return true;
         }
 
-        public bool PatchGame(bool patchit = true, bool online = false, int metode = 1, int ch = 1)
+        public bool PatchGame(bool patchit = true, bool online = true, int metode = 1, int ch = 1)
         {
+            // Check Folder Game
             var cst_folder_game = Set_LA_GameFolder.Text;
             if (String.IsNullOrEmpty(cst_folder_game))
             {
@@ -194,19 +219,7 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
-            var cst_folder_metadata = Set_Metadata_Folder.Text;
-            if (String.IsNullOrEmpty(cst_folder_metadata))
-            {
-                Console.WriteLine("No metadata folder found (1)");
-                return false;
-            }
-            if (!Directory.Exists(cst_folder_metadata))
-            {
-                Console.WriteLine("No metadata folder found (2)");
-                return false;
-            }
-
-            // Ambil key terbaru
+            // Get last key
             KeyGS last_key_api = API.GSKEY();
             if (last_key_api == null)
             {
@@ -214,167 +227,430 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
-            //TODO: get better func or remove
-            if (VersionGame != last_key_api.Patched.MetaData.version)
+            // Check version
+            if (VersionGame == "0.0.0")
             {
                 Console.WriteLine("This Game Version is not compatible with this method patch");
                 return false;
             }
 
-            // Check file metadata
-            string PathfileMetadata_Now = Path.Combine(cst_folder_metadata, "global-metadata.dat");
-            string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
-            string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
-
-            // API
-            string MD5_Metadata_API_Original;
-            string MD5_Metadata_API_Patched;
-
-            // LOC
-            string MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
-            string MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
-            string MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
-
-            var cno = "Global";
-            if (ch == 1)
+            if (metode == 2)
             {
-                // Global
-                MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_os.ToUpper();
-                MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_os.ToUpper();
+                // TODO: online method not yet available
+                online = false;
+
+                // Check Folder UA
+                var cst_folder_UA = Set_UA_Folder.Text;
+                if (String.IsNullOrEmpty(cst_folder_UA))
+                {
+                    Console.WriteLine("No UserAssembly folder found (1)");
+                    return false;
+                }
+                if (!Directory.Exists(cst_folder_UA))
+                {
+                    Console.WriteLine("No UserAssembly folder found (2)");
+                    return false;
+                }
+
+                string PathfileUA_Now = Path.Combine(cst_folder_UA, "UserAssembly.dll");
+                string PathfileUA_Patched = Path.Combine(cst_folder_UA, "UserAssembly-patched.dll");
+                string PathfileUA_Original = Path.Combine(cst_folder_UA, "UserAssembly-original.dll");
+
+                // Check MD5 local (First time)
+                string MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Now).ToUpper();
+                string MD5_UA_LOC_Patched = CalculateMD5(PathfileUA_Patched).ToUpper();
+                string MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original).ToUpper();
+
+                if (online)
+                {
+                    // API
+                    string MD5_UA_API_Original;
+                    string MD5_UA_API_Patched;
+
+                    // Select CH
+                    var cno = "Global";
+                    if (ch == 1)
+                    {
+                        // Global
+                        MD5_UA_API_Original = last_key_api.Original.UserAssembly.md5_os.ToUpper();
+                        MD5_UA_API_Patched = last_key_api.Patched.UserAssembly.md5_os.ToUpper();
+                    }
+                    else if (ch == 2)
+                    {
+                        // Chinese
+                        MD5_UA_API_Original = last_key_api.Original.UserAssembly.md5_cn.ToUpper();
+                        MD5_UA_API_Patched = last_key_api.Patched.UserAssembly.md5_cn.ToUpper();
+                        cno = "Chinese";
+                    }
+                    else
+                    {
+                        Console.WriteLine("This Game Version is not compatible with Method Patch UserAssembly");
+                        return false;
+                    }
+
+                    Console.WriteLine("TODO: not yet available");
+                    return false;
+                }
+                else
+                {
+                    // Offline Mode UserAssembly
+                    if (patchit)
+                    {
+                        // Backup PathfileUA_Original
+                        if (!File.Exists(PathfileUA_Original))
+                        {
+                            try
+                            {
+                                // Use PathfileUA_Now to backup original file, but since without md5 api we can't check is original or not.
+                                File.Copy(PathfileUA_Now, PathfileUA_Original, true);
+                                Console.WriteLine("Backup UserAssembly Original");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("UserAssembly backup failed because file not found in offline mode");
+                                return false;
+                            }
+                        }
+
+                        // Patch (Because we can't check md5 from api to check if this file is original or patched so to make it work we will always patch)
+                        // TODO: Looking for another better method
+                        var ManualUA = "???";
+                        // Select CH
+                        if (ch == 1)
+                        {
+                            ManualUA = patch.UserAssembly.Do(PathfileUA_Now, PathfileUA_Patched, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.UserAssembly.key2);
+                        }
+                        else if (ch == 2)
+                        {
+                            ManualUA = patch.UserAssembly.Do(PathfileUA_Now, PathfileUA_Patched, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.UserAssembly.key2);
+                        }
+                        if (!String.IsNullOrEmpty(ManualUA))
+                        {
+                            Console.WriteLine("Error Patch UserAssembly: " + ManualUA);
+                            return false;
+                        }
+                        /* 
+                        if (!File.Exists(PathfileUA_Patched))
+                        {
+                            Console.WriteLine("No manual patch found so let's patch");                            
+                        }
+                        */
+
+                        // Patch PathfileUA_Patched ke PathfileUA_Now
+                        if (File.Exists(PathfileUA_Patched))
+                        {
+                            try
+                            {
+                                // gunakan PathfileUA_Patched buat copy ke 
+                                File.Copy(PathfileUA_Patched, PathfileUA_Now, true);
+                                Console.WriteLine("Patch UserAssembly...");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Failed Patch UserAssembly Original1", ex);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed Patch UserAssembly (0)");
+                            return false;
+                        }
+
+                    }
+                    else
+                    {
+                        // Jika PathfileUA_Original ada
+                        if (File.Exists(PathfileUA_Original))
+                        {
+                            try
+                            {
+                                // Kembalikan PathfileUA_Original ke PathfileUA_Now
+                                File.Copy(PathfileUA_Original, PathfileUA_Now, true);
+                                Console.WriteLine("Back to Original UserAssembly Version...");
+                            }
+                            catch (Exception ex)
+                            {
+                                // Jika tidak ada PathfileUA_Original kembali ke false
+                                Console.WriteLine("Failed: Backup UserAssembly Original2", ex);
+                                return false;
+                            }
+                        }
+
+                    }
+
+                }
+
+                Console.WriteLine("MD5 UA Currently: " + MD5_UA_LOC_Currently);
+                Console.WriteLine("MD5 UA Original: " + MD5_UA_LOC_Original);
+                Console.WriteLine("MD5 UA Patched: " + MD5_UA_LOC_Patched);
             }
-            else if (ch == 2)
+            else if (metode == 1)
             {
-                // Chinese
-                MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_cn.ToUpper();
-                MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_cn.ToUpper();
-                cno = "Chinese";
+                // Check folder Metadata
+                var cst_folder_metadata = Set_Metadata_Folder.Text;
+                if (String.IsNullOrEmpty(cst_folder_metadata))
+                {
+                    Console.WriteLine("No metadata folder found (1)");
+                    return false;
+                }
+                if (!Directory.Exists(cst_folder_metadata))
+                {
+                    Console.WriteLine("No metadata folder found (2)");
+                    return false;
+                }
+
+                // Check file metadata
+                string PathfileMetadata_Now = Path.Combine(cst_folder_metadata, "global-metadata.dat");
+                string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
+                string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
+
+                // Get MD5 local Metadata (First time)
+                string MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                string MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                string MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
+
+                // debug
+                //online = false;
+
+                if (online)
+                {
+                    // API
+                    string MD5_Metadata_API_Original;
+                    string MD5_Metadata_API_Patched;
+
+                    var cno = "Global";
+                    if (ch == 1)
+                    {
+                        // Global
+                        MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_os.ToUpper();
+                        MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_os.ToUpper();
+                    }
+                    else if (ch == 2)
+                    {
+                        // Chinese
+                        MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_cn.ToUpper();
+                        MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_cn.ToUpper();
+                        cno = "Chinese";
+                    }
+                    else
+                    {
+                        Console.WriteLine("This Game Version is not compatible with this method patch (2)");
+                        return false;
+                    }
+
+                    var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/Release/" + cno + "/Patch/";
+
+                    // If original backup file is not found, start backup process
+                    if (!File.Exists(PathfileMetadata_Original))
+                    {
+                        // Check if MD5_Metadata_API_Original (original file from api) matches MD5_Metadata_LOC_Currently (file in current use)
+                        if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Currently)
+                        {
+                            try
+                            {
+                                File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                                Console.WriteLine("Backup Metadata Original");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Failed: Backup Metadata Original1", ex);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            // Download Original MetaData
+                            var DL3 = new Download(DL_Patch + "global-metadata-original.dat", PathfileMetadata_Original);
+                            if (DL3.ShowDialog() != DialogResult.OK)
+                            {
+                                Console.WriteLine("Original Backup failed because md5 doesn't match");
+                                return false;
+                            }
+                            else
+                            {
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                            }
+                        }
+                    }
+
+                    // Jika file metadata sekarang tidak ada gunakan global-metadata-original.dat
+                    if (!File.Exists(PathfileMetadata_Now))
+                    {
+                        try
+                        {
+                            File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
+                            MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                            Console.WriteLine("Get Backup Original");
+                        }
+                        catch (Exception exx)
+                        {
+                            Console.WriteLine("Error Get Backup Original", exx);
+                            return false;
+                        }
+                    }
+
+                    // Jik User tidak ingin patch kembalikan ke aslinya. (If MD5_Metadata_API_Original doesn't match MD5_Metadata_LOC_Currently)
+                    if (!patchit)
+                    {
+                        if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
+                        {
+                            try
+                            {
+                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                                Console.WriteLine(MD5_Metadata_API_Original + " doesn't match with " + MD5_Metadata_LOC_Currently + ", backup it....");
+                            }
+                            catch (Exception exx)
+                            {
+                                Console.WriteLine("Failed: Backup Metadata Original", exx);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Skip, it's up-to-date");
+                        }
+                    }
+                    else if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Currently)
+                    {
+                        // Jika User pilih patch (MD5_Metadata_API_Patched doesn't match MD5_Metadata_LOC_Currently)
+                        if (!File.Exists(PathfileMetadata_Patched))
+                        {
+                            // If you don't have PathfileMetadata_Patched, download it
+                            var DL2 = new Download(DL_Patch + "global-metadata-patched.dat", PathfileMetadata_Patched);
+                            if (DL2.ShowDialog() != DialogResult.OK)
+                            {
+                                // If PathfileMetadata_Patched (Patched file) doesn't exist
+                                Console.WriteLine("No Found Patch file....");
+                                return false;
+                            }
+                            else
+                            {
+                                MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
+                            }
+                        }
+
+                        // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
+                        if (MD5_Metadata_API_Patched == MD5_Metadata_LOC_Patched)
+                        {
+                            // Patch to PathfileMetadata_Now                            
+                            try
+                            {
+                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                                Console.WriteLine("Patch done...");
+                            }
+                            catch (Exception x)
+                            {
+                                Console.WriteLine("Failed Patch: ", x);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed because file doesn't match from md5 api");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        // If Metadata_API_Patches_MD5 match Metadata_LOC_Now_MD5
+                    }
+                }
+                else
+                {
+                    // Offline Mode Metadata
+                    if (patchit)
+                    {
+                        // Backup PathfileMetadata_Original
+                        if (!File.Exists(PathfileMetadata_Original))
+                        {
+                            try
+                            {
+                                // Use PathfileMetadata_Now to backup PathfileMetadata_Original file, but since without md5 api we can't check is original or not.
+                                File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
+                                Console.WriteLine("Backup Metadata Original");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Cannot find current metadata file in offline mode", ex);
+                                return false;
+                            }
+                        }
+
+                        // Patch (Because we can't check md5 from api to check if this file is original or patched so to make it work we will always patch)
+                        // TODO: Looking for another better method
+                        var ManualMetadata = "???";
+                        // Select CH
+                        if (ch == 1)
+                        {
+                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Now, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.MetaData.key2);
+                        }
+                        else if (ch == 2)
+                        {
+                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Now, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.MetaData.key2);
+                        }
+                        if (!String.IsNullOrEmpty(ManualMetadata))
+                        {
+                            Console.WriteLine("Error Patch: " + ManualMetadata);
+                            return false;
+                        }
+
+                        // Patch PathfileMetadata_Patched ke PathfileUA_Now
+                        if (File.Exists(PathfileMetadata_Patched))
+                        {
+                            try
+                            {
+                                // Gunakan PathfileMetadata_Patched buat copy ke PathfileMetadata_Now
+                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
+                                Console.WriteLine("Patch Metadata...");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Failed Patch Metadata Original1", ex);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed Patch Metadata (0)");
+                            return false;
+                        }
+
+                    }
+                    else
+                    {
+                        // Jika PathfileMetadata_Original ada
+                        if (File.Exists(PathfileMetadata_Original))
+                        {
+                            try
+                            {
+                                // Kembalikan PathfileMetadata_Original ke PathfileMetadata_Now
+                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
+                                Console.WriteLine("Back to Original Metadata Version...");
+                            }
+                            catch (Exception ex)
+                            {
+                                // Jika tidak ada PathfileMetadata_Original kembali ke false
+                                Console.WriteLine("Failed: Backup Metadata Original2", ex);
+                                return false;
+                            }
+                        }
+
+                    }
+                }
+
+                // Check MD5 loc metadata                
+                Console.WriteLine("MD5 Metadata Currently: " + MD5_Metadata_LOC_Currently);
+                Console.WriteLine("MD5 Metadata Original: " + MD5_Metadata_LOC_Original);
+                Console.WriteLine("MD5 Metadata Patched: " + MD5_Metadata_LOC_Patched);
             }
             else
             {
-                Console.WriteLine("This Game Version is not compatible with this method patch (2)");
+                Console.WriteLine("No other method found");
                 return false;
-            }
-
-            var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/Release/" + cno + "/Patch/";
-
-            // If original backup file is not found, start backup process
-            if (!File.Exists(PathfileMetadata_Original))
-            {
-                // Check if MD5_Metadata_API_Original (original file from api) matches MD5_Metadata_LOC_Currently (file in current use)
-                if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Currently)
-                {
-                    try
-                    {
-                        File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
-                        MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
-                        Console.WriteLine("Backup Metadata Original");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Failed: Backup Metadata Original1", ex);
-                        return false;
-                    }
-
-                }
-                else
-                {
-                    // Download Original MetaData
-                    var DL3 = new Download(DL_Patch + "global-metadata-original.dat", PathfileMetadata_Original);
-                    if (DL3.ShowDialog() != DialogResult.OK)
-                    {
-                        Console.WriteLine("Original Backup failed because md5 doesn't match");
-                        return false;
-                    }
-                    else
-                    {
-                        MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
-                    }
-                }
-            }
-
-            // Jika file metadata sekarang tidak ada gunakan global-metadata-original.dat
-            if (!File.Exists(PathfileMetadata_Now))
-            {
-                try
-                {
-                    File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                    MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
-                    Console.WriteLine("Get Backup Original");
-                }
-                catch (Exception exx)
-                {
-                    Console.WriteLine("Error Get Backup Original", exx);
-                    return false;
-                }
-            }
-
-            // Jik User tidak ingin patch kembalikan ke aslinya. (If MD5_Metadata_API_Original doesn't match MD5_Metadata_LOC_Currently)
-            if (!patchit)
-            {
-                if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
-                {
-                    try
-                    {
-                        File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                        MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
-                        Console.WriteLine(MD5_Metadata_API_Original + " doesn't match with " + MD5_Metadata_LOC_Currently + ", backup it....");
-                    }
-                    catch (Exception exx)
-                    {
-                        Console.WriteLine("Failed: Backup Metadata Original", exx);
-                        return false;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Skip, it's up-to-date");
-                }
-            }
-            else if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Currently)
-            {
-
-                // Jika User pilih patch (MD5_Metadata_API_Patched doesn't match MD5_Metadata_LOC_Currently)
-                if (!File.Exists(PathfileMetadata_Patched))
-                {
-                    // If you don't have PathfileMetadata_Patched, download it
-                    var DL2 = new Download(DL_Patch + "global-metadata-patched.dat", PathfileMetadata_Patched);
-                    if (DL2.ShowDialog() != DialogResult.OK)
-                    {
-                        // If PathfileMetadata_Patched (Patched file) doesn't exist
-                        Console.WriteLine("No Found Patch file....");
-                        return false;
-                    }
-                    else
-                    {
-                        MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
-                    }
-                }
-
-                // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
-                if (MD5_Metadata_API_Patched == MD5_Metadata_LOC_Patched)
-                {
-                    // Patch to PathfileMetadata_Now                            
-                    try
-                    {
-                        File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
-                        MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
-                        Console.WriteLine("Patch done...");
-                    }
-                    catch (Exception x)
-                    {
-                        Console.WriteLine("Failed Patch: ", x);
-                        return false;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Failed because file doesn't match from md5 api");
-                    return false;
-                }
-            }
-            else
-            {
-                // If Metadata_API_Patches_MD5 match Metadata_LOC_Now_MD5
             }
 
             return true;
@@ -689,6 +965,7 @@ namespace YuukiPS_Launcher
         {
             // Get Extra
             bool isAkebiGC = Extra_AkebiGC.Checked;
+            bool isProxyNeed = CheckProxyEnable.Checked;
 
             // Get Host
             string set_server_host = GetHost.Text;
@@ -729,9 +1006,9 @@ namespace YuukiPS_Launcher
                 }
 
                 // run patch
-                if (!PatchGame(patch, true, 1, GameChannel))
+                if (!PatchGame(patch, checkModeOnline.Checked, GameMetode, GameChannel))
                 {
-                    MessageBox.Show("Error patch...");
+                    MessageBox.Show("Error Patch, Please look at console to see what the error is, you can send a screenshot/log to discord support.");
                     return;
                 }
             }
@@ -748,12 +1025,15 @@ namespace YuukiPS_Launcher
                 // skip proxy if official server
                 if (set_server_host != "official")
                 {
-                    proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
-                    if (!proxy.Start())
+                    if (isProxyNeed)
                     {
-                        MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
-                        proxy = null;
-                        return;
+                        proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
+                        if (!proxy.Start())
+                        {
+                            MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
+                            proxy = null;
+                            return;
+                        }
                     }
                 }
             }
@@ -881,7 +1161,7 @@ namespace YuukiPS_Launcher
                 {
                     Console.WriteLine("Game Exit, Back to original");
                     StopGame();
-                    if (!PatchGame(false, true, 1, GameChannel))
+                    if (!PatchGame(false, checkModeOnline.Checked, GameMetode, GameChannel))
                     {
                         Console.WriteLine("Failed to return to original");
                     }

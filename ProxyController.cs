@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Security;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
@@ -31,8 +32,6 @@ namespace YuukiPS_Launcher
 
             // Get Request Data
             proxyServer.BeforeRequest += OnRequest;
-
-
             proxyServer.ServerCertificateValidationCallback += OnCertificateValidation;
 
             try
@@ -67,10 +66,8 @@ namespace YuukiPS_Launcher
                 {
                     Console.WriteLine("Error Start Proxy: {0}", ex.Message);
                 }
-
                 return false;
             }
-
 
             foreach (var endPoint in proxyServer.ProxyEndPoints)
             {
@@ -93,7 +90,6 @@ namespace YuukiPS_Launcher
                 explicitEndPoint.BeforeTunnelConnectRequest -= OnBeforeTunnelConnectRequest;
                 proxyServer.BeforeRequest -= OnRequest;
                 proxyServer.ServerCertificateValidationCallback -= OnCertificateValidation;
-
             }
             catch (Exception ex)
             {
@@ -105,13 +101,14 @@ namespace YuukiPS_Launcher
                 {
                     Console.WriteLine("Proxy Stop");
                     proxyServer.Stop();
+                    //UninstallCertificate();
+                    proxyServer.Dispose();
                 }
                 else
                 {
                     Console.WriteLine("Proxy tries to stop but the proxy is not running.");
                 }
             }
-
         }
 
         public void UninstallCertificate()
@@ -154,7 +151,7 @@ namespace YuukiPS_Launcher
 
                 var url = e.HttpClient.Request.Url;
 
-                Console.WriteLine("Request Original: " + url);
+                //Console.WriteLine("Request Original: " + url);
 
                 if (!usehttps)
                 {
@@ -163,7 +160,7 @@ namespace YuukiPS_Launcher
 
                 url = url.Replace(q.Host, ps);
 
-                Console.WriteLine("Request Private: " + url);
+                Tool.Logger("Request " + url, ConsoleColor.Green);
 
                 // Set
                 e.HttpClient.Request.Url = url;
@@ -175,8 +172,11 @@ namespace YuukiPS_Launcher
         // Allows overriding default certificate validation logic
         private Task OnCertificateValidation(object sender, CertificateValidationEventArgs e)
         {
-            // Check if valid?
-            e.IsValid = true;
+            // set IsValid to true/false based on Certificate Errors
+            if (e.SslPolicyErrors == SslPolicyErrors.None)
+            {
+                e.IsValid = true;
+            }
             return Task.CompletedTask;
         }
 
