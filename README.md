@@ -6,14 +6,17 @@ A simple Launcher that run several anime games.
 ### Features
 
 * Automatic game detection (if you have an official launcher)
-* Download Metadata based on current game version and only MD5 match.
-* Direct patch using a key that supports Metadata/UserAssembly (PR)
-* Auto rollback to original version so you can play the official version without renaming it again (PR)
+* Download Metadata based on current game version or by select folder (UserAssembly soon).
+* Verify Game Data and Patches based on MD5 matched from server check api.
+* Direct Patches (offline mode) using a key that supports Metadata & UserAssembly.
+* Auto rollback to original version so you can play official version without renaming it again.
 * Local proxy support so no need extra.
 * Server list support.
 * Support for creating a localhost server with a simple click, including adding to the server list for public servers (PR)
-* Mod, Command, Cheat coming soon (PR)
+* [Akebi-GC](https://github.com/Akebi-Group/Akebi-GC) supported with auto update.
 * Auto update.
+* More coming soon (PR)
+
 
 ### Installation
 
