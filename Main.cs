@@ -140,7 +140,7 @@ namespace YuukiPS_Launcher
             }
 
             // Check MD5 Game
-            string Game_LOC_Original_MD5 = CalculateMD5(PathfileGame).ToUpper();
+            string Game_LOC_Original_MD5 = CalculateMD5(PathfileGame);
 
             // Check MD5 in Server API
             VersionGenshin get_version = API.GetMD5VersionGS(Game_LOC_Original_MD5);
@@ -204,34 +204,30 @@ namespace YuukiPS_Launcher
             return true;
         }
 
-        public bool PatchGame(bool patchit = true, bool online = true, int metode = 1, int ch = 1)
+        public string PatchGame(bool patchit = true, bool online = true, int metode = 1, int ch = 1)
         {
             // Check Folder Game
             var cst_folder_game = Set_LA_GameFolder.Text;
             if (String.IsNullOrEmpty(cst_folder_game))
             {
-                Console.WriteLine("No game folder found (1)");
-                return false;
+                return "No game folder found (1)";
             }
             if (!Directory.Exists(cst_folder_game))
             {
-                Console.WriteLine("No game folder found (2)");
-                return false;
+                return "No game folder found (2)";
             }
 
             // Get last key
             KeyGS last_key_api = API.GSKEY();
             if (last_key_api == null)
             {
-                Console.WriteLine("Error Get Key");
-                return false;
+                return "Error Get Key";
             }
 
             // Check version
             if (VersionGame == "0.0.0")
             {
-                Console.WriteLine("This Game Version is not compatible with this method patch");
-                return false;
+                return "This Game Version is not compatible with this method patch";
             }
 
             if (metode == 2)
@@ -243,23 +239,21 @@ namespace YuukiPS_Launcher
                 var cst_folder_UA = Set_UA_Folder.Text;
                 if (String.IsNullOrEmpty(cst_folder_UA))
                 {
-                    Console.WriteLine("No UserAssembly folder found (1)");
-                    return false;
+                    return "No UserAssembly folder found (1)";
                 }
                 if (!Directory.Exists(cst_folder_UA))
                 {
-                    Console.WriteLine("No UserAssembly folder found (2)");
-                    return false;
+                    return "No UserAssembly folder found (2)";
                 }
 
-                string PathfileUA_Now = Path.Combine(cst_folder_UA, "UserAssembly.dll");
+                string PathfileUA_Currently = Path.Combine(cst_folder_UA, "UserAssembly.dll");
                 string PathfileUA_Patched = Path.Combine(cst_folder_UA, "UserAssembly-patched.dll");
                 string PathfileUA_Original = Path.Combine(cst_folder_UA, "UserAssembly-original.dll");
 
                 // Check MD5 local (First time)
-                string MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Now).ToUpper();
-                string MD5_UA_LOC_Patched = CalculateMD5(PathfileUA_Patched).ToUpper();
-                string MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original).ToUpper();
+                string MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+                string MD5_UA_LOC_Patched = CalculateMD5(PathfileUA_Patched);
+                string MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original);
 
                 if (online)
                 {
@@ -284,50 +278,81 @@ namespace YuukiPS_Launcher
                     }
                     else
                     {
-                        Console.WriteLine("This Game Version is not compatible with Method Patch UserAssembly");
-                        return false;
+                        return "This Game Version is not compatible with Method Patch UserAssembly";
                     }
 
-                    Console.WriteLine("TODO: not yet available");
-                    return false;
+                    return "TODO: not yet available";
                 }
                 else
                 {
                     // Offline Mode UserAssembly
                     if (patchit)
                     {
-                        // Backup PathfileUA_Original
+                        // Use PathfileUA_Currently to backup PathfileUA_Original file, but since without md5 api we can't check is original or not.
                         if (!File.Exists(PathfileUA_Original))
                         {
                             try
                             {
-                                // Use PathfileUA_Now to backup original file, but since without md5 api we can't check is original or not.
-                                File.Copy(PathfileUA_Now, PathfileUA_Original, true);
+                                File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
+                                MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original);
+
                                 Console.WriteLine("Backup UserAssembly Original");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("UserAssembly backup failed because file not found in offline mode");
-                                return false;
+                                return "UserAssembly backup failed because file not found in offline mode: " + ex.ToString();
                             }
                         }
 
-                        // Patch (Because we can't check md5 from api to check if this file is original or patched so to make it work we will always patch)
-                        // TODO: Looking for another better method
+                        // Check PathfileMetadata_Currently if no found
+                        if (!File.Exists(PathfileUA_Currently))
+                        {
+                            if (File.Exists(PathfileUA_Original))
+                            {
+                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+
+                                Console.WriteLine("We detected that you did not have files (Currently) so we returned them with Original");
+                            }
+                            else
+                            {
+                                return "Can't find Original UA file in offline mode (0)";
+                            }
+                        }
+                        else
+                        {
+                            // jika PathfileMetadata_Currently ada coba cek PathfileMetadata_Original apakah sama
+                            if (File.Exists(PathfileUA_Original))
+                            {
+                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+                                MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original);
+                                if (MD5_UA_LOC_Currently != MD5_UA_LOC_Original)
+                                {
+                                    File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                                    MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+
+                                    Console.WriteLine("We detect you have non-original (Currently) files so we return them with Original");
+                                }
+                            }
+                            else
+                            {
+                                return "Can't find Original UA file in offline mode (1)";
+                            }
+                        }
+
                         var ManualUA = "???";
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualUA = patch.UserAssembly.Do(PathfileUA_Now, PathfileUA_Patched, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.UserAssembly.key2);
+                            ManualUA = patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.UserAssembly.key2);
                         }
                         else if (ch == 2)
                         {
-                            ManualUA = patch.UserAssembly.Do(PathfileUA_Now, PathfileUA_Patched, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.UserAssembly.key2);
+                            ManualUA = patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.UserAssembly.key2);
                         }
                         if (!String.IsNullOrEmpty(ManualUA))
                         {
-                            Console.WriteLine("Error Patch UserAssembly: " + ManualUA);
-                            return false;
+                            return "Error Patch UserAssembly: " + ManualUA;
                         }
                         /* 
                         if (!File.Exists(PathfileUA_Patched))
@@ -336,44 +361,41 @@ namespace YuukiPS_Launcher
                         }
                         */
 
-                        // Patch PathfileUA_Patched ke PathfileUA_Now
+                        // Patch PathfileUA_Patched ke PathfileUA_Currently
                         if (File.Exists(PathfileUA_Patched))
                         {
                             try
                             {
-                                // gunakan PathfileUA_Patched buat copy ke 
-                                File.Copy(PathfileUA_Patched, PathfileUA_Now, true);
+                                File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
+                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+
                                 Console.WriteLine("Patch UserAssembly...");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Failed Patch UserAssembly Original1", ex);
-                                return false;
+                                return "Failed Patch UserAssembly Original1: " + ex.ToString();
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Failed Patch UserAssembly (0)");
-                            return false;
+                            return "Failed Patch UserAssembly (0)";
                         }
-
                     }
                     else
                     {
-                        // Jika PathfileUA_Original ada
+                        // Jika PathfileUA_Original ada kembalikan ke PathfileUA_Currently
                         if (File.Exists(PathfileUA_Original))
                         {
                             try
                             {
-                                // Kembalikan PathfileUA_Original ke PathfileUA_Now
-                                File.Copy(PathfileUA_Original, PathfileUA_Now, true);
+                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+
                                 Console.WriteLine("Back to Original UserAssembly Version...");
                             }
                             catch (Exception ex)
                             {
-                                // Jika tidak ada PathfileUA_Original kembali ke false
-                                Console.WriteLine("Failed: Backup UserAssembly Original2", ex);
-                                return false;
+                                return "Failed: Backup UserAssembly Original2: " + ex.ToString();
                             }
                         }
 
@@ -391,24 +413,22 @@ namespace YuukiPS_Launcher
                 var cst_folder_metadata = Set_Metadata_Folder.Text;
                 if (String.IsNullOrEmpty(cst_folder_metadata))
                 {
-                    Console.WriteLine("No metadata folder found (1)");
-                    return false;
+                    return "No metadata folder found (1)";
                 }
                 if (!Directory.Exists(cst_folder_metadata))
                 {
-                    Console.WriteLine("No metadata folder found (2)");
-                    return false;
+                    return "No metadata folder found (2)";
                 }
 
                 // Check file metadata
-                string PathfileMetadata_Now = Path.Combine(cst_folder_metadata, "global-metadata.dat");
+                string PathfileMetadata_Currently = Path.Combine(cst_folder_metadata, "global-metadata.dat");
                 string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
                 string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
 
                 // Get MD5 local Metadata (First time)
-                string MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
-                string MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
-                string MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
+                string MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                string MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                string MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched);
 
                 // debug
                 //online = false;
@@ -435,8 +455,7 @@ namespace YuukiPS_Launcher
                     }
                     else
                     {
-                        Console.WriteLine("This Game Version is not compatible with this method patch (2)");
-                        return false;
+                        return "This Game Version is not compatible with this method patch (2)";
                     }
 
                     var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/Release/" + cno + "/Patch/";
@@ -449,14 +468,14 @@ namespace YuukiPS_Launcher
                         {
                             try
                             {
-                                File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                                File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+
                                 Console.WriteLine("Backup Metadata Original");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Failed: Backup Metadata Original1", ex);
-                                return false;
+                                return "Failed: Backup Metadata Original1: " + ex.ToString();
                             }
                         }
                         else
@@ -465,29 +484,28 @@ namespace YuukiPS_Launcher
                             var DL3 = new Download(DL_Patch + "global-metadata-original.dat", PathfileMetadata_Original);
                             if (DL3.ShowDialog() != DialogResult.OK)
                             {
-                                Console.WriteLine("Original Backup failed because md5 doesn't match");
-                                return false;
+                                return "Original Backup failed because md5 doesn't match";
                             }
                             else
                             {
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original).ToUpper();
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
                             }
                         }
                     }
 
                     // Jika file metadata sekarang tidak ada gunakan global-metadata-original.dat
-                    if (!File.Exists(PathfileMetadata_Now))
+                    if (!File.Exists(PathfileMetadata_Currently))
                     {
                         try
                         {
-                            File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                            MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                            File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                            MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+
                             Console.WriteLine("Get Backup Original");
                         }
                         catch (Exception exx)
                         {
-                            Console.WriteLine("Error Get Backup Original", exx);
-                            return false;
+                            return "Error Get Backup Original: " + exx.ToString();
                         }
                     }
 
@@ -498,14 +516,14 @@ namespace YuukiPS_Launcher
                         {
                             try
                             {
-                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+
                                 Console.WriteLine(MD5_Metadata_API_Original + " doesn't match with " + MD5_Metadata_LOC_Currently + ", backup it....");
                             }
                             catch (Exception exx)
                             {
-                                Console.WriteLine("Failed: Backup Metadata Original", exx);
-                                return false;
+                                return "Failed: Backup Metadata Original: " + exx.ToString();
                             }
                         }
                         else
@@ -523,12 +541,11 @@ namespace YuukiPS_Launcher
                             if (DL2.ShowDialog() != DialogResult.OK)
                             {
                                 // If PathfileMetadata_Patched (Patched file) doesn't exist
-                                Console.WriteLine("No Found Patch file....");
-                                return false;
+                                return "No Found Patch file....";
                             }
                             else
                             {
-                                MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched).ToUpper();
+                                MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched);
                             }
                         }
 
@@ -538,20 +555,19 @@ namespace YuukiPS_Launcher
                             // Patch to PathfileMetadata_Now                            
                             try
                             {
-                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Now).ToUpper();
+                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Currently, true);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+
                                 Console.WriteLine("Patch done...");
                             }
                             catch (Exception x)
                             {
-                                Console.WriteLine("Failed Patch: ", x);
-                                return false;
+                                return "Failed Patch: " + x.ToString();
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Failed because file doesn't match from md5 api");
-                            return false;
+                            return "Failed because file doesn't match from md5 api";
                         }
                     }
                     else
@@ -569,14 +585,56 @@ namespace YuukiPS_Launcher
                         {
                             try
                             {
+                                if (!File.Exists(PathfileMetadata_Currently))
+                                {
+                                    return "Cannot find current metadata file in offline mode";
+                                }
+
                                 // Use PathfileMetadata_Now to backup PathfileMetadata_Original file, but since without md5 api we can't check is original or not.
-                                File.Copy(PathfileMetadata_Now, PathfileMetadata_Original, true);
+                                File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+
                                 Console.WriteLine("Backup Metadata Original");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Cannot find current metadata file in offline mode", ex);
-                                return false;
+                                return ex.ToString();
+                            }
+                        }
+
+                        // Check PathfileMetadata_Currently if no found
+                        if (!File.Exists(PathfileMetadata_Currently))
+                        {
+                            if (File.Exists(PathfileMetadata_Original))
+                            {
+                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+
+                                Console.WriteLine("We detected that you did not have files (Currently) so we returned them with Original");
+                            }
+                            else
+                            {
+                                return "Can't find Original Metadata file in offline mode (0)";
+                            }
+                        }
+                        else
+                        {
+                            // jika PathfileMetadata_Currently ada coba cek PathfileMetadata_Original apakah sama
+                            if (File.Exists(PathfileMetadata_Original))
+                            {
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                                if (MD5_Metadata_LOC_Currently != MD5_Metadata_LOC_Original)
+                                {
+                                    File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                                    MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+
+                                    Console.WriteLine("We detect you have non-original (Currently) files so we return them with Original");
+                                }
+                            }
+                            else
+                            {
+                                return "Can't find Original Metadata file in offline mode (1)";
                             }
                         }
 
@@ -586,74 +644,78 @@ namespace YuukiPS_Launcher
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Now, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.MetaData.key2);
+                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.MetaData.key2);
                         }
                         else if (ch == 2)
                         {
-                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Now, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.MetaData.key2);
+                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.MetaData.key2);
                         }
                         if (!String.IsNullOrEmpty(ManualMetadata))
                         {
-                            Console.WriteLine("Error Patch: " + ManualMetadata);
-                            return false;
+                            return "Error Patch: " + ManualMetadata;
                         }
 
-                        // Patch PathfileMetadata_Patched ke PathfileUA_Now
+                        // Patch PathfileMetadata_Patched ke PathfileMetadata_Currently
                         if (File.Exists(PathfileMetadata_Patched))
                         {
                             try
                             {
-                                // Gunakan PathfileMetadata_Patched buat copy ke PathfileMetadata_Now
-                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Now, true);
+                                File.Copy(PathfileMetadata_Patched, PathfileMetadata_Currently, true);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+
                                 Console.WriteLine("Patch Metadata...");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Failed Patch Metadata Original1", ex);
-                                return false;
+                                return "Failed Patch Metadata Original1: " + ex.ToString();
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Failed Patch Metadata (0)");
-                            return false;
+                            return "Failed Patch Metadata (0)";
                         }
 
                     }
                     else
                     {
-                        // Jika PathfileMetadata_Original ada
+                        // Jika PathfileMetadata_Original, Kembalikan PathfileMetadata_Original ke PathfileMetadata_Currently
                         if (File.Exists(PathfileMetadata_Original))
                         {
                             try
                             {
-                                // Kembalikan PathfileMetadata_Original ke PathfileMetadata_Now
-                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Now, true);
-                                Console.WriteLine("Back to Original Metadata Version...");
+                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                if (MD5_Metadata_LOC_Original == MD5_Metadata_LOC_Currently)
+                                {
+                                    Console.WriteLine("Current file is Original");
+                                }
+                                else
+                                {
+                                    File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                                    MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                    Console.WriteLine("Back to Original Metadata Version...");
+                                }
                             }
                             catch (Exception ex)
                             {
-                                // Jika tidak ada PathfileMetadata_Original kembali ke false
-                                Console.WriteLine("Failed: Backup Metadata Original2", ex);
-                                return false;
+                                return "Failed: Backup Metadata Original2: " + ex.ToString();
                             }
                         }
 
                     }
                 }
 
-                // Check MD5 loc metadata                
+                // Make sure MD5 matches
                 Console.WriteLine("MD5 Metadata Currently: " + MD5_Metadata_LOC_Currently);
                 Console.WriteLine("MD5 Metadata Original: " + MD5_Metadata_LOC_Original);
                 Console.WriteLine("MD5 Metadata Patched: " + MD5_Metadata_LOC_Patched);
             }
             else
             {
-                Console.WriteLine("No other method found");
-                return false;
+                return "No other method found";
             }
 
-            return true;
+            return "";
         }
 
         private void Set_LA_Select_Click(object sender, EventArgs e)
@@ -949,7 +1011,7 @@ namespace YuukiPS_Launcher
                     using (var stream = File.OpenRead(filename))
                     {
                         var hash = md5.ComputeHash(stream);
-                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                        return BitConverter.ToString(hash).Replace("-", "");
                     }
                 }
             }
@@ -963,6 +1025,13 @@ namespace YuukiPS_Launcher
         [Obsolete]
         private void btStart_Click(object sender, EventArgs e)
         {
+            // Jika game berjalan...
+            if (IsGameRun)
+            {
+                AllStop();
+                return;
+            }
+
             // Get Extra
             bool isAkebiGC = Extra_AkebiGC.Checked;
             bool isProxyNeed = CheckProxyEnable.Checked;
@@ -998,6 +1067,10 @@ namespace YuukiPS_Launcher
             if (!IsGameRun)
             {
                 // if game is not running
+                if (progress != null)
+                {
+                    Console.WriteLine("progress tes");
+                }
 
                 // if server is official 
                 if (set_server_host == "official")
@@ -1006,17 +1079,19 @@ namespace YuukiPS_Launcher
                 }
 
                 // run patch
-                if (!PatchGame(patch, checkModeOnline.Checked, GameMetode, GameChannel))
+                var tes = PatchGame(patch, checkModeOnline.Checked, GameMetode, GameChannel);
+                if (!string.IsNullOrEmpty(tes))
                 {
-                    MessageBox.Show("Error Patch, Please look at console to see what the error is, you can send a screenshot/log to discord support.");
+                    if (tes.Contains("Key1") || tes.Contains("Key2"))
+                    {
+                        MessageBox.Show("This may happen because you have already patched or you are using an unsupported version game. The solution is you can use Online Method (you can find it in Config Tab) to make sure you have right file.", "Error Patch Offline");
+                    }
+                    else
+                    {
+                        MessageBox.Show(tes, "Error Patch");
+                    }
                     return;
                 }
-            }
-            else
-            {
-                // if game is running
-                //MessageBox.Show("Can't patch because game is still running, please close it first");
-                //return;
             }
 
             // For Proxy
@@ -1035,6 +1110,14 @@ namespace YuukiPS_Launcher
                             return;
                         }
                     }
+                    else
+                    {
+                        Console.WriteLine("Proxy is ignored, because you turned it off");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Proxy is ignored, because use official server");
                 }
             }
             else
@@ -1126,8 +1209,7 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                Console.WriteLine("Game is still running so let's stop it?");
-                AllStop();
+                Console.WriteLine("Progress is still running...");
             }
 
         }
@@ -1135,18 +1217,6 @@ namespace YuukiPS_Launcher
         [Obsolete]
         private void CheckGameRun_Tick(object sender, EventArgs e)
         {
-            if (VersionGame == "0.0.0")
-            {
-                IsGameRun = false;
-                btStart.Text = "Launch";
-                return;
-            }
-            if (string.IsNullOrEmpty(WatchFile))
-            {
-                IsGameRun = false;
-                btStart.Text = "Launch";
-                return;
-            }
             var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == "YuanShen" || pr.ProcessName == "GenshinImpact" || pr.ProcessName == "injector");
             if (!isrun.Any())
             {
@@ -1159,11 +1229,12 @@ namespace YuukiPS_Launcher
                 // Revert to original version every game close
                 if (!DoneCheck)
                 {
-                    Console.WriteLine("Game Exit, Back to original");
-                    StopGame();
-                    if (!PatchGame(false, checkModeOnline.Checked, GameMetode, GameChannel))
+                    Console.WriteLine("Game detected stopped");
+                    StopGame(); // this shouldn't be necessary but just let it be
+                    var tes = PatchGame(false, checkModeOnline.Checked, GameMetode, GameChannel);
+                    if (!string.IsNullOrEmpty(tes))
                     {
-                        Console.WriteLine("Failed to return to original");
+                        Console.WriteLine(tes);
                     }
                     DoneCheck = true;
                 }
@@ -1193,7 +1264,6 @@ namespace YuukiPS_Launcher
                 proxy.Stop();
                 proxy = null;
                 Console.WriteLine("Proxy Stop....");
-
             }
         }
 
@@ -1203,18 +1273,37 @@ namespace YuukiPS_Launcher
             {
                 try
                 {
-                    // normal kill
-                    KillProcessAndChildrens(progress.Id);
-                    progress.WaitForExit();
-                    // foce kill
-                    EndTask(WatchFile);
+                    // Normal Kill
+                    progress.Kill();
+                    progress.Close();
+                    progress.Dispose();
+                    //KillProcessAndChildrens(progress.Id);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                 }
                 progress = null;
-                Console.WriteLine("Game Stop.....");
+            }
+            if (IsGameRun)
+            {
+                try
+                {
+                    // Foce Kill
+                    if (!string.IsNullOrEmpty(WatchFile))
+                    {
+                        EndTask(WatchFile);
+                        Console.WriteLine("EndTask Game: " + WatchFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine("EndTask not supported");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
         }
 
@@ -1374,7 +1463,7 @@ namespace YuukiPS_Launcher
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Does not support proxy check support? ", ex);
+                Console.WriteLine("Does not support proxy check support: " + ex.ToString());
             }
         }
     }
