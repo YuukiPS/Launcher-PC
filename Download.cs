@@ -1,6 +1,5 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Net;
+﻿using Downloader;
+using System.ComponentModel;
 
 namespace YuukiPS_Launcher
 {
@@ -8,7 +7,7 @@ namespace YuukiPS_Launcher
     {
         private string set_download;
         private string set_folder;
-        private WebClient dl;
+        private DownloadService dl;
 
         public Download(string url_download, string folder_download)
         {
@@ -39,13 +38,20 @@ namespace YuukiPS_Launcher
 
             if (dl == null)
             {
-                dl = new WebClient();
-                dl.DownloadFileCompleted += DLDone;
-                dl.DownloadProgressChanged += DLProgress;
+                var downloadOpt = new DownloadConfiguration()
+                {
+                    ChunkCount = 8, // file parts to download, default value is 1
+                    OnTheFlyDownload = true, // caching in-memory or not? default values is true
+                    ParallelDownload = true // download parts of file as parallel or not. Default value is false
+                };
+                dl = new DownloadService(downloadOpt);
+                dl.DownloadStarted += Dl_DownloadStarted;
+                dl.DownloadFileCompleted += Dl_DownloadFileCompleted;
+                dl.DownloadProgressChanged += Dl_DownloadProgressChanged;
+                dl.ChunkDownloadProgressChanged += Dl_ChunkDownloadProgressChanged;
                 try
                 {
-                    Console.WriteLine("Start Download: " + set_download);
-                    dl.DownloadFileAsync(new Uri(set_download), set_folder);
+                    dl.DownloadFileTaskAsync(set_download, set_folder);
                 }
                 catch (Exception ek)
                 {
@@ -59,22 +65,55 @@ namespace YuukiPS_Launcher
 
         }
 
-        private void DLProgress(object sender, DownloadProgressChangedEventArgs e)
+        private void Dl_DownloadFileCompleted(object? sender, AsyncCompletedEventArgs e)
         {
-            var bytesIn = double.Parse(e.BytesReceived.ToString());
-            var totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
-            var percentage = bytesIn / totalBytes * 100;
-            DLBar.Value = int.Parse(Math.Truncate(percentage).ToString(CultureInfo.InvariantCulture));
-
-            GetNumDownload.Text = $@"Update {Tool.SizeSuffix(e.BytesReceived)} of {Tool.SizeSuffix(e.TotalBytesToReceive)}";
+            btDownload.Invoke((Action)delegate
+            {
+                btDownload.Enabled = true;
+            });
+            GetNumDownload.Invoke((Action)delegate
+            {
+                GetNumDownload.Text = "Done";
+            });
+            DialogResult = DialogResult.OK;
         }
 
-        private void DLDone(object? sender, AsyncCompletedEventArgs e)
+        private void Dl_ChunkDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
         {
-            btDownload.Enabled = true;
-            GetNumDownload.Text = "Done";
-            // TODO: check vaild file
-            DialogResult = DialogResult.OK;
+            //Console.WriteLine($@"Update {e.ReceivedBytes} of {e.TotalBytesToReceive}");
+        }
+
+        private void Dl_DownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
+        {
+            double nonZeroSpeed = e.BytesPerSecondSpeed + 0.0001;
+            int estimateTime = (int)((e.TotalBytesToReceive - e.ReceivedBytesSize) / nonZeroSpeed);
+            bool isMinutes = estimateTime >= 60;
+            string timeLeftUnit = "seconds";
+
+            if (isMinutes)
+            {
+                timeLeftUnit = "minutes";
+                estimateTime /= 60;
+            }
+
+            if (estimateTime < 0)
+            {
+                estimateTime = 0;
+                timeLeftUnit = "unknown";
+            }
+
+            string bytesReceived = Tool.CalcMemoryMensurableUnit(e.ReceivedBytesSize);
+            string totalBytesToReceive = Tool.CalcMemoryMensurableUnit(e.TotalBytesToReceive);
+
+            GetNumDownload.Invoke((Action)delegate
+            {
+                GetNumDownload.Text = $"{bytesReceived} of {totalBytesToReceive} | {estimateTime} {timeLeftUnit} left | Speed: {Tool.CalcMemoryMensurableUnit(e.BytesPerSecondSpeed)}/s";
+            });
+        }
+
+        private void Dl_DownloadStarted(object? sender, DownloadStartedEventArgs e)
+        {
+            Console.WriteLine("Start Download: " + e.FileName);
         }
 
         private void btCancel_Click(object sender, EventArgs e)

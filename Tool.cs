@@ -4,16 +4,24 @@ using System.Text.RegularExpressions;
 
 namespace YuukiPS_Launcher
 {
-    public class Tool
+    public static class Tool
     {
-        private static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-        public static string SizeSuffix(long value)
+        public static string CalcMemoryMensurableUnit(double bytes)
         {
-            if (value < 0) { return "-" + SizeSuffix(-value); }
-            if (value == 0) { return "0.0 bytes"; }
-            var mag = (int)Math.Log(value, 1024);
-            var adjustedSize = (decimal)value / (1L << (mag * 10));
-            return $"{adjustedSize:n1} {SizeSuffixes[mag]}";
+            double kb = bytes / 1024; // · 1024 Bytes = 1 Kilobyte 
+            double mb = kb / 1024; // · 1024 Kilobytes = 1 Megabyte 
+            double gb = mb / 1024; // · 1024 Megabytes = 1 Gigabyte 
+            double tb = gb / 1024; // · 1024 Gigabytes = 1 Terabyte 
+
+            string result =
+                tb > 1 ? $"{tb:0.##}TB" :
+                gb > 1 ? $"{gb:0.##}GB" :
+                mb > 1 ? $"{mb:0.##}MB" :
+                kb > 1 ? $"{kb:0.##}KB" :
+                $"{bytes:0.##}B";
+
+            result = result.Replace("/", ".");
+            return result;
         }
 
         public const string UNIX_PID_REGX = @"\w+\s+(\d+).*";

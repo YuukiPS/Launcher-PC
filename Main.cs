@@ -1131,13 +1131,40 @@ namespace YuukiPS_Launcher
                 Directory.CreateDirectory(set_AkebiGC);
                 string get_AkebiGC = Path.Combine(set_AkebiGC, "injector.exe");
                 string get_AkebiGC_zip = Path.Combine(set_AkebiGC, "update.zip");
+                string get_AkebiGC_md5 = Path.Combine(set_AkebiGC, "md5.txt");
 
-                if (!File.Exists(get_AkebiGC))
+                var Update_AkebiGC = false;
+
+                var cekAkebi = API.GetAkebi(GameChannel);
+                if (string.IsNullOrEmpty(cekAkebi))
                 {
-                    var DL2 = new Download("https://github.com/Akebi-Group/Akebi-GC/releases/download/v0.95/akebi-gc-v0.95-g3.0-binaries-global.zip", get_AkebiGC_zip);
+                    MessageBox.Show("Can't check latest Akebi");
+                    return;
+                }
+                string[] SplitAkebiGC = cekAkebi.Split("|");
+
+                // Check file update, jika tidak ada
+                if (!File.Exists(get_AkebiGC_md5))
+                {
+                    Console.WriteLine("Md5 no found, update!!!");
+                    Update_AkebiGC = true;
+                }
+                else
+                {
+                    string readText = File.ReadAllText(get_AkebiGC_md5);
+                    if (!readText.Contains(SplitAkebiGC[0]))
+                    {
+                        Console.WriteLine("Found a new version, time to download");
+                        Update_AkebiGC = true;
+                    }
+                }
+
+                if (Update_AkebiGC)//!File.Exists(get_AkebiGC)
+                {
+                    var DL2 = new Download(SplitAkebiGC[1], get_AkebiGC_zip);
                     if (DL2.ShowDialog() != DialogResult.OK)
                     {
-                        MessageBox.Show("No Akebi");
+                        MessageBox.Show("Download Akebi failed");
                         return;
                     }
                     else
@@ -1173,16 +1200,19 @@ namespace YuukiPS_Launcher
                             ProcessStartInfo pInfo = new ProcessStartInfo();
                             pInfo.FileName = file_update_AkebiGC;
                             Process p = Process.Start(pInfo);
-                            //p.WaitForInputIdle();
+
                             p.WaitForExit();
+
+                            // Update MD5
+                            File.WriteAllText(get_AkebiGC_md5, SplitAkebiGC[0]);
 
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show(ex.Message);
                         }
-
                     }
+
                 }
                 cst_gamefile = get_AkebiGC;
                 //WatchFile = "injector";

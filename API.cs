@@ -11,7 +11,8 @@ namespace YuukiPS_Launcher
         public static string API_DL_CF = "https://file.yuuki.me/";
         public static string API_DL_OW = "https://drive.yuuki.me/";
         public static string API_DL_WB = "https://ps.yuuki.me/api/";
-        public static string API_GITHUB = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
+        public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
+        public static string API_GITHUB_Akebi = "https://api.github.com/repos/Akebi-Group/Akebi-GC/";
 
         public static GS GS_DL(string dl = "os")
         {
@@ -150,7 +151,7 @@ namespace YuukiPS_Launcher
 
         public static Update? GetUpdate()
         {
-            var client = new RestClient(API_GITHUB);
+            var client = new RestClient(API_GITHUB_YuukiPS);
             var request = new RestRequest("releases");
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -177,6 +178,53 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("Error GetUpdate2: " + response.StatusCode);
             }
             return null;
+        }
+
+        public static string? GetAkebi(int ch = 1)
+        {
+            var client = new RestClient(API_GITHUB_Akebi);
+            var request = new RestRequest("actions/artifacts");
+            var response = client.Execute(request);
+
+            var whos = "master";
+            if (ch == 2)
+            {
+                whos = "chinese";
+            }
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                if (response.Content != null)
+                {
+                    try
+                    {
+                        var tes = JsonConvert.DeserializeObject<Nightly>(response.Content);
+                        if (tes != null)
+                        {
+                            foreach (var file in tes.artifacts)
+                            {
+                                if (file.workflow_run != null)
+                                {
+                                    if (file.workflow_run.head_branch == whos)
+                                    {
+                                        return file.workflow_run.head_sha + "|https://nightly.link/Akebi-Group/Akebi-GC/actions/runs/" + file.workflow_run.id + "/" + file.name + ".zip";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error GetAkebi: ", ex);
+                    }
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error GetUpdate2: " + response.StatusCode);
+            }
+            return "";
         }
     }
 }

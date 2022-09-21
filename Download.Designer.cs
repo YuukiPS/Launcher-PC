@@ -65,7 +65,7 @@
             // 
             this.GetNumDownload.AutoSize = true;
             this.GetNumDownload.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.GetNumDownload.Location = new System.Drawing.Point(174, 60);
+            this.GetNumDownload.Location = new System.Drawing.Point(12, 87);
             this.GetNumDownload.Name = "GetNumDownload";
             this.GetNumDownload.Size = new System.Drawing.Size(16, 20);
             this.GetNumDownload.TabIndex = 3;
@@ -95,7 +95,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(556, 92);
+            this.ClientSize = new System.Drawing.Size(556, 111);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btDownload);
             this.Controls.Add(this.GetNumDownload);
