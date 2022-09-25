@@ -1254,6 +1254,7 @@ namespace YuukiPS_Launcher
                         catch (Exception ex)
                         {
                             MessageBox.Show(ex.Message);
+                            return;
                         }
                     }
 
@@ -1271,6 +1272,7 @@ namespace YuukiPS_Launcher
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    return;
                 }
                 cst_gamefile = get_AkebiGC;
                 Console.WriteLine("RUN: " + cst_gamefile);
