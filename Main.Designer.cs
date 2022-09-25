@@ -64,6 +64,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.TabConfig = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
             this.checkModeOnline = new System.Windows.Forms.CheckBox();
             this.Set_LA_GameFile = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -388,6 +389,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.label8);
             this.tabPage5.Controls.Add(this.checkModeOnline);
             this.tabPage5.Controls.Add(this.Set_LA_GameFile);
             this.tabPage5.Controls.Add(this.label7);
@@ -404,6 +406,15 @@
             this.tabPage5.Text = "Launcher";
             this.tabPage5.UseVisualStyleBackColor = true;
             this.tabPage5.Click += new System.EventHandler(this.tabPage5_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(374, 232);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(185, 15);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "Click Save to save current settings";
             // 
             // checkModeOnline
             // 
@@ -772,5 +783,6 @@
         private System.Windows.Forms.Timer CheckGameRun;
         private System.Windows.Forms.Timer CheckProxyRun;
         private CheckBox checkModeOnline;
+        private Label label8;
     }
 }

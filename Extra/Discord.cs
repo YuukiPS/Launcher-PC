@@ -6,7 +6,7 @@ namespace YuukiPS_Launcher.Extra
 {
     public class Discord
     {
-        public DiscordRpcClient client;
+        public DiscordRpcClient? client;
 
         public void Ready(string appid = "1023479009335582830")
         {
@@ -19,12 +19,12 @@ namespace YuukiPS_Launcher.Extra
                 //Subscribe to events
                 client.OnReady += (sender, e) =>
                 {
-                    Console.WriteLine("Received Ready from user {0}", e.User.Username);
+                    Console.WriteLine("Discord: Received Ready from user {0}", e.User.Username);
                     UpdateStatus("Getting ready", "Wait");
                 };
-                client.OnPresenceUpdate += (sender, e) =>
+                client.OnError += (sender, e) =>
                 {
-                    Console.WriteLine("Received Update! {0}", e.Presence);
+                    Console.WriteLine("Discord: Error Update {0}", e.Message);
                 };
 
                 //Connect to the RPC

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Management;
 using System.Net.NetworkInformation;
@@ -9,6 +10,7 @@ namespace YuukiPS_Launcher
 {
     public partial class Main : Form
     {
+        Config configdata = new Config();
 
         // Main Function
         private ProxyController? proxy;
@@ -24,16 +26,90 @@ namespace YuukiPS_Launcher
         private static string DataConfig = Path.Combine(CurrentlyPath, "data");
         private static string Modfolder = Path.Combine(CurrentlyPath, "mod");
 
-        // Config default
-        string VersionGame = "";
-        string WatchFile = "";
-        bool IsGameRun = false;
-        bool DoneCheck = true;
-        int GameChannel = 0;
-        int GameMetode = 1;
+        public string ConfigPath = Path.Combine(DataConfig, "config.json");
+
+        // Stats default
+        public string WatchFile = "";
+        public bool IsGameRun = false;
+        public bool DoneCheck = true;
+        public string VersionGame = "";
+        public int GameChannel = 0;
+        public int GameMetode = 1;
 
         // Extra
         Extra.Discord discord = new Extra.Discord();
+
+        public void LoadConfig()
+        {
+            // Create missing folder
+            Directory.CreateDirectory(DataConfig);
+            Directory.CreateDirectory(Modfolder);
+
+            if (File.Exists(ConfigPath))
+            {
+                string data = File.ReadAllText(ConfigPath);
+                try
+                {
+                    configdata = JsonConvert.DeserializeObject<Config>(data);
+                    if (configdata != null)
+                    {
+                        // load config
+                        Set_LA_GameFolder.Text = configdata.Game_Path;
+                        GetHost.Text = configdata.Hostdefault;
+                        GetPort.Text = configdata.ProxyPort.ToString();
+
+                        checkModeOnline.Checked = configdata.MetodeOnline;
+                        CheckProxyUseHTTPS.Checked = configdata.HostHTTPS;
+                        Extra_AkebiGC.Checked = configdata.extra.Akebi;
+
+                        Console.WriteLine("load config...");
+                    }
+                    else
+                    {
+                        Console.WriteLine("No config load...");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error load config: " + ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No Config file found...");
+            }
+
+            // Check Game Version
+            CheckVersionGame();
+        }
+        public void SaveConfig()
+        {
+            try
+            {
+                // save config
+                configdata.Game_Path = Set_LA_GameFolder.Text;
+                configdata.Hostdefault = GetHost.Text;
+
+                int myInt;
+                bool isValid = int.TryParse(GetPort.Text, out myInt);
+                if (isValid)
+                {
+                    configdata.ProxyPort = myInt;
+                }
+
+                configdata.MetodeOnline = checkModeOnline.Checked;
+                configdata.HostHTTPS = CheckProxyUseHTTPS.Checked;
+                configdata.extra.Akebi = Extra_AkebiGC.Checked;
+
+                File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(configdata));
+
+                Console.WriteLine("Done save config...");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error save config: " + ex.Message);
+            }
+        }
 
         public Main()
         {
@@ -45,18 +121,14 @@ namespace YuukiPS_Launcher
         {
             Console.WriteLine("Loading....");
 
-            // Create missing folder
-            Directory.CreateDirectory(DataConfig);
-            Directory.CreateDirectory(Modfolder);
+            // Load config and check version game
+            LoadConfig();
 
             // Before starting make sure proxy is turned off
             CheckProxy(true);
 
             // Check Update
             CheckUpdate();
-
-            // Check Game Version
-            CheckVersionGame();
 
             // Server List
             GetServerList();
@@ -1444,7 +1516,7 @@ namespace YuukiPS_Launcher
 
         private void Set_LA_Save_Click(object sender, EventArgs e)
         {
-
+            SaveConfig();
         }
 
         [Obsolete]
