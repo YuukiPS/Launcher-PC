@@ -62,7 +62,7 @@ namespace YuukiPS_Launcher
                         CheckProxyUseHTTPS.Checked = configdata.HostHTTPS;
                         Extra_AkebiGC.Checked = configdata.extra.Akebi;
 
-                        Console.WriteLine("loading config...");
+                        Console.WriteLine("Loading config...");
                     }
                     else
                     {
