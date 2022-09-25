@@ -1,9 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Management;
 using System.Net.NetworkInformation;
-using System.Security.Cryptography;
 using YuukiPS_Launcher.json;
 
 namespace YuukiPS_Launcher
@@ -211,7 +209,7 @@ namespace YuukiPS_Launcher
             }
 
             // Check MD5 Game
-            string Game_LOC_Original_MD5 = CalculateMD5(PathfileGame);
+            string Game_LOC_Original_MD5 = Tool.CalculateMD5(PathfileGame);
 
             // Check MD5 in Server API
             VersionGenshin get_version = API.GetMD5VersionGS(Game_LOC_Original_MD5);
@@ -323,9 +321,9 @@ namespace YuukiPS_Launcher
                 string PathfileUA_Original = Path.Combine(cst_folder_UA, "UserAssembly-original.dll");
 
                 // Check MD5 local (First time)
-                string MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
-                string MD5_UA_LOC_Patched = CalculateMD5(PathfileUA_Patched);
-                string MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original);
+                string MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                string MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
+                string MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
 
                 if (online)
                 {
@@ -366,7 +364,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
-                                MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original);
+                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
 
                                 Console.WriteLine("Backup UserAssembly Original");
                             }
@@ -382,7 +380,7 @@ namespace YuukiPS_Launcher
                             if (File.Exists(PathfileUA_Original))
                             {
                                 File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
 
                                 Console.WriteLine("We detected that you did not have files (Currently) so we returned them with Original");
                             }
@@ -396,12 +394,12 @@ namespace YuukiPS_Launcher
                             // jika PathfileMetadata_Currently ada coba cek PathfileMetadata_Original apakah sama
                             if (File.Exists(PathfileUA_Original))
                             {
-                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
-                                MD5_UA_LOC_Original = CalculateMD5(PathfileUA_Original);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
                                 if (MD5_UA_LOC_Currently != MD5_UA_LOC_Original)
                                 {
                                     File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                    MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+                                    MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
 
                                     Console.WriteLine("We detect you have non-original (Currently) files so we return them with Original");
                                 }
@@ -439,7 +437,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
 
                                 Console.WriteLine("Patch UserAssembly...");
                             }
@@ -461,7 +459,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = CalculateMD5(PathfileUA_Currently);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
 
                                 Console.WriteLine("Back to Original UserAssembly Version...");
                             }
@@ -498,9 +496,9 @@ namespace YuukiPS_Launcher
                 string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
 
                 // Get MD5 local Metadata (First time)
-                string MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
-                string MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
-                string MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched);
+                string MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                string MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
+                string MD5_Metadata_LOC_Patched = Tool.CalculateMD5(PathfileMetadata_Patched);
 
                 // debug
                 //online = false;
@@ -541,7 +539,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                                MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
 
                                 Console.WriteLine("Backup Metadata Original");
                             }
@@ -560,7 +558,7 @@ namespace YuukiPS_Launcher
                             }
                             else
                             {
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                                MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
                             }
                         }
                     }
@@ -571,7 +569,7 @@ namespace YuukiPS_Launcher
                         try
                         {
                             File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                            MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                            MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                             Console.WriteLine("Get Backup Original");
                         }
@@ -589,7 +587,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                                 Console.WriteLine(MD5_Metadata_API_Original + " doesn't match with " + MD5_Metadata_LOC_Currently + ", backup it....");
                             }
@@ -617,7 +615,7 @@ namespace YuukiPS_Launcher
                             }
                             else
                             {
-                                MD5_Metadata_LOC_Patched = CalculateMD5(PathfileMetadata_Patched);
+                                MD5_Metadata_LOC_Patched = Tool.CalculateMD5(PathfileMetadata_Patched);
                             }
                         }
 
@@ -628,7 +626,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileMetadata_Patched, PathfileMetadata_Currently, true);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                                 Console.WriteLine("Patch done...");
                             }
@@ -664,7 +662,7 @@ namespace YuukiPS_Launcher
 
                                 // Use PathfileMetadata_Now to backup PathfileMetadata_Original file, but since without md5 api we can't check is original or not.
                                 File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                                MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
 
                                 Console.WriteLine("Backup Metadata Original");
                             }
@@ -680,7 +678,7 @@ namespace YuukiPS_Launcher
                             if (File.Exists(PathfileMetadata_Original))
                             {
                                 File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                                 Console.WriteLine("We detected that you did not have files (Currently) so we returned them with Original");
                             }
@@ -694,12 +692,12 @@ namespace YuukiPS_Launcher
                             // jika PathfileMetadata_Currently ada coba cek PathfileMetadata_Original apakah sama
                             if (File.Exists(PathfileMetadata_Original))
                             {
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
                                 if (MD5_Metadata_LOC_Currently != MD5_Metadata_LOC_Original)
                                 {
                                     File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                                    MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                    MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                                     Console.WriteLine("We detect you have non-original (Currently) files so we return them with Original");
                                 }
@@ -733,7 +731,7 @@ namespace YuukiPS_Launcher
                             try
                             {
                                 File.Copy(PathfileMetadata_Patched, PathfileMetadata_Currently, true);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                                 Console.WriteLine("Patch Metadata...");
                             }
@@ -755,8 +753,8 @@ namespace YuukiPS_Launcher
                         {
                             try
                             {
-                                MD5_Metadata_LOC_Original = CalculateMD5(PathfileMetadata_Original);
-                                MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
                                 if (MD5_Metadata_LOC_Original == MD5_Metadata_LOC_Currently)
                                 {
                                     Console.WriteLine("Current file is Original");
@@ -764,7 +762,7 @@ namespace YuukiPS_Launcher
                                 else
                                 {
                                     File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                                    MD5_Metadata_LOC_Currently = CalculateMD5(PathfileMetadata_Currently);
+                                    MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
                                     Console.WriteLine("Back to Original Metadata Version...");
                                 }
                             }
@@ -1068,27 +1066,6 @@ namespace YuukiPS_Launcher
             return foldPath;
         }
 
-        // Check MD5
-        private static string CalculateMD5(string filename)
-        {
-            try
-            {
-                using (var md5 = MD5.Create())
-                {
-                    using (var stream = File.OpenRead(filename))
-                    {
-                        var hash = md5.ComputeHash(stream);
-                        return BitConverter.ToString(hash).Replace("-", "");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return "Unknown";
-            }
-
-        }
-
         [Obsolete]
         private void btStart_Click(object sender, EventArgs e)
         {
@@ -1281,8 +1258,21 @@ namespace YuukiPS_Launcher
                     }
 
                 }
+
+                //Update Path
+                var file_config_AkebiGC = set_AkebiGC + @"\cfg.ini";
+                try
+                {
+                    var w = new StreamWriter(file_config_AkebiGC);
+                    w.WriteLine("[Inject]");
+                    w.WriteLine("GenshinPath = " + cst_gamefile);
+                    w.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
                 cst_gamefile = get_AkebiGC;
-                //WatchFile = "injector";
                 Console.WriteLine("RUN: " + cst_gamefile);
             }
 
@@ -1375,7 +1365,6 @@ namespace YuukiPS_Launcher
                     progress.Kill();
                     progress.Close();
                     progress.Dispose();
-                    //KillProcessAndChildrens(progress.Id);
                 }
                 catch (Exception e)
                 {
@@ -1390,7 +1379,7 @@ namespace YuukiPS_Launcher
                     // Foce Kill
                     if (!string.IsNullOrEmpty(WatchFile))
                     {
-                        EndTask(WatchFile);
+                        Tool.EndTask(WatchFile);
                         Console.WriteLine("EndTask Game: " + WatchFile);
                     }
                     else
@@ -1405,50 +1394,9 @@ namespace YuukiPS_Launcher
             }
         }
 
-        public void EndTask(string taskname)
-        {
-            var chromeDriverProcesses = Process.GetProcesses().Where(pr => pr.ProcessName == taskname);
-            foreach (var process in chromeDriverProcesses)
-            {
-                process.Kill();
-            }
-        }
-
-        private static void KillProcessAndChildrens(int pid)
-        {
-            ManagementObjectSearcher processSearcher = new ManagementObjectSearcher
-              ("Select * From Win32_Process Where ParentProcessID=" + pid);
-            ManagementObjectCollection processCollection = processSearcher.Get();
-
-            // We must kill child processes first!
-            if (processCollection != null)
-            {
-                foreach (ManagementObject mo in processCollection)
-                {
-                    KillProcessAndChildrens(Convert.ToInt32(mo["ProcessID"])); //kill child processes(also kills childrens of childrens etc.)
-                }
-            }
-
-            // Then kill parents.
-            try
-            {
-                Process proc = Process.GetProcessById(pid);
-                if (!proc.HasExited) proc.Kill();
-            }
-            catch (ArgumentException)
-            {
-                // Process already exited.
-            }
-        }
-
         private void btStartServer_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Still PR :)");
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btReloadServer_Click(object sender, EventArgs e)
@@ -1495,25 +1443,11 @@ namespace YuukiPS_Launcher
         [Obsolete]
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Jika Proxy atau game masih berjalan
-            /*
-            if (proxy != null)
+            if (IsGameRun)
             {
-                if (MessageBox.Show("Currently proxy is still running do you want to cancel exit?", "a good question", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    e.Cancel = true;
-                }
-                else
-                {
-
-                }
+                MessageBox.Show("Can't close program while game is still running.");
+                e.Cancel = true;
             }
-            */
-        }
-
-        private void tabPage5_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void Set_LA_Save_Click(object sender, EventArgs e)

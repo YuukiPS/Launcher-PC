@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Management;
+using System.Security.Cryptography;
 
 namespace YuukiPS_Launcher
 {
@@ -22,20 +24,60 @@ namespace YuukiPS_Launcher
             return result;
         }
 
-        public static void killProcesBy(string pidString)
+        public static string CalculateMD5(string filename)
         {
-            int pid = -1;
-            if (pidString != null && int.TryParse(s: pidString, result: out pid))
+            try
             {
-                Process p = Process.GetProcessById(pid);
-                p.Kill();
-                Console.WriteLine("Killed pid =" + pidString);
+                using (var md5 = MD5.Create())
+                {
+                    using (var stream = File.OpenRead(filename))
+                    {
+                        var hash = md5.ComputeHash(stream);
+                        return BitConverter.ToString(hash).Replace("-", "");
+                    }
+                }
             }
-            else
+            catch (Exception)
             {
-                Console.WriteLine("Process not found for pid =" + pidString);
+                return "Unknown";
             }
 
+        }
+
+        public static void EndTask(string taskname)
+        {
+            var chromeDriverProcesses = Process.GetProcesses().Where(pr => pr.ProcessName == taskname);
+            foreach (var process in chromeDriverProcesses)
+            {
+                process.Kill();
+            }
+        }
+
+        public static void KillProcessAndChildrens(int pid)
+        {
+            ManagementObjectSearcher processSearcher = new ManagementObjectSearcher
+              ("Select * From Win32_Process Where ParentProcessID=" + pid);
+            ManagementObjectCollection processCollection = processSearcher.Get();
+
+            // We must kill child processes first!
+            if (processCollection != null)
+            {
+                foreach (ManagementObject mo in processCollection)
+                {
+                    KillProcessAndChildrens(Convert.ToInt32(mo["ProcessID"])); //kill child processes(also kills childrens of childrens etc.)
+                }
+            }
+
+            // Then kill parents.
+            try
+            {
+                Process proc = Process.GetProcessById(pid);
+                if (!proc.HasExited) proc.Kill();
+            }
+            catch (ArgumentException)
+            {
+                // Process already exited.
+            }
         }
 
         public static void Logger(string message, ConsoleColor c = ConsoleColor.White)

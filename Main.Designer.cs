@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
             "Yuuki",
             "tes.yuuki.me",
             "N/A",
@@ -199,7 +199,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Connect";
             this.tabPage1.UseVisualStyleBackColor = true;
-            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
             // Is_ServerList_Autocheck
             // 
@@ -281,7 +280,7 @@
             this.ServerList.FullRowSelect = true;
             this.ServerList.GridLines = true;
             this.ServerList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem2});
             this.ServerList.Location = new System.Drawing.Point(243, 36);
             this.ServerList.MultiSelect = false;
             this.ServerList.Name = "ServerList";
@@ -405,7 +404,6 @@
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Launcher";
             this.tabPage5.UseVisualStyleBackColor = true;
-            this.tabPage5.Click += new System.EventHandler(this.tabPage5_Click);
             // 
             // label8
             // 
