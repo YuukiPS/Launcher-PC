@@ -504,9 +504,9 @@
             this.Get_LA_Metode.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Get_LA_Metode.Location = new System.Drawing.Point(6, 114);
             this.Get_LA_Metode.Name = "Get_LA_Metode";
-            this.Get_LA_Metode.Size = new System.Drawing.Size(141, 21);
+            this.Get_LA_Metode.Size = new System.Drawing.Size(142, 21);
             this.Get_LA_Metode.TabIndex = 6;
-            this.Get_LA_Metode.Text = "Metode:  Unknown";
+            this.Get_LA_Metode.Text = "Method:  Unknown";
             // 
             // Get_LA_REL
             // 

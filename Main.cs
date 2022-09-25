@@ -146,7 +146,7 @@ namespace YuukiPS_Launcher
             {
                 // cari otomatis launcher
                 var Get_Launcher = GetLauncherPath();
-                Console.WriteLine("Folder Launcher: " + Get_Launcher);
+                Console.WriteLine("Launcher folder: " + Get_Launcher);
 
                 // Jika tidak ada launcher
                 if (string.IsNullOrEmpty(Get_Launcher))
@@ -1561,6 +1561,11 @@ namespace YuukiPS_Launcher
             {
                 Console.WriteLine("Does not support proxy check support: " + ex.ToString());
             }
+        }
+
+        private void GetPort_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
