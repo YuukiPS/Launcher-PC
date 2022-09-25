@@ -62,7 +62,7 @@ namespace YuukiPS_Launcher
                         CheckProxyUseHTTPS.Checked = configdata.HostHTTPS;
                         Extra_AkebiGC.Checked = configdata.extra.Akebi;
 
-                        Console.WriteLine("loading config...");
+                        Console.WriteLine("Loading config...");
                     }
                     else
                     {
@@ -103,11 +103,11 @@ namespace YuukiPS_Launcher
 
                 File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(configdata));
 
-                Console.WriteLine("Done save config...");
+                Console.WriteLine("Done, saving config...");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error save config: " + ex.Message);
+                Console.WriteLine("Error saving config: " + ex.Message);
             }
         }
 
@@ -151,7 +151,7 @@ namespace YuukiPS_Launcher
                 // Jika tidak ada launcher
                 if (string.IsNullOrEmpty(Get_Launcher))
                 {
-                    Console.WriteLine("Please find game install folder!");
+                    Console.WriteLine("Please find the game install folder!");
                     return false;
                 }
                 else
@@ -173,7 +173,7 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
-            Console.WriteLine("Folder Game: " + cst_folder_game);
+            Console.WriteLine("Game Folder: " + cst_folder_game);
 
             string cn = Path.Combine(cst_folder_game, "YuanShen.exe");
             string os = Path.Combine(cst_folder_game, "GenshinImpact.exe");
@@ -292,7 +292,7 @@ namespace YuukiPS_Launcher
             KeyGS last_key_api = API.GSKEY();
             if (last_key_api == null)
             {
-                return "Error Get Key";
+                return "Error Getting Key";
             }
 
             // Check version

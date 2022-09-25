@@ -23,7 +23,7 @@ namespace YuukiPS_Launcher.patch
             data = Methods.ReplaceBytes(data, ToFixBytesP1(key1nopatch), ToFixBytesP1(key1patch), ref count);
             if (count == 0)
             {
-                return "Key1 can't be patched";
+                return "Key1 can't be patched, check discord channels for support";
             }
 
             data = Methods.ReplaceBytes(data, Encoding.UTF8.GetBytes(key2nopatch), Encoding.UTF8.GetBytes(key2patch), ref count);
@@ -40,7 +40,7 @@ namespace YuukiPS_Launcher.patch
             }
             else
             {
-                str = "Key2 can't be patched";
+                str = "Key2 can't be patched, check discord channels for support";
             }
 
             return str;
