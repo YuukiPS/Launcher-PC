@@ -30,6 +30,7 @@ namespace YuukiPS_Launcher
 
         // Stats default
         public string WatchFile = "";
+        public string HostName = "Unknown";
         public bool IsGameRun = false;
         public bool DoneCheck = true;
         public string VersionGame = "";
@@ -1342,7 +1343,7 @@ namespace YuukiPS_Launcher
                 IsGameRun = true;
                 btStart.Text = "Stop";
                 DoneCheck = false;
-                discord.UpdateStatus("Currently in Server " + GetHost.Text, "In Game", "on");
+                discord.UpdateStatus($"Server: {HostName} Version: {VersionGame}", "In Game", "on", 1);
             }
         }
 
@@ -1465,6 +1466,7 @@ namespace YuukiPS_Launcher
             var name_server = item.SubItems[0].Text;
             var host_server = item.SubItems[1].Text;
             GetHost.Text = host_server;
+            HostName = name_server;
         }
 
         private void linkDiscord_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

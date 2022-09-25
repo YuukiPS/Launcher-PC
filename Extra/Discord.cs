@@ -33,7 +33,7 @@ namespace YuukiPS_Launcher.Extra
 
         }
 
-        public void UpdateStatus(string details, string state, string iconkey = "")
+        public void UpdateStatus(string details, string state, string iconkey = "", int type = 0)
         {
             if (client != null)
             {
@@ -42,22 +42,29 @@ namespace YuukiPS_Launcher.Extra
                     Details = details,
                     State = state
                 };
+                var Detail = new Assets()
+                {
+                    LargeImageKey = "yuuki",
+                    LargeImageText = "YuukiPS"
+                };
+
                 if (!string.IsNullOrEmpty(iconkey))
                 {
-                    Editor.Assets = new Assets()
-                    {
-                        LargeImageKey = iconkey,
-                        LargeImageText = state
-                    };
+                    Detail.LargeImageKey = iconkey;
+                    Detail.LargeImageText = state;
                 }
-                else
+
+                if (type == 0)
                 {
-                    Editor.Assets = new Assets()
-                    {
-                        LargeImageKey = "yuuki",
-                        LargeImageText = "YuukiPS"
-                    };
+                    Detail.SmallImageKey = "offline";
+                    Detail.SmallImageText = "Offline";
                 }
+                else if (type == 1)
+                {
+                    Detail.SmallImageKey = "online";
+                    Detail.SmallImageText = "Online";
+                }
+
                 if (state.Contains("In Game"))
                 {
                     Editor.Buttons = new Button[]
@@ -65,6 +72,9 @@ namespace YuukiPS_Launcher.Extra
                        new Button() { Label = "Join", Url = "https://ps.yuuki.me/" }
                      };
                 }
+
+                Editor.Assets = Detail;
+
                 client.SetPresence(Editor);
             }
 
