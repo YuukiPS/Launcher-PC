@@ -146,7 +146,7 @@ namespace YuukiPS_Launcher
             {
                 // cari otomatis launcher
                 var Get_Launcher = GetLauncherPath();
-                Console.WriteLine("Folder Launcher: " + Get_Launcher);
+                Console.WriteLine("Launcher folder: " + Get_Launcher);
 
                 // Jika tidak ada launcher
                 if (string.IsNullOrEmpty(Get_Launcher))
@@ -234,7 +234,7 @@ namespace YuukiPS_Launcher
                 Get_LA_Version.Text = "Version: Unknown";
                 Get_LA_CH.Text = "Channel: Unknown";
                 Get_LA_REL.Text = "Release: Unknown";
-                Get_LA_Metode.Text = "Metode: Unknown";
+                Get_LA_Metode.Text = "Method: Unknown";
                 Get_LA_MD5.Text = "MD5: Unknown";
 
                 return false;
@@ -252,7 +252,7 @@ namespace YuukiPS_Launcher
             Get_LA_Version.Text = "Version: " + get_version.version;
             Get_LA_CH.Text = "Channel: " + get_version.channel;
             Get_LA_REL.Text = "Release: " + get_version.release;
-            Get_LA_Metode.Text = "Metode: " + get_version.metode;
+            Get_LA_Metode.Text = "Method: " + get_version.metode;
             Get_LA_MD5.Text = "MD5: " + get_version.md5;
 
             // Pilih Metode
@@ -1561,6 +1561,11 @@ namespace YuukiPS_Launcher
             {
                 Console.WriteLine("Does not support proxy check support: " + ex.ToString());
             }
+        }
+
+        private void GetPort_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
