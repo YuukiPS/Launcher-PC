@@ -9,39 +9,31 @@ namespace YuukiPS_Launcher
 {
     public partial class Main : Form
     {
+
+        // Main Function
         private ProxyController? proxy;
         private Process? progress;
 
+        // Server List
         Thread thServerList;
         List<List> ListServer;
 
-        // https://nightly.link/akbaryahya/YuukiPS-Launcher/actions/runs/2947968074/YuukiPS.zip
-        // https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/actions/artifacts
-
+        // Folder
         public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
 
         private static string DataConfig = Path.Combine(CurrentlyPath, "data");
         private static string Modfolder = Path.Combine(CurrentlyPath, "mod");
 
-        // TODO: hapus nanti ini
-
-
-        // TODO: hapus nanti ini
-        //string PathfileGame = "";
-        //string PathMetadata = "";
-        //string PathUA = "";
-
-        //string DL_Patch = "";
-
+        // Config default
         string VersionGame = "";
         string WatchFile = "";
         bool IsGameRun = false;
         bool DoneCheck = true;
-        bool ShouldIcheck = false;
-
-        int GameMode = 0; // 0 - tanpa patch, 1 - patch
         int GameChannel = 0;
         int GameMetode = 1;
+
+        // Extra
+        Extra.Discord discord = new Extra.Discord();
 
         public Main()
         {
@@ -53,19 +45,25 @@ namespace YuukiPS_Launcher
         {
             Console.WriteLine("Loading....");
 
-            // Create missing Files
+            // Create missing folder
             Directory.CreateDirectory(DataConfig);
             Directory.CreateDirectory(Modfolder);
 
             // Before starting make sure proxy is turned off
             CheckProxy(true);
 
+            // Check Update
             CheckUpdate();
+
+            // Check Game Version
             CheckVersionGame();
 
             // Server List
             GetServerList();
             UpdateServerListTimer();
+
+            // Extra
+            discord.Ready();
         }
 
         public bool CheckVersionGame()
@@ -201,6 +199,7 @@ namespace YuukiPS_Launcher
             Console.WriteLine("File Game: " + PathfileGame);
 
             Console.WriteLine("MD5 Game Currently: " + Game_LOC_Original_MD5);
+
             return true;
         }
 
@@ -932,29 +931,24 @@ namespace YuukiPS_Launcher
         private static string GetLauncherPath(String version = "Genshin Impact")
         {
             RegistryKey key = Registry.LocalMachine;
-
-            if (key == null)
+            if (key != null)
             {
-                return "";
-            }
-
-            var tes1 = key.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + version); // 原神
-            if (tes1 != null)
-            {
-                var testes1 = tes1.GetValue("InstallPath");
-                if (testes1 != null)
+                var tes1 = key.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + version);
+                if (tes1 != null)
                 {
-                    var testestestes1 = testes1.ToString();
-                    if (testestestes1 != null)
+                    var testes1 = tes1.GetValue("InstallPath");
+                    if (testes1 != null)
                     {
-                        return testestestes1;
-                    }
+                        var testestestes1 = testes1.ToString();
+                        if (testestestes1 != null)
+                        {
+                            return testestestes1;
+                        }
 
+                    }
                 }
             }
-
             return "";
-
         }
 
         // Check Game Install
@@ -1267,6 +1261,7 @@ namespace YuukiPS_Launcher
                         Console.WriteLine(tes);
                     }
                     DoneCheck = true;
+                    discord.UpdateStatus("Not playing", "Stop", "sleep");
                 }
             }
             else
@@ -1275,7 +1270,7 @@ namespace YuukiPS_Launcher
                 IsGameRun = true;
                 btStart.Text = "Stop";
                 DoneCheck = false;
-                ShouldIcheck = true;
+                discord.UpdateStatus("Currently in Server " + GetHost.Text, "In Game", "on");
             }
         }
 
@@ -1461,7 +1456,6 @@ namespace YuukiPS_Launcher
         [Obsolete]
         void CheckProxy(bool force_off = false)
         {
-            // Before starting make sure proxy is turned off
             try
             {
                 // Metode 1
