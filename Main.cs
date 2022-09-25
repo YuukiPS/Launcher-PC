@@ -62,16 +62,16 @@ namespace YuukiPS_Launcher
                         CheckProxyUseHTTPS.Checked = configdata.HostHTTPS;
                         Extra_AkebiGC.Checked = configdata.extra.Akebi;
 
-                        Console.WriteLine("load config...");
+                        Console.WriteLine("loading config...");
                     }
                     else
                     {
-                        Console.WriteLine("No config load...");
+                        Console.WriteLine("No config to load...");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error load config: " + ex.Message);
+                    Console.WriteLine("Error loading config: " + ex.Message);
                 }
             }
             else
@@ -265,10 +265,10 @@ namespace YuukiPS_Launcher
                 GameMetode = 2;
             }
 
-            Console.WriteLine("Currently using version game " + VersionGame);
+            Console.WriteLine("Version game " + VersionGame);
 
-            Console.WriteLine("Folder PathMetadata: " + PathMetadata);
-            Console.WriteLine("File Game: " + PathfileGame);
+            Console.WriteLine("PathMetadata folder: " + PathMetadata);
+            Console.WriteLine("Game File: " + PathfileGame);
 
             Console.WriteLine("MD5 Game Currently: " + Game_LOC_Original_MD5);
 
@@ -901,7 +901,7 @@ namespace YuukiPS_Launcher
 
         public void CheckUpdate()
         {
-            Console.WriteLine("Cek update...");
+            Console.WriteLine("Checking for updates...");
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             string ver = "";
             if (version != null)
@@ -954,15 +954,15 @@ namespace YuukiPS_Launcher
                                         w.WriteLine("Taskkill /IM YuukiPS.vshost.exe /F");
 
                                         // Unzip file
-                                        w.WriteLine("echo unzip file...");
+                                        w.WriteLine("echo unziping file...");
                                         w.WriteLine("tar -xf update.zip");
 
                                         //delete file old
-                                        w.WriteLine("echo delete file old");
+                                        w.WriteLine("echo deleting old file...");
                                         w.WriteLine("del update.zip");
 
                                         //start bot
-                                        w.WriteLine("echo Update done, start back...");
+                                        w.WriteLine("echo Update done, starting back...");
                                         w.WriteLine("timeout 5 > NUL");
                                         w.WriteLine("start YuukiPS.exe");
                                         w.WriteLine("del Update.bat");
@@ -1150,7 +1150,7 @@ namespace YuukiPS_Launcher
                 {
                     if (tes.Contains("Key1") || tes.Contains("Key2"))
                     {
-                        MessageBox.Show("This may happen because you have already patched or you are using an unsupported version game. The solution is you can use Online Method (you can find it in Config Tab) to make sure you have right file.", "Error Patch Offline");
+                        MessageBox.Show("This may happen because you have already patched or you are using an unsupported version of the game. The solution is that you can use an Online Method (you can find it in Config Tab) to make sure you have right file.", "Error Patch Offline");
                     }
                     else
                     {
@@ -1171,7 +1171,7 @@ namespace YuukiPS_Launcher
                         proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
                         if (!proxy.Start())
                         {
-                            MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
+                            MessageBox.Show("Maybe the port is already in use or Windows Firewall does not allow using the port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
                             proxy = null;
                             return;
                         }
@@ -1183,7 +1183,7 @@ namespace YuukiPS_Launcher
                 }
                 else
                 {
-                    Console.WriteLine("Proxy is ignored, because use official server");
+                    Console.WriteLine("Proxy is ignored, because you are useing official server");
                 }
             }
             else
@@ -1204,7 +1204,7 @@ namespace YuukiPS_Launcher
                 var cekAkebi = API.GetAkebi(GameChannel);
                 if (string.IsNullOrEmpty(cekAkebi))
                 {
-                    MessageBox.Show("Can't check latest Akebi");
+                    MessageBox.Show("Can't check for latest Akebi");
                     return;
                 }
                 string[] SplitAkebiGC = cekAkebi.Split("|");
@@ -1212,7 +1212,7 @@ namespace YuukiPS_Launcher
                 // Check file update, jika tidak ada
                 if (!File.Exists(get_AkebiGC_md5))
                 {
-                    Console.WriteLine("Md5 no found, update!!!");
+                    Console.WriteLine("Md5 not found, update!!!");
                     Update_AkebiGC = true;
                 }
                 else
@@ -1220,7 +1220,7 @@ namespace YuukiPS_Launcher
                     string readText = File.ReadAllText(get_AkebiGC_md5);
                     if (!readText.Contains(SplitAkebiGC[0]))
                     {
-                        Console.WriteLine("Found a new version, time to download");
+                        Console.WriteLine("Found a new version, downloading...");
                         Update_AkebiGC = true;
                     }
                 }
@@ -1230,7 +1230,7 @@ namespace YuukiPS_Launcher
                     var DL2 = new Download(SplitAkebiGC[1], get_AkebiGC_zip);
                     if (DL2.ShowDialog() != DialogResult.OK)
                     {
-                        MessageBox.Show("Download Akebi failed");
+                        MessageBox.Show("Akebi download failed...");
                         return;
                     }
                     else
@@ -1325,7 +1325,7 @@ namespace YuukiPS_Launcher
                 // Revert to original version every game close
                 if (!DoneCheck)
                 {
-                    Console.WriteLine("Game detected stopped");
+                    Console.WriteLine("Game has been detected as stopped");
                     StopGame(); // this shouldn't be necessary but just let it be
                     var tes = PatchGame(false, checkModeOnline.Checked, GameMetode, GameChannel);
                     if (!string.IsNullOrEmpty(tes))
@@ -1360,7 +1360,7 @@ namespace YuukiPS_Launcher
             {
                 proxy.Stop();
                 proxy = null;
-                Console.WriteLine("Proxy Stop....");
+                Console.WriteLine("Proxy Stoping....");
             }
         }
 
