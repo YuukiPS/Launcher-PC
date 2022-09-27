@@ -29,13 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "Yuuki",
             "tes.yuuki.me",
             "N/A",
             "N/A",
             "N/A"}, -1);
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.btStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.GetHost = new System.Windows.Forms.TextBox();
@@ -280,7 +279,7 @@
             this.ServerList.FullRowSelect = true;
             this.ServerList.GridLines = true;
             this.ServerList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
+            listViewItem1});
             this.ServerList.Location = new System.Drawing.Point(243, 36);
             this.ServerList.MultiSelect = false;
             this.ServerList.Name = "ServerList";
@@ -694,7 +693,6 @@
             this.Controls.Add(this.Set_Version);
             this.Controls.Add(this.TabMain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Main";
             this.Text = "YuukiPS Launcher";

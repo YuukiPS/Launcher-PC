@@ -12,13 +12,13 @@
     
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <AssemblyVersion>2022.9.25.2204</AssemblyVersion>    
-    <FileVersion>2022.9.25.2204</FileVersion>
+    <AssemblyVersion>2022.9.27.0535</AssemblyVersion>    
+    <FileVersion>2022.9.27.0535</FileVersion>
     
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
     <OutputType>Exe</OutputType>
-    <ApplicationIcon>yuuki.ico</ApplicationIcon>
+    <ApplicationIcon>Asset\Image\yuuki.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -41,7 +41,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="yuuki.ico" />
+    <Content Include="Asset\Image\yuuki.ico" />
   </ItemGroup>
 
   <ItemGroup>

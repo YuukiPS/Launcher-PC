@@ -27,4 +27,4 @@ Required
 
 ### Screenshot
 
-![ConsoleControl Screenshot](./docs/show.jpg "ConsoleControl Screenshot")
+![ConsoleControl Screenshot](./Docs/show.jpg "ConsoleControl Screenshot")

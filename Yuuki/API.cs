@@ -2,9 +2,9 @@
 using RestSharp;
 using System.Diagnostics;
 using System.Net;
-using YuukiPS_Launcher.json;
+using YuukiPS_Launcher.Json;
 
-namespace YuukiPS_Launcher
+namespace YuukiPS_Launcher.Yuuki
 {
     public class API
     {

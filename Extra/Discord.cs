@@ -1,5 +1,6 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
+using System.Diagnostics;
 using Button = DiscordRPC.Button;
 
 namespace YuukiPS_Launcher.Extra
@@ -19,12 +20,12 @@ namespace YuukiPS_Launcher.Extra
                 //Subscribe to events
                 client.OnReady += (sender, e) =>
                 {
-                    Console.WriteLine("Discord: Received Ready from user {0}", e.User.Username);
+                    Debug.WriteLine("Discord: Received Ready from user {0}", e.User.Username);
                     UpdateStatus("Getting ready", "Wait");
                 };
                 client.OnError += (sender, e) =>
                 {
-                    Console.WriteLine("Discord: Error Update {0}", e.Message);
+                    Debug.WriteLine("Discord: Error Update {0}", e.Message);
                 };
 
                 //Connect to the RPC

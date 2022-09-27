@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using YuukiPS_Launcher.patch;
 
-namespace YuukiPS_Launcher.patch
+namespace YuukiPS_Launcher.Game.Genshin.Patch
 {
     public static class Metadata
     {

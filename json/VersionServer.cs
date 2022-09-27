@@ -1,4 +1,4 @@
-﻿namespace YuukiPS_Launcher.json
+﻿namespace YuukiPS_Launcher.Json
 {
     public class VersionServer
     {

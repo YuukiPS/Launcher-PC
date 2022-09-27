@@ -2,7 +2,7 @@
 using System.Management;
 using System.Security.Cryptography;
 
-namespace YuukiPS_Launcher
+namespace YuukiPS_Launcher.Yuuki
 {
     public static class Tool
     {

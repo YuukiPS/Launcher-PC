@@ -1,5 +1,6 @@
 ﻿using Downloader;
 using System.ComponentModel;
+using YuukiPS_Launcher.Yuuki;
 
 namespace YuukiPS_Launcher
 {

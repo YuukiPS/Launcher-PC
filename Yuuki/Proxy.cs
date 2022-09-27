@@ -4,9 +4,9 @@ using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
 
-namespace YuukiPS_Launcher
+namespace YuukiPS_Launcher.Yuuki
 {
-    public class ProxyController
+    public class Proxy
     {
         public ProxyServer proxyServer;
         private ExplicitProxyEndPoint explicitEndPoint;
@@ -15,15 +15,15 @@ namespace YuukiPS_Launcher
         private string ps;
         private bool usehttps;
 
-        public ProxyController(int port, string host, bool usehttps)
+        public Proxy(int port, string host, bool usehttps)
         {
             this.port = port;
-            this.ps = host;
+            ps = host;
             this.usehttps = usehttps;
         }
 
         [Obsolete]
-        public Boolean Start()
+        public bool Start()
         {
             proxyServer = new ProxyServer();
 

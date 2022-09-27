@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
-using YuukiPS_Launcher.json;
+using System.Reflection;
+using YuukiPS_Launcher.Json;
+using YuukiPS_Launcher.Yuuki;
 
 namespace YuukiPS_Launcher
 {
@@ -11,7 +13,7 @@ namespace YuukiPS_Launcher
         Config configdata = new Config();
 
         // Main Function
-        private ProxyController? proxy;
+        private Proxy? proxy;
         private Process? progress;
 
         // Server List
@@ -37,6 +39,9 @@ namespace YuukiPS_Launcher
 
         // Extra
         Extra.Discord discord = new Extra.Discord();
+
+        // Game
+        public Game.Genshin.Settings settings_genshin;
 
         public void LoadConfig()
         {
@@ -206,6 +211,15 @@ namespace YuukiPS_Launcher
                 // jika game versi tidak di dukung atau tidak ada file
                 Console.WriteLine("No game files found!!!");
                 return false;
+            }
+
+            settings_genshin = new(GameChannel);
+            if (settings_genshin != null)
+            {
+                Console.WriteLine("Game Text Language: " + settings_genshin.GetGameLanguage());
+                Console.WriteLine("Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
+                // TODO: need selectedServerName, inputData > scriptVersion
+                //Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
             }
 
             // Check MD5 Game
@@ -414,11 +428,11 @@ namespace YuukiPS_Launcher
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualUA = patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.UserAssembly.key2);
+                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.UserAssembly.key2);
                         }
                         else if (ch == 2)
                         {
-                            ManualUA = patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.UserAssembly.key2);
+                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.UserAssembly.key2);
                         }
                         if (!String.IsNullOrEmpty(ManualUA))
                         {
@@ -714,11 +728,11 @@ namespace YuukiPS_Launcher
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.MetaData.key2);
+                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.MetaData.key2);
                         }
                         else if (ch == 2)
                         {
-                            ManualMetadata = patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.MetaData.key2);
+                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.MetaData.key2);
                         }
                         if (!String.IsNullOrEmpty(ManualMetadata))
                         {
@@ -901,7 +915,7 @@ namespace YuukiPS_Launcher
         public void CheckUpdate()
         {
             Console.WriteLine("Cek update...");
-            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
             string ver = "";
             if (version != null)
             {
@@ -1146,7 +1160,7 @@ namespace YuukiPS_Launcher
                 {
                     if (isProxyNeed)
                     {
-                        proxy = new ProxyController(set_proxy_port, set_server_host, set_server_https);
+                        proxy = new Proxy(set_proxy_port, set_server_host, set_server_https);
                         if (!proxy.Start())
                         {
                             MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
