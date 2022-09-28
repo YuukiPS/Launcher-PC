@@ -6,11 +6,11 @@ namespace YuukiPS_Launcher
 {
     public partial class Download : Form
     {
-        private string set_download;
-        private string set_folder;
+        private string set_download = "";
+        private string set_folder = "";
         private DownloadService dl;
 
-        public Download(string url_download, string folder_download)
+        public Download(string url_download = "", string folder_download = "")
         {
             set_download = url_download;
             set_folder = folder_download;
@@ -114,7 +114,7 @@ namespace YuukiPS_Launcher
 
         private void Dl_DownloadStarted(object? sender, DownloadStartedEventArgs e)
         {
-            Console.WriteLine("Start Download: " + e.FileName);
+            Console.WriteLine("Start Download: " + set_download);
         }
 
         private void btCancel_Click(object sender, EventArgs e)

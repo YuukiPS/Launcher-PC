@@ -1193,7 +1193,7 @@ namespace YuukiPS_Launcher
 
                 var Update_AkebiGC = false;
 
-                var cekAkebi = API.GetAkebi(GameChannel);
+                var cekAkebi = API.GetAkebi(GameChannel, VersionGame);
                 if (string.IsNullOrEmpty(cekAkebi))
                 {
                     MessageBox.Show("Can't check latest Akebi");

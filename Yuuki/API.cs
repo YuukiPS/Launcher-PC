@@ -12,7 +12,7 @@ namespace YuukiPS_Launcher.Yuuki
         public static string API_DL_OW = "https://drive.yuuki.me/";
         public static string API_DL_WB = "https://ps.yuuki.me/api/";
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
-        public static string API_GITHUB_Akebi = "https://api.github.com/repos/Akebi-Group/Akebi-GC/";
+        public static string API_GITHUB_Akebi = "https://api.github.com/repos/Taiga74164/Akebi-GC/";
 
         public static GS GS_DL(string dl = "os")
         {
@@ -180,17 +180,19 @@ namespace YuukiPS_Launcher.Yuuki
             return null;
         }
 
-        public static string? GetAkebi(int ch = 1)
+        public static string? GetAkebi(int ch = 1, string ver_set = "3.1")
         {
             var client = new RestClient(API_GITHUB_Akebi);
-            var request = new RestRequest("actions/artifacts");
+            var request = new RestRequest("releases");
             var response = client.Execute(request);
 
-            var whos = "master";
+            var whos = "global";
             if (ch == 2)
             {
-                whos = "chinese";
+                whos = "china";
             }
+
+            ver_set = ver_set.Replace(".0", "");
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -198,16 +200,26 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonConvert.DeserializeObject<Nightly>(response.Content);
-                        if (tes != null)
+                        var GetData = JsonConvert.DeserializeObject<List<Update>>(response.Content);
+                        if (GetData != null)
                         {
-                            foreach (var file in tes.artifacts)
+                            // Get List Releases
+                            foreach (var GetVersion in GetData)
                             {
-                                if (file.workflow_run != null)
+                                if (GetVersion.name.Contains(ver_set))
                                 {
-                                    if (file.workflow_run.head_branch == whos)
+                                    var version = GetVersion.tag_name + "_" + whos + "_" + ver_set;
+                                    var aseet = GetVersion.assets;
+                                    if (aseet != null)
                                     {
-                                        return file.workflow_run.head_sha + "|https://nightly.link/Akebi-Group/Akebi-GC/actions/runs/" + file.workflow_run.id + "/" + file.name + ".zip";
+                                        // Get List Asset
+                                        foreach (var file in aseet)
+                                        {
+                                            if (file.name.Contains(whos))
+                                            {
+                                                return version + "|" + file.browser_download_url;
+                                            }
+                                        }
                                     }
                                 }
                             }
