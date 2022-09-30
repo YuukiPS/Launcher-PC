@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
             "Yuuki",
             "tes.yuuki.me",
             "N/A",
@@ -63,8 +63,12 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.TabConfig = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.Set_UA_Folder = new System.Windows.Forms.TextBox();
+            this.Set_Metadata_Folder = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.checkModeOnline = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.Set_LA_GameFile = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.Set_LA_Select = new System.Windows.Forms.Button();
@@ -77,14 +81,22 @@
             this.Set_LA_Save = new System.Windows.Forms.Button();
             this.Set_LA_GameFolder = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.btSetInputMetadata = new System.Windows.Forms.Button();
-            this.Set_Metadata_Folder = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.tabPage7 = new System.Windows.Forms.TabPage();
-            this.Set_UA_Folder = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.DEV_MA_Set_Key2_Patch = new System.Windows.Forms.TextBox();
+            this.DEV_MA_Set_Key2_NoPatch = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.DEV_MA_Set_Key1_Patch = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.DEV_MA_Set_Key1_NoPatch = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.DEV_MA_bt_Selectfile = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.DEV_MA_get_file = new System.Windows.Forms.TextBox();
+            this.DEV_MA_bt_Patch = new System.Windows.Forms.Button();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
             this.Set_Version = new System.Windows.Forms.Label();
             this.linkDiscord = new System.Windows.Forms.LinkLabel();
             this.linkGithub = new System.Windows.Forms.LinkLabel();
@@ -101,8 +113,9 @@
             this.TabConfig.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tabPage8.SuspendLayout();
+            this.tabControl1.SuspendLayout();
             this.tabPage6.SuspendLayout();
-            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // btStart
@@ -279,7 +292,7 @@
             this.ServerList.FullRowSelect = true;
             this.ServerList.GridLines = true;
             this.ServerList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem2});
             this.ServerList.Location = new System.Drawing.Point(243, 36);
             this.ServerList.MultiSelect = false;
             this.ServerList.Name = "ServerList";
@@ -376,8 +389,6 @@
             // TabConfig
             // 
             this.TabConfig.Controls.Add(this.tabPage5);
-            this.TabConfig.Controls.Add(this.tabPage6);
-            this.TabConfig.Controls.Add(this.tabPage7);
             this.TabConfig.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TabConfig.Location = new System.Drawing.Point(0, 0);
             this.TabConfig.Name = "TabConfig";
@@ -387,8 +398,12 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.Set_UA_Folder);
+            this.tabPage5.Controls.Add(this.Set_Metadata_Folder);
+            this.tabPage5.Controls.Add(this.label6);
             this.tabPage5.Controls.Add(this.label8);
             this.tabPage5.Controls.Add(this.checkModeOnline);
+            this.tabPage5.Controls.Add(this.label4);
             this.tabPage5.Controls.Add(this.Set_LA_GameFile);
             this.tabPage5.Controls.Add(this.label7);
             this.tabPage5.Controls.Add(this.Set_LA_Select);
@@ -404,6 +419,32 @@
             this.tabPage5.Text = "Launcher";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // Set_UA_Folder
+            // 
+            this.Set_UA_Folder.Location = new System.Drawing.Point(418, 144);
+            this.Set_UA_Folder.Name = "Set_UA_Folder";
+            this.Set_UA_Folder.ReadOnly = true;
+            this.Set_UA_Folder.Size = new System.Drawing.Size(219, 23);
+            this.Set_UA_Folder.TabIndex = 1;
+            // 
+            // Set_Metadata_Folder
+            // 
+            this.Set_Metadata_Folder.Location = new System.Drawing.Point(233, 144);
+            this.Set_Metadata_Folder.Name = "Set_Metadata_Folder";
+            this.Set_Metadata_Folder.ReadOnly = true;
+            this.Set_Metadata_Folder.Size = new System.Drawing.Size(179, 23);
+            this.Set_Metadata_Folder.TabIndex = 4;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label6.Location = new System.Drawing.Point(418, 117);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(160, 21);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "UserAssembly Folder:";
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -416,12 +457,22 @@
             // checkModeOnline
             // 
             this.checkModeOnline.AutoSize = true;
-            this.checkModeOnline.Location = new System.Drawing.Point(233, 124);
+            this.checkModeOnline.Location = new System.Drawing.Point(12, 189);
             this.checkModeOnline.Name = "checkModeOnline";
             this.checkModeOnline.Size = new System.Drawing.Size(95, 19);
             this.checkModeOnline.TabIndex = 12;
             this.checkModeOnline.Text = "Mode Online";
             this.checkModeOnline.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label4.Location = new System.Drawing.Point(233, 117);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(126, 21);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Metadata Folder:";
             // 
             // Set_LA_GameFile
             // 
@@ -435,7 +486,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(229, 66);
+            this.label7.Location = new System.Drawing.Point(229, 67);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(86, 21);
             this.label7.TabIndex = 10;
@@ -543,83 +594,167 @@
             this.label5.TabIndex = 0;
             this.label5.Text = "Game Folder:";
             // 
-            // tabPage6
-            // 
-            this.tabPage6.Controls.Add(this.btSetInputMetadata);
-            this.tabPage6.Controls.Add(this.Set_Metadata_Folder);
-            this.tabPage6.Controls.Add(this.label4);
-            this.tabPage6.Location = new System.Drawing.Point(4, 24);
-            this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(644, 253);
-            this.tabPage6.TabIndex = 1;
-            this.tabPage6.Text = "Metadata";
-            this.tabPage6.UseVisualStyleBackColor = true;
-            // 
-            // btSetInputMetadata
-            // 
-            this.btSetInputMetadata.Location = new System.Drawing.Point(126, 4);
-            this.btSetInputMetadata.Name = "btSetInputMetadata";
-            this.btSetInputMetadata.Size = new System.Drawing.Size(75, 23);
-            this.btSetInputMetadata.TabIndex = 5;
-            this.btSetInputMetadata.Text = "Choose";
-            this.btSetInputMetadata.UseVisualStyleBackColor = true;
-            // 
-            // Set_Metadata_Folder
-            // 
-            this.Set_Metadata_Folder.Location = new System.Drawing.Point(8, 31);
-            this.Set_Metadata_Folder.Name = "Set_Metadata_Folder";
-            this.Set_Metadata_Folder.ReadOnly = true;
-            this.Set_Metadata_Folder.Size = new System.Drawing.Size(630, 23);
-            this.Set_Metadata_Folder.TabIndex = 4;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label4.Location = new System.Drawing.Point(3, 3);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(126, 21);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Metadata Folder:";
-            // 
-            // tabPage7
-            // 
-            this.tabPage7.Controls.Add(this.Set_UA_Folder);
-            this.tabPage7.Controls.Add(this.label6);
-            this.tabPage7.Location = new System.Drawing.Point(4, 24);
-            this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(644, 253);
-            this.tabPage7.TabIndex = 2;
-            this.tabPage7.Text = "UserAssembly";
-            this.tabPage7.UseVisualStyleBackColor = true;
-            // 
-            // Set_UA_Folder
-            // 
-            this.Set_UA_Folder.Location = new System.Drawing.Point(4, 24);
-            this.Set_UA_Folder.Name = "Set_UA_Folder";
-            this.Set_UA_Folder.ReadOnly = true;
-            this.Set_UA_Folder.Size = new System.Drawing.Size(636, 23);
-            this.Set_UA_Folder.TabIndex = 1;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label6.Location = new System.Drawing.Point(4, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(160, 21);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "UserAssembly Folder:";
-            // 
             // tabPage8
             // 
+            this.tabPage8.Controls.Add(this.tabControl1);
             this.tabPage8.Location = new System.Drawing.Point(4, 24);
             this.tabPage8.Name = "tabPage8";
             this.tabPage8.Size = new System.Drawing.Size(652, 281);
             this.tabPage8.TabIndex = 4;
-            this.tabPage8.Text = "Account";
+            this.tabPage8.Text = "Development Tool";
             this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(652, 281);
+            this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.Controls.Add(this.DEV_MA_Set_Key2_Patch);
+            this.tabPage6.Controls.Add(this.DEV_MA_Set_Key2_NoPatch);
+            this.tabPage6.Controls.Add(this.label13);
+            this.tabPage6.Controls.Add(this.label12);
+            this.tabPage6.Controls.Add(this.DEV_MA_Set_Key1_Patch);
+            this.tabPage6.Controls.Add(this.label11);
+            this.tabPage6.Controls.Add(this.DEV_MA_Set_Key1_NoPatch);
+            this.tabPage6.Controls.Add(this.label10);
+            this.tabPage6.Controls.Add(this.DEV_MA_bt_Selectfile);
+            this.tabPage6.Controls.Add(this.label9);
+            this.tabPage6.Controls.Add(this.DEV_MA_get_file);
+            this.tabPage6.Controls.Add(this.DEV_MA_bt_Patch);
+            this.tabPage6.Location = new System.Drawing.Point(4, 24);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(644, 253);
+            this.tabPage6.TabIndex = 0;
+            this.tabPage6.Text = "Metadata";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // DEV_MA_Set_Key2_Patch
+            // 
+            this.DEV_MA_Set_Key2_Patch.Location = new System.Drawing.Point(329, 160);
+            this.DEV_MA_Set_Key2_Patch.Multiline = true;
+            this.DEV_MA_Set_Key2_Patch.Name = "DEV_MA_Set_Key2_Patch";
+            this.DEV_MA_Set_Key2_Patch.Size = new System.Drawing.Size(300, 77);
+            this.DEV_MA_Set_Key2_Patch.TabIndex = 11;
+            // 
+            // DEV_MA_Set_Key2_NoPatch
+            // 
+            this.DEV_MA_Set_Key2_NoPatch.Location = new System.Drawing.Point(17, 160);
+            this.DEV_MA_Set_Key2_NoPatch.Multiline = true;
+            this.DEV_MA_Set_Key2_NoPatch.Name = "DEV_MA_Set_Key2_NoPatch";
+            this.DEV_MA_Set_Key2_NoPatch.Size = new System.Drawing.Size(306, 77);
+            this.DEV_MA_Set_Key2_NoPatch.TabIndex = 10;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label13.Location = new System.Drawing.Point(329, 136);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(95, 21);
+            this.label13.TabIndex = 9;
+            this.label13.Text = "Key2 (Patch)";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label12.Location = new System.Drawing.Point(17, 136);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(114, 21);
+            this.label12.TabIndex = 8;
+            this.label12.Text = "Key2 (Original)";
+            // 
+            // DEV_MA_Set_Key1_Patch
+            // 
+            this.DEV_MA_Set_Key1_Patch.Location = new System.Drawing.Point(329, 56);
+            this.DEV_MA_Set_Key1_Patch.Multiline = true;
+            this.DEV_MA_Set_Key1_Patch.Name = "DEV_MA_Set_Key1_Patch";
+            this.DEV_MA_Set_Key1_Patch.Size = new System.Drawing.Size(300, 77);
+            this.DEV_MA_Set_Key1_Patch.TabIndex = 7;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label11.Location = new System.Drawing.Point(329, 32);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(95, 21);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "Key1 (Patch)";
+            // 
+            // DEV_MA_Set_Key1_NoPatch
+            // 
+            this.DEV_MA_Set_Key1_NoPatch.Location = new System.Drawing.Point(17, 56);
+            this.DEV_MA_Set_Key1_NoPatch.Multiline = true;
+            this.DEV_MA_Set_Key1_NoPatch.Name = "DEV_MA_Set_Key1_NoPatch";
+            this.DEV_MA_Set_Key1_NoPatch.Size = new System.Drawing.Size(306, 77);
+            this.DEV_MA_Set_Key1_NoPatch.TabIndex = 5;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label10.Location = new System.Drawing.Point(17, 32);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(114, 21);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Key1 (Original)";
+            // 
+            // DEV_MA_bt_Selectfile
+            // 
+            this.DEV_MA_bt_Selectfile.Location = new System.Drawing.Point(503, 7);
+            this.DEV_MA_bt_Selectfile.Name = "DEV_MA_bt_Selectfile";
+            this.DEV_MA_bt_Selectfile.Size = new System.Drawing.Size(75, 23);
+            this.DEV_MA_bt_Selectfile.TabIndex = 3;
+            this.DEV_MA_bt_Selectfile.Text = "Select File";
+            this.DEV_MA_bt_Selectfile.UseVisualStyleBackColor = true;
+            this.DEV_MA_bt_Selectfile.Click += new System.EventHandler(this.DEV_UA_bt_Selectfile_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label9.Location = new System.Drawing.Point(6, 6);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(37, 21);
+            this.label9.TabIndex = 2;
+            this.label9.Text = "File:";
+            // 
+            // DEV_MA_get_file
+            // 
+            this.DEV_MA_get_file.Location = new System.Drawing.Point(40, 6);
+            this.DEV_MA_get_file.Name = "DEV_MA_get_file";
+            this.DEV_MA_get_file.Size = new System.Drawing.Size(457, 23);
+            this.DEV_MA_get_file.TabIndex = 1;
+            // 
+            // DEV_MA_bt_Patch
+            // 
+            this.DEV_MA_bt_Patch.Location = new System.Drawing.Point(579, 7);
+            this.DEV_MA_bt_Patch.Name = "DEV_MA_bt_Patch";
+            this.DEV_MA_bt_Patch.Size = new System.Drawing.Size(59, 23);
+            this.DEV_MA_bt_Patch.TabIndex = 0;
+            this.DEV_MA_bt_Patch.Text = "Patch";
+            this.DEV_MA_bt_Patch.UseVisualStyleBackColor = true;
+            this.DEV_MA_bt_Patch.Click += new System.EventHandler(this.DEV_UA_bt_Patch_Click);
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.Location = new System.Drawing.Point(4, 24);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(644, 253);
+            this.tabPage7.TabIndex = 1;
+            this.tabPage7.Text = "UserAssembly";
+            this.tabPage7.UseVisualStyleBackColor = true;
             // 
             // Set_Version
             // 
@@ -712,10 +847,10 @@
             this.tabPage5.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.tabPage8.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
-            this.tabPage7.ResumeLayout(false);
-            this.tabPage7.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -751,11 +886,8 @@
         private LinkLabel linkWeb;
         private TabControl TabConfig;
         private TabPage tabPage5;
-        private TabPage tabPage6;
-        private Button btSetInputMetadata;
         private TextBox Set_Metadata_Folder;
         private Label label4;
-        private TabPage tabPage7;
         private TabPage tabPage8;
         private ColumnHeader ServerList_GetPing;
         private System.Windows.Forms.Timer CekUpdateTT;
@@ -780,5 +912,20 @@
         private System.Windows.Forms.Timer CheckProxyRun;
         private CheckBox checkModeOnline;
         private Label label8;
+        private TabControl tabControl1;
+        private TabPage tabPage6;
+        private Button DEV_MA_bt_Selectfile;
+        private Label label9;
+        private TextBox DEV_MA_get_file;
+        private Button DEV_MA_bt_Patch;
+        private TabPage tabPage7;
+        private Label label10;
+        private TextBox DEV_MA_Set_Key1_NoPatch;
+        private TextBox DEV_MA_Set_Key1_Patch;
+        private Label label11;
+        private TextBox DEV_MA_Set_Key2_Patch;
+        private TextBox DEV_MA_Set_Key2_NoPatch;
+        private Label label13;
+        private Label label12;
     }
 }

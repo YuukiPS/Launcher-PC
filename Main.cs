@@ -213,14 +213,22 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
-            settings_genshin = new(GameChannel);
-            if (settings_genshin != null)
+            try
             {
-                Console.WriteLine("Game Text Language: " + settings_genshin.GetGameLanguage());
-                Console.WriteLine("Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
-                // TODO: need selectedServerName, inputData > scriptVersion
-                //Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
+                settings_genshin = new(GameChannel);
+                if (settings_genshin != null)
+                {
+                    Console.WriteLine("Game Text Language: " + settings_genshin.GetGameLanguage());
+                    Console.WriteLine("Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
+                    // TODO: need selectedServerName, inputData > scriptVersion
+                    //Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error getting game settings: " + ex.ToString());
+            }
+
 
             // Check MD5 Game
             string Game_LOC_Original_MD5 = Tool.CalculateMD5(PathfileGame);
@@ -1512,6 +1520,47 @@ namespace YuukiPS_Launcher
             catch (Exception ex)
             {
                 Console.WriteLine("Does not support proxy check support: " + ex.ToString());
+            }
+        }
+
+        private void DEV_UA_bt_Patch_Click(object sender, EventArgs e)
+        {
+            // Check Folder Game
+            var DEV_metadata_file = DEV_MA_get_file.Text;
+            if (String.IsNullOrEmpty(DEV_metadata_file))
+            {
+                MessageBox.Show("No metadata found (1)");
+                return;
+            }
+            if (!File.Exists(DEV_metadata_file))
+            {
+                MessageBox.Show("No file metadata found (2)");
+                return;
+            }
+            var DEV_MA_KEY1_NOPATCH = DEV_MA_Set_Key1_NoPatch.Text;
+            var DEV_MA_KEY1_PATCH = DEV_MA_Set_Key1_Patch.Text;
+            var DEV_MA_KEY2_NOPATCH = DEV_MA_Set_Key2_NoPatch.Text;
+            var DEV_MA_KEY2_PATCH = DEV_MA_Set_Key2_Patch.Text;
+
+            var IsPatchOK = Game.Genshin.Patch.Metadata.Do(DEV_metadata_file, DEV_metadata_file, DEV_MA_KEY1_NOPATCH, DEV_MA_KEY1_PATCH, DEV_MA_KEY2_NOPATCH, DEV_MA_KEY2_PATCH);
+            if (!string.IsNullOrEmpty(IsPatchOK))
+            {
+                MessageBox.Show(IsPatchOK);
+            }
+            else
+            {
+                MessageBox.Show("Patching is successful");
+            }
+
+        }
+
+        private void DEV_UA_bt_Selectfile_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Select file metadata...";
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                DEV_MA_get_file.Text = dialog.SelectedPath;
             }
         }
     }
