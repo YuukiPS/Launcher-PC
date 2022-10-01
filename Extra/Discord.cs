@@ -14,7 +14,7 @@ namespace YuukiPS_Launcher.Extra
             if (client == null)
             {
                 client = new DiscordRpcClient(appid);
-                client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
+                client.Logger = new ConsoleLogger() { Level = LogLevel.None };
                 client.RegisterUriScheme();
 
                 //Subscribe to events

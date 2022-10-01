@@ -102,6 +102,13 @@ namespace YuukiPS_Launcher
                 estimateTime = 0;
                 timeLeftUnit = "unknown";
             }
+            else
+            {
+                DLBar.Invoke((Action)delegate
+                {
+                    DLBar.Value = (int)e.ProgressPercentage;
+                });
+            }
 
             string bytesReceived = Tool.CalcMemoryMensurableUnit(e.ReceivedBytesSize);
             string totalBytesToReceive = Tool.CalcMemoryMensurableUnit(e.TotalBytesToReceive);

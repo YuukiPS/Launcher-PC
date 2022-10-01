@@ -22,10 +22,10 @@ namespace YuukiPS_Launcher
 
         // Folder
         public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
+        public static string DataConfig = Path.Combine(CurrentlyPath, "data");
+        public static string Modfolder = Path.Combine(CurrentlyPath, "mod");
 
-        private static string DataConfig = Path.Combine(CurrentlyPath, "data");
-        private static string Modfolder = Path.Combine(CurrentlyPath, "mod");
-
+        // File Config
         public string ConfigPath = Path.Combine(DataConfig, "config.json");
 
         // Stats default
@@ -972,7 +972,7 @@ namespace YuukiPS_Launcher
 
                                         //kill all
                                         w.WriteLine("Taskkill /IM YuukiPS.exe /F");
-                                        w.WriteLine("Taskkill /IM YuukiPS.vshost.exe /F");
+                                        //w.WriteLine("Taskkill /IM YuukiPS.vshost.exe /F");
 
                                         // Unzip file
                                         w.WriteLine("echo unzip file...");
@@ -1348,7 +1348,11 @@ namespace YuukiPS_Launcher
                         Console.WriteLine(tes);
                     }
                     DoneCheck = true;
-                    discord.UpdateStatus("Not playing", "Stop", "sleep");
+
+                    if (Config_Discord_Enable.Checked)
+                    {
+                        discord.UpdateStatus("Not playing", "Stop", "sleep");
+                    }
                 }
             }
             else
@@ -1357,7 +1361,12 @@ namespace YuukiPS_Launcher
                 IsGameRun = true;
                 btStart.Text = "Stop";
                 DoneCheck = false;
-                discord.UpdateStatus($"Server: {HostName} Version: {VersionGame}", "In Game", "on", 1);
+
+                if (Config_Discord_Enable.Checked)
+                {
+                    discord.UpdateStatus($"Server: {HostName} Version: 3.1.51", "In Game", "on", 1);
+                }
+
             }
         }
 
@@ -1416,11 +1425,6 @@ namespace YuukiPS_Launcher
                     Console.WriteLine(e);
                 }
             }
-        }
-
-        private void btStartServer_Click(object sender, EventArgs e)
-        {
-            Console.WriteLine("Still PR :)");
         }
 
         private void btReloadServer_Click(object sender, EventArgs e)
@@ -1562,6 +1566,50 @@ namespace YuukiPS_Launcher
             {
                 DEV_MA_get_file.Text = dialog.SelectedPath;
             }
+        }
+
+        private void Server_Config_OpenFolder_Click(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Server.Serverfolder,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+        }
+
+        private void Server_Start_Click(object sender, EventArgs e)
+        {
+
+            //Console.Write(Server.GetJava());
+            //var set_AkebiGC = Path.Combine(Modfolder, "AkebiGC");
+            //Directory.CreateDirectory(set_AkebiGC);
+            Console.WriteLine("Still PR :)");
+        }
+
+        private void Server_DL_JAVA_Click(object sender, EventArgs e)
+        {
+            var dl_java = Server.DLJava();
+            if (!string.IsNullOrEmpty(dl_java))
+            {
+                MessageBox.Show(dl_java);
+            }
+            else
+            {
+                MessageBox.Show("Download is successful");
+            }
+        }
+
+        private void Server_DL_DB_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+        private void Server_DL_GC_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

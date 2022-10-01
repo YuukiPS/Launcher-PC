@@ -11,9 +11,9 @@ namespace YuukiPS_Launcher.Yuuki
         public static string API_DL_CF = "https://file.yuuki.me/";
         public static string API_DL_OW = "https://drive.yuuki.me/";
         public static string API_DL_WB = "https://ps.yuuki.me/api/";
+
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
         public static string API_GITHUB_Akebi = "https://api.github.com/repos/Taiga74164/Akebi-GC/";
-
         public static GS GS_DL(string dl = "os")
         {
             var client = new RestClient(API_DL_WB);

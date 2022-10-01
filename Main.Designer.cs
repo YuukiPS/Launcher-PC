@@ -58,7 +58,17 @@
             this.btReloadServer = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.btStartServer = new System.Windows.Forms.Button();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.Server_DL_RES = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.Server_DL_GC = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.Server_DL_DB = new System.Windows.Forms.Button();
+            this.Server_DL_JAVA = new System.Windows.Forms.Button();
+            this.Server_Config_OpenFolder = new System.Windows.Forms.Button();
+            this.Server_Start = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.TabConfig = new System.Windows.Forms.TabControl();
@@ -81,6 +91,8 @@
             this.Set_LA_Save = new System.Windows.Forms.Button();
             this.Set_LA_GameFolder = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.Config_Discord_Enable = new System.Windows.Forms.CheckBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
@@ -104,18 +116,37 @@
             this.CekUpdateTT = new System.Windows.Forms.Timer(this.components);
             this.CheckGameRun = new System.Windows.Forms.Timer(this.components);
             this.CheckProxyRun = new System.Windows.Forms.Timer(this.components);
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.tabPage11 = new System.Windows.Forms.TabPage();
+            this.label14 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.TabConfig.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tabPage9.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage6.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage10.SuspendLayout();
+            this.tabPage11.SuspendLayout();
             this.SuspendLayout();
             // 
             // btStart
@@ -347,7 +378,7 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.btStartServer);
+            this.tabPage2.Controls.Add(this.tabControl2);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -356,15 +387,130 @@
             this.tabPage2.Text = "Server";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // btStartServer
+            // groupBox6
             // 
-            this.btStartServer.Location = new System.Drawing.Point(6, 6);
-            this.btStartServer.Name = "btStartServer";
-            this.btStartServer.Size = new System.Drawing.Size(75, 23);
-            this.btStartServer.TabIndex = 0;
-            this.btStartServer.Text = "Start";
-            this.btStartServer.UseVisualStyleBackColor = true;
-            this.btStartServer.Click += new System.EventHandler(this.btStartServer_Click);
+            this.groupBox6.Controls.Add(this.Server_DL_RES);
+            this.groupBox6.Controls.Add(this.comboBox2);
+            this.groupBox6.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupBox6.Location = new System.Drawing.Point(367, 6);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(200, 100);
+            this.groupBox6.TabIndex = 7;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Version Resources:";
+            // 
+            // Server_DL_RES
+            // 
+            this.Server_DL_RES.Location = new System.Drawing.Point(6, 56);
+            this.Server_DL_RES.Name = "Server_DL_RES";
+            this.Server_DL_RES.Size = new System.Drawing.Size(188, 38);
+            this.Server_DL_RES.TabIndex = 8;
+            this.Server_DL_RES.Text = "Download";
+            this.Server_DL_RES.UseVisualStyleBackColor = true;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Yuuki Gitlab 3.1",
+            "Yuuki Gitlab 3.0",
+            "Yuuki Gitlab 2.8",
+            "Yuuki Gitlab 2.7",
+            "Yuuki Gitlab 2.6"});
+            this.comboBox2.Location = new System.Drawing.Point(6, 23);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(188, 33);
+            this.comboBox2.TabIndex = 3;
+            this.comboBox2.Text = "Yuuki Gitlab 3.1";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.Server_DL_GC);
+            this.groupBox5.Controls.Add(this.comboBox1);
+            this.groupBox5.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupBox5.Location = new System.Drawing.Point(167, 6);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(200, 100);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Version Grasscutter:";
+            // 
+            // Server_DL_GC
+            // 
+            this.Server_DL_GC.Location = new System.Drawing.Point(6, 57);
+            this.Server_DL_GC.Name = "Server_DL_GC";
+            this.Server_DL_GC.Size = new System.Drawing.Size(188, 38);
+            this.Server_DL_GC.TabIndex = 3;
+            this.Server_DL_GC.Text = "Download";
+            this.Server_DL_GC.UseVisualStyleBackColor = true;
+            this.Server_DL_GC.Click += new System.EventHandler(this.Server_DL_GC_Click);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "DockerGS 2.6",
+            "DockerGS 2.7",
+            "DockerGS 2.8",
+            "DockerGS 3.0",
+            "DockerGS 3.1"});
+            this.comboBox1.Location = new System.Drawing.Point(6, 23);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(188, 33);
+            this.comboBox1.TabIndex = 2;
+            this.comboBox1.Text = "DockerGC 3.1";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.Server_DL_DB);
+            this.groupBox4.Controls.Add(this.Server_DL_JAVA);
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupBox4.Location = new System.Drawing.Point(6, 6);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(155, 100);
+            this.groupBox4.TabIndex = 5;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Download Package";
+            // 
+            // Server_DL_DB
+            // 
+            this.Server_DL_DB.Location = new System.Drawing.Point(6, 63);
+            this.Server_DL_DB.Name = "Server_DL_DB";
+            this.Server_DL_DB.Size = new System.Drawing.Size(143, 29);
+            this.Server_DL_DB.TabIndex = 1;
+            this.Server_DL_DB.Text = "MongoDB";
+            this.Server_DL_DB.UseVisualStyleBackColor = true;
+            this.Server_DL_DB.Click += new System.EventHandler(this.Server_DL_DB_Click);
+            // 
+            // Server_DL_JAVA
+            // 
+            this.Server_DL_JAVA.Location = new System.Drawing.Point(6, 28);
+            this.Server_DL_JAVA.Name = "Server_DL_JAVA";
+            this.Server_DL_JAVA.Size = new System.Drawing.Size(143, 29);
+            this.Server_DL_JAVA.TabIndex = 0;
+            this.Server_DL_JAVA.Text = "Java";
+            this.Server_DL_JAVA.UseVisualStyleBackColor = true;
+            this.Server_DL_JAVA.Click += new System.EventHandler(this.Server_DL_JAVA_Click);
+            // 
+            // Server_Config_OpenFolder
+            // 
+            this.Server_Config_OpenFolder.Location = new System.Drawing.Point(12, 218);
+            this.Server_Config_OpenFolder.Name = "Server_Config_OpenFolder";
+            this.Server_Config_OpenFolder.Size = new System.Drawing.Size(89, 23);
+            this.Server_Config_OpenFolder.TabIndex = 1;
+            this.Server_Config_OpenFolder.Text = "Folder Server";
+            this.Server_Config_OpenFolder.UseVisualStyleBackColor = true;
+            this.Server_Config_OpenFolder.Click += new System.EventHandler(this.Server_Config_OpenFolder_Click);
+            // 
+            // Server_Start
+            // 
+            this.Server_Start.Location = new System.Drawing.Point(107, 218);
+            this.Server_Start.Name = "Server_Start";
+            this.Server_Start.Size = new System.Drawing.Size(93, 23);
+            this.Server_Start.TabIndex = 0;
+            this.Server_Start.Text = "Start";
+            this.Server_Start.UseVisualStyleBackColor = true;
+            this.Server_Start.Click += new System.EventHandler(this.Server_Start_Click);
             // 
             // tabPage3
             // 
@@ -389,6 +535,7 @@
             // TabConfig
             // 
             this.TabConfig.Controls.Add(this.tabPage5);
+            this.TabConfig.Controls.Add(this.tabPage9);
             this.TabConfig.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TabConfig.Location = new System.Drawing.Point(0, 0);
             this.TabConfig.Name = "TabConfig";
@@ -593,6 +740,26 @@
             this.label5.Size = new System.Drawing.Size(102, 21);
             this.label5.TabIndex = 0;
             this.label5.Text = "Game Folder:";
+            // 
+            // tabPage9
+            // 
+            this.tabPage9.Controls.Add(this.Config_Discord_Enable);
+            this.tabPage9.Location = new System.Drawing.Point(4, 24);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Size = new System.Drawing.Size(644, 253);
+            this.tabPage9.TabIndex = 1;
+            this.tabPage9.Text = "Discord";
+            this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // Config_Discord_Enable
+            // 
+            this.Config_Discord_Enable.AutoSize = true;
+            this.Config_Discord_Enable.Location = new System.Drawing.Point(14, 13);
+            this.Config_Discord_Enable.Name = "Config_Discord_Enable";
+            this.Config_Discord_Enable.Size = new System.Drawing.Size(142, 19);
+            this.Config_Discord_Enable.TabIndex = 0;
+            this.Config_Discord_Enable.Text = "Discord Rich Presence";
+            this.Config_Discord_Enable.UseVisualStyleBackColor = true;
             // 
             // tabPage8
             // 
@@ -817,6 +984,128 @@
             this.CheckProxyRun.Interval = 1000;
             this.CheckProxyRun.Tick += new System.EventHandler(this.CheckProxyRun_Tick);
             // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.tabPage10);
+            this.tabControl2.Controls.Add(this.tabPage11);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(3, 3);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(646, 275);
+            this.tabControl2.TabIndex = 8;
+            // 
+            // tabPage10
+            // 
+            this.tabPage10.Controls.Add(this.groupBox4);
+            this.tabPage10.Controls.Add(this.groupBox6);
+            this.tabPage10.Controls.Add(this.Server_Start);
+            this.tabPage10.Controls.Add(this.groupBox5);
+            this.tabPage10.Controls.Add(this.Server_Config_OpenFolder);
+            this.tabPage10.Location = new System.Drawing.Point(4, 24);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage10.Size = new System.Drawing.Size(638, 247);
+            this.tabPage10.TabIndex = 0;
+            this.tabPage10.Text = "Home";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // tabPage11
+            // 
+            this.tabPage11.Controls.Add(this.textBox4);
+            this.tabPage11.Controls.Add(this.label17);
+            this.tabPage11.Controls.Add(this.textBox3);
+            this.tabPage11.Controls.Add(this.label16);
+            this.tabPage11.Controls.Add(this.button1);
+            this.tabPage11.Controls.Add(this.textBox2);
+            this.tabPage11.Controls.Add(this.label15);
+            this.tabPage11.Controls.Add(this.textBox1);
+            this.tabPage11.Controls.Add(this.label14);
+            this.tabPage11.Location = new System.Drawing.Point(4, 24);
+            this.tabPage11.Name = "tabPage11";
+            this.tabPage11.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage11.Size = new System.Drawing.Size(638, 247);
+            this.tabPage11.TabIndex = 1;
+            this.tabPage11.Text = "Custom";
+            this.tabPage11.UseVisualStyleBackColor = true;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label14.Location = new System.Drawing.Point(3, 3);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(169, 25);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "Grasscutter Folder:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(6, 31);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(626, 23);
+            this.textBox1.TabIndex = 1;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label15.Location = new System.Drawing.Point(6, 57);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(258, 25);
+            this.label15.TabIndex = 2;
+            this.label15.Text = "Grasscutter Resources Folder:";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(6, 85);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(626, 23);
+            this.textBox2.TabIndex = 3;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(557, 221);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "Save";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label16.Location = new System.Drawing.Point(6, 111);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(157, 25);
+            this.label16.TabIndex = 5;
+            this.label16.Text = "Folder Java (BIN):";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(6, 139);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(626, 23);
+            this.textBox3.TabIndex = 6;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label17.Location = new System.Drawing.Point(6, 165);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(206, 25);
+            this.label17.TabIndex = 7;
+            this.label17.Text = "Folder MongoDB (BIN):";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(6, 192);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(626, 23);
+            this.textBox4.TabIndex = 8;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -841,16 +1130,25 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.TabConfig.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.tabPage9.ResumeLayout(false);
+            this.tabPage9.PerformLayout();
             this.tabPage8.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage10.ResumeLayout(false);
+            this.tabPage11.ResumeLayout(false);
+            this.tabPage11.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -867,7 +1165,7 @@
         private TabControl TabMain;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private Button btStartServer;
+        private Button Server_Start;
         private Label label3;
         private ColumnHeader ServerList_GetName;
         private ColumnHeader ServerList_GetHost;
@@ -927,5 +1225,29 @@
         private TextBox DEV_MA_Set_Key2_NoPatch;
         private Label label13;
         private Label label12;
+        private TabPage tabPage9;
+        private CheckBox Config_Discord_Enable;
+        private Button Server_Config_OpenFolder;
+        private ComboBox comboBox1;
+        private GroupBox groupBox4;
+        private Button Server_DL_JAVA;
+        private Button Server_DL_DB;
+        private GroupBox groupBox5;
+        private Button Server_DL_GC;
+        private GroupBox groupBox6;
+        private Button Server_DL_RES;
+        private ComboBox comboBox2;
+        private TabControl tabControl2;
+        private TabPage tabPage10;
+        private TabPage tabPage11;
+        private TextBox textBox4;
+        private Label label17;
+        private TextBox textBox3;
+        private Label label16;
+        private Button button1;
+        private TextBox textBox2;
+        private Label label15;
+        private TextBox textBox1;
+        private Label label14;
     }
 }
