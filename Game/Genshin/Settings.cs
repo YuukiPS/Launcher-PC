@@ -109,7 +109,9 @@ namespace YuukiPS_Launcher.Game.Genshin
             os_usa = 0,
             os_euro = 1,
             os_asia = 2,
-            os_cht = 3
+            os_cht = 3,
+            // BETA?
+            sg1 = 4
         }
 
         public class GeneralDataProp

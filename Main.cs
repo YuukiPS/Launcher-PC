@@ -43,6 +43,8 @@ namespace YuukiPS_Launcher
         // Game
         public Game.Genshin.Settings settings_genshin;
 
+        KeyGS key;
+
         public void LoadConfig()
         {
             // Create missing folder
@@ -82,6 +84,9 @@ namespace YuukiPS_Launcher
             {
                 Console.WriteLine("No Config file found...");
             }
+
+            // Get Key
+            Console.WriteLine(UpdateKey());
 
             // Check Game Version
             CheckVersionGame();
@@ -229,7 +234,6 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("Error getting game settings: " + ex.ToString());
             }
 
-
             // Check MD5 Game
             string Game_LOC_Original_MD5 = Tool.CalculateMD5(PathfileGame);
 
@@ -309,11 +313,9 @@ namespace YuukiPS_Launcher
                 return "No game folder found (2)";
             }
 
-            // Get last key
-            KeyGS last_key_api = API.GSKEY();
-            if (last_key_api == null)
+            if (key == null)
             {
-                return "Error Get Key";
+                return "Can't find key, try clicking 'Get Key' in config tab";
             }
 
             // Check version
@@ -322,10 +324,40 @@ namespace YuukiPS_Launcher
                 return "This Game Version is not compatible with this method patch";
             }
 
+            // API            
+            string MD5_UA_API_Original;
+            string MD5_UA_API_Patched;
+            string MD5_Metadata_API_Original;
+            string MD5_Metadata_API_Patched;
+            // Select CH
+            var cno = "Global";
+            if (ch == 1)
+            {
+                // Global
+                MD5_UA_API_Original = key.Original.UserAssembly.md5_os.ToUpper();
+                MD5_UA_API_Patched = key.Patched.UserAssembly.md5_os.ToUpper();
+                MD5_Metadata_API_Original = key.Original.MetaData.md5_os.ToUpper();
+                MD5_Metadata_API_Patched = key.Patched.MetaData.md5_os.ToUpper();
+            }
+            else if (ch == 2)
+            {
+                // Chinese
+                MD5_UA_API_Original = key.Original.UserAssembly.md5_cn.ToUpper();
+                MD5_UA_API_Patched = key.Patched.UserAssembly.md5_cn.ToUpper();
+                MD5_Metadata_API_Original = key.Original.MetaData.md5_cn.ToUpper();
+                MD5_Metadata_API_Patched = key.Patched.MetaData.md5_cn.ToUpper();
+                cno = "Chinese";
+            }
+            else
+            {
+                return "This Game Version is not compatible with Method Patch UserAssembly";
+            }
+            var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/" + cno + "/Patch/";
+
             if (metode == 2)
             {
-                // TODO: online method not yet available
-                online = false;
+                // debug
+                //online = false;
 
                 // Check Folder UA
                 var cst_folder_UA = Set_UA_Folder.Text;
@@ -349,31 +381,122 @@ namespace YuukiPS_Launcher
 
                 if (online)
                 {
-                    // API
-                    string MD5_UA_API_Original;
-                    string MD5_UA_API_Patched;
+                    // If original backup file is not found, start backup process
+                    if (!File.Exists(PathfileUA_Original))
+                    {
+                        // Check if MD5_UA_API_Original (original file from api) matches MD5_UA_LOC_Currently (file in current use)
+                        if (MD5_UA_API_Original == MD5_UA_LOC_Currently)
+                        {
+                            try
+                            {
+                                File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
+                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
 
-                    // Select CH
-                    var cno = "Global";
-                    if (ch == 1)
-                    {
-                        // Global
-                        MD5_UA_API_Original = last_key_api.Original.UserAssembly.md5_os.ToUpper();
-                        MD5_UA_API_Patched = last_key_api.Patched.UserAssembly.md5_os.ToUpper();
+                                Console.WriteLine("Backup UA Original");
+                            }
+                            catch (Exception ex)
+                            {
+                                return "Failed: Backup UA Original1: " + ex.ToString();
+                            }
+                        }
+                        else
+                        {
+                            // Download Original UA
+                            var DL3 = new Download(DL_Patch + "UserAssembly-original.dll", PathfileUA_Original);
+                            if (DL3.ShowDialog() != DialogResult.OK)
+                            {
+                                return "Original Backup failed because md5 doesn't match";
+                            }
+                            else
+                            {
+                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
+                            }
+                        }
                     }
-                    else if (ch == 2)
+
+                    // Jika file UA sekarang tidak ada gunakan UserAssembly-original.dat
+                    if (!File.Exists(PathfileUA_Currently))
                     {
-                        // Chinese
-                        MD5_UA_API_Original = last_key_api.Original.UserAssembly.md5_cn.ToUpper();
-                        MD5_UA_API_Patched = last_key_api.Patched.UserAssembly.md5_cn.ToUpper();
-                        cno = "Chinese";
+                        try
+                        {
+                            File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                            MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+
+                            Console.WriteLine("Get Backup Original");
+                        }
+                        catch (Exception exx)
+                        {
+                            return "Error Get Backup Original: " + exx.ToString();
+                        }
+                    }
+
+                    // Jik User tidak ingin patch kembalikan ke aslinya. (If MD5_UA_API_Original doesn't match MD5_UA_LOC_Currently)
+                    if (!patchit)
+                    {
+                        if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
+                        {
+                            try
+                            {
+                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+
+                                Console.WriteLine(MD5_UA_API_Original + " doesn't match with " + MD5_UA_LOC_Currently + ", backup it....");
+                            }
+                            catch (Exception exx)
+                            {
+                                return "Failed: Backup UA Original: " + exx.ToString();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Skip, it's up-to-date");
+                        }
+                    }
+                    else if (MD5_UA_API_Patched != MD5_UA_LOC_Currently)
+                    {
+                        // Jika User pilih patch (MD5_UA_API_Patched doesn't match MD5_UA_LOC_Currently)
+                        if (!File.Exists(PathfileUA_Patched))
+                        {
+                            // If you don't have PathfileUA_Patched, download it
+                            var DL2 = new Download(DL_Patch + "UserAssembly-patched.dll", PathfileUA_Patched);
+                            if (DL2.ShowDialog() != DialogResult.OK)
+                            {
+                                // If PathfileUA_Patched (Patched file) doesn't exist
+                                return "No Found Patch file....";
+                            }
+                            else
+                            {
+                                MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
+                            }
+                        }
+
+                        // If UA_API_Patches_MD5 (patch file from api) matches UA_LOC_Patched_MD5 (current patch file)
+                        if (MD5_UA_API_Patched == MD5_UA_LOC_Patched)
+                        {
+                            // Patch to PathfileUA_Now                            
+                            try
+                            {
+                                File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+
+                                Console.WriteLine("Patch done...");
+                            }
+                            catch (Exception x)
+                            {
+                                return "Failed Patch: " + x.ToString();
+                            }
+                        }
+                        else
+                        {
+                            return "Failed because file doesn't match from md5 api";
+                        }
                     }
                     else
                     {
-                        return "This Game Version is not compatible with Method Patch UserAssembly";
+                        // If UA_API_Patches_MD5 match UA_LOC_Now_MD5
                     }
 
-                    return "TODO: not yet available";
+                    //return "TODO: not yet available";
                 }
                 else
                 {
@@ -436,11 +559,11 @@ namespace YuukiPS_Launcher
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.UserAssembly.key2);
+                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key.Original.MetaData.key2_os, key.Patched.UserAssembly.key2);
                         }
                         else if (ch == 2)
                         {
-                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.UserAssembly.key2);
+                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key.Original.MetaData.key2_cn, key.Patched.UserAssembly.key2);
                         }
                         if (!String.IsNullOrEmpty(ManualUA))
                         {
@@ -527,31 +650,6 @@ namespace YuukiPS_Launcher
 
                 if (online)
                 {
-                    // API
-                    string MD5_Metadata_API_Original;
-                    string MD5_Metadata_API_Patched;
-
-                    var cno = "Global";
-                    if (ch == 1)
-                    {
-                        // Global
-                        MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_os.ToUpper();
-                        MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_os.ToUpper();
-                    }
-                    else if (ch == 2)
-                    {
-                        // Chinese
-                        MD5_Metadata_API_Original = last_key_api.Original.MetaData.md5_cn.ToUpper();
-                        MD5_Metadata_API_Patched = last_key_api.Patched.MetaData.md5_cn.ToUpper();
-                        cno = "Chinese";
-                    }
-                    else
-                    {
-                        return "This Game Version is not compatible with this method patch (2)";
-                    }
-
-                    var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/Release/" + cno + "/Patch/";
-
                     // If original backup file is not found, start backup process
                     if (!File.Exists(PathfileMetadata_Original))
                     {
@@ -736,11 +834,11 @@ namespace YuukiPS_Launcher
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_os, last_key_api.Patched.MetaData.key2);
+                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, key.Original.MetaData.key1, key.Patched.MetaData.key1, key.Original.MetaData.key2_os, key.Patched.MetaData.key2);
                         }
                         else if (ch == 2)
                         {
-                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, last_key_api.Original.MetaData.key1, last_key_api.Patched.MetaData.key1, last_key_api.Original.MetaData.key2_cn, last_key_api.Patched.MetaData.key2);
+                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, key.Original.MetaData.key1, key.Patched.MetaData.key1, key.Original.MetaData.key2_cn, key.Patched.MetaData.key2);
                         }
                         if (!String.IsNullOrEmpty(ManualMetadata))
                         {
@@ -871,6 +969,7 @@ namespace YuukiPS_Launcher
                     new Thread(() =>
                     {
                         var host = ListServer[s].host;
+                        var ishttps = ListServer[s].https;
                         try
                         {
                             if (host == "official")
@@ -878,9 +977,8 @@ namespace YuukiPS_Launcher
                                 return;
                             }
 
-                            Debug.Print("Start update.. " + host);
-
-                            string url_server_api = "https://" + host + "/status/server";
+                            string url_server_api = (ishttps ? "https" : "http") + "://" + host + "/status/server";
+                            Debug.Print("Start update.. " + url_server_api);
                             VersionServer? ig = API.GetServerStatus(url_server_api);
                             ServerList.Invoke((Action)delegate
                             {
@@ -888,6 +986,10 @@ namespace YuukiPS_Launcher
                                 {
                                     ServerList.Items[s].SubItems[2].Text = ig.status.playerCount.ToString();
                                     ServerList.Items[s].SubItems[3].Text = ig.status.Version.ToString();
+                                    if (ig.status.runMode != "HYBRID")
+                                    {
+                                        ServerList.Items[s].SubItems[2].Text = ig.status.runMode;
+                                    }
                                 }
                                 else
                                 {
@@ -1527,7 +1629,126 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void DEV_UA_bt_Patch_Click(object sender, EventArgs e)
+        private void DEV_UA_bt_Selectfile_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Title = "Select file metadata...";
+            dialog.DefaultExt = "dat";
+            dialog.Multiselect = false;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                DEV_MA_get_file.Text = dialog.FileName;
+            }
+        }
+
+        private void Server_Config_OpenFolder_Click(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Server.Serverfolder,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+        }
+
+        private void Server_Start_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("Still PR :)");
+        }
+
+        private void Server_DL_JAVA_Click(object sender, EventArgs e)
+        {
+            var dl_java = Server.DLJava();
+            if (!string.IsNullOrEmpty(dl_java))
+            {
+                MessageBox.Show(dl_java);
+            }
+            else
+            {
+                MessageBox.Show("Download is successful");
+            }
+        }
+
+        private void Server_DL_DB_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+        private void Server_DL_GC_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bt_GetKey_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(UpdateKey());
+        }
+
+        public string UpdateKey()
+        {
+            key = API.GSKEY();
+            if (key == null)
+            {
+                return "Maybe your internet has problems or there is an active proxy";
+            }
+            else
+            {
+                //MA
+                DEV_MA_Set_Key1_NoPatch.Text = key.Original.MetaData.key1;
+                DEV_MA_Set_Key2_NoPatch.Text = key.Original.MetaData.key2_os;
+                DEV_MA_Set_Key1_Patch.Text = key.Patched.MetaData.key1;
+                DEV_MA_Set_Key2_Patch.Text = key.Patched.MetaData.key2;
+
+                //UA
+                DEV_UA_Set_Key1_NoPatch.Text = key.Original.MetaData.key2_os;
+                DEV_UA_Set_Key2_Patch.Text = key.Patched.UserAssembly.key2;
+            }
+            return "Successfully got Key, you can see update in developer tab";
+        }
+
+        private void DEV_UA_bt_Selectfile_Click_1(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Title = "Select File UserAssembly...";
+            dialog.DefaultExt = "dll";
+            dialog.Multiselect = false;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                DEV_UA_get_file.Text = dialog.FileName;
+            }
+        }
+
+        private void DEV_UA_bt_Patch_Click_1(object sender, EventArgs e)
+        {
+            // Check Folder Game
+            var DEV_UA_file = DEV_UA_get_file.Text;
+            if (String.IsNullOrEmpty(DEV_UA_file))
+            {
+                MessageBox.Show("No UA found (1)");
+                return;
+            }
+            if (!File.Exists(DEV_UA_file))
+            {
+                MessageBox.Show("No file UA found (2)");
+                return;
+            }
+            var DEV_UA_KEY1_NOPATCH = DEV_UA_Set_Key1_NoPatch.Text;
+            var DEV_UA_KEY2_PATCH = DEV_UA_Set_Key2_Patch.Text;
+
+            var IsPatchOK = Game.Genshin.Patch.UserAssembly.Do(DEV_UA_file, DEV_UA_file, DEV_UA_KEY1_NOPATCH, DEV_UA_KEY2_PATCH);
+            if (!string.IsNullOrEmpty(IsPatchOK))
+            {
+                MessageBox.Show(IsPatchOK);
+            }
+            else
+            {
+                MessageBox.Show("Patching is successful");
+            }
+        }
+
+        private void DEV_MA_bt_Patch_Click(object sender, EventArgs e)
         {
             // Check Folder Game
             var DEV_metadata_file = DEV_MA_get_file.Text;
@@ -1555,61 +1776,6 @@ namespace YuukiPS_Launcher
             {
                 MessageBox.Show("Patching is successful");
             }
-
-        }
-
-        private void DEV_UA_bt_Selectfile_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.Description = "Select file metadata...";
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                DEV_MA_get_file.Text = dialog.SelectedPath;
-            }
-        }
-
-        private void Server_Config_OpenFolder_Click(object sender, EventArgs e)
-        {
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = Server.Serverfolder,
-                UseShellExecute = true,
-                Verb = "open"
-            });
-        }
-
-        private void Server_Start_Click(object sender, EventArgs e)
-        {
-
-            //Console.Write(Server.GetJava());
-            //var set_AkebiGC = Path.Combine(Modfolder, "AkebiGC");
-            //Directory.CreateDirectory(set_AkebiGC);
-            Console.WriteLine("Still PR :)");
-        }
-
-        private void Server_DL_JAVA_Click(object sender, EventArgs e)
-        {
-            var dl_java = Server.DLJava();
-            if (!string.IsNullOrEmpty(dl_java))
-            {
-                MessageBox.Show(dl_java);
-            }
-            else
-            {
-                MessageBox.Show("Download is successful");
-            }
-        }
-
-        private void Server_DL_DB_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
-
-        private void Server_DL_GC_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

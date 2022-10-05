@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "Yuuki",
             "tes.yuuki.me",
             "N/A",
@@ -58,21 +58,34 @@
             this.btReloadServer = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.Server_DL_RES = new System.Windows.Forms.Button();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.Server_DL_GC = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage10 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.Server_DL_DB = new System.Windows.Forms.Button();
             this.Server_DL_JAVA = new System.Windows.Forms.Button();
-            this.Server_Config_OpenFolder = new System.Windows.Forms.Button();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.Server_DL_RES = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.Server_Start = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.Server_DL_GC = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.Server_Config_OpenFolder = new System.Windows.Forms.Button();
+            this.tabPage11 = new System.Windows.Forms.TabPage();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.TabConfig = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.bt_GetKey = new System.Windows.Forms.Button();
             this.Set_UA_Folder = new System.Windows.Forms.TextBox();
             this.Set_Metadata_Folder = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -109,6 +122,14 @@
             this.DEV_MA_get_file = new System.Windows.Forms.TextBox();
             this.DEV_MA_bt_Patch = new System.Windows.Forms.Button();
             this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.DEV_UA_Set_Key2_Patch = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.DEV_UA_Set_Key1_NoPatch = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.DEV_UA_bt_Selectfile = new System.Windows.Forms.Button();
+            this.label22 = new System.Windows.Forms.Label();
+            this.DEV_UA_get_file = new System.Windows.Forms.TextBox();
+            this.DEV_UA_bt_Patch = new System.Windows.Forms.Button();
             this.Set_Version = new System.Windows.Forms.Label();
             this.linkDiscord = new System.Windows.Forms.LinkLabel();
             this.linkGithub = new System.Windows.Forms.LinkLabel();
@@ -116,26 +137,17 @@
             this.CekUpdateTT = new System.Windows.Forms.Timer(this.components);
             this.CheckGameRun = new System.Windows.Forms.Timer(this.components);
             this.CheckProxyRun = new System.Windows.Forms.Timer(this.components);
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabPage10 = new System.Windows.Forms.TabPage();
-            this.tabPage11 = new System.Windows.Forms.TabPage();
-            this.label14 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label16 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage10.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.tabPage11.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.TabConfig.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -144,9 +156,7 @@
             this.tabPage8.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage6.SuspendLayout();
-            this.tabControl2.SuspendLayout();
-            this.tabPage10.SuspendLayout();
-            this.tabPage11.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // btStart
@@ -323,7 +333,7 @@
             this.ServerList.FullRowSelect = true;
             this.ServerList.GridLines = true;
             this.ServerList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
+            listViewItem1});
             this.ServerList.Location = new System.Drawing.Point(243, 36);
             this.ServerList.MultiSelect = false;
             this.ServerList.Name = "ServerList";
@@ -387,6 +397,64 @@
             this.tabPage2.Text = "Server";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.tabPage10);
+            this.tabControl2.Controls.Add(this.tabPage11);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(3, 3);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(646, 275);
+            this.tabControl2.TabIndex = 8;
+            // 
+            // tabPage10
+            // 
+            this.tabPage10.Controls.Add(this.groupBox4);
+            this.tabPage10.Controls.Add(this.groupBox6);
+            this.tabPage10.Controls.Add(this.Server_Start);
+            this.tabPage10.Controls.Add(this.groupBox5);
+            this.tabPage10.Controls.Add(this.Server_Config_OpenFolder);
+            this.tabPage10.Location = new System.Drawing.Point(4, 24);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage10.Size = new System.Drawing.Size(638, 247);
+            this.tabPage10.TabIndex = 0;
+            this.tabPage10.Text = "Home";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.Server_DL_DB);
+            this.groupBox4.Controls.Add(this.Server_DL_JAVA);
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.groupBox4.Location = new System.Drawing.Point(6, 6);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(155, 100);
+            this.groupBox4.TabIndex = 5;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Download Package";
+            // 
+            // Server_DL_DB
+            // 
+            this.Server_DL_DB.Location = new System.Drawing.Point(6, 63);
+            this.Server_DL_DB.Name = "Server_DL_DB";
+            this.Server_DL_DB.Size = new System.Drawing.Size(143, 29);
+            this.Server_DL_DB.TabIndex = 1;
+            this.Server_DL_DB.Text = "MongoDB";
+            this.Server_DL_DB.UseVisualStyleBackColor = true;
+            this.Server_DL_DB.Click += new System.EventHandler(this.Server_DL_DB_Click);
+            // 
+            // Server_DL_JAVA
+            // 
+            this.Server_DL_JAVA.Location = new System.Drawing.Point(6, 28);
+            this.Server_DL_JAVA.Name = "Server_DL_JAVA";
+            this.Server_DL_JAVA.Size = new System.Drawing.Size(143, 29);
+            this.Server_DL_JAVA.TabIndex = 0;
+            this.Server_DL_JAVA.Text = "Java";
+            this.Server_DL_JAVA.UseVisualStyleBackColor = true;
+            this.Server_DL_JAVA.Click += new System.EventHandler(this.Server_DL_JAVA_Click);
+            // 
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.Server_DL_RES);
@@ -422,6 +490,16 @@
             this.comboBox2.Size = new System.Drawing.Size(188, 33);
             this.comboBox2.TabIndex = 3;
             this.comboBox2.Text = "Yuuki Gitlab 3.1";
+            // 
+            // Server_Start
+            // 
+            this.Server_Start.Location = new System.Drawing.Point(107, 218);
+            this.Server_Start.Name = "Server_Start";
+            this.Server_Start.Size = new System.Drawing.Size(93, 23);
+            this.Server_Start.TabIndex = 0;
+            this.Server_Start.Text = "Start";
+            this.Server_Start.UseVisualStyleBackColor = true;
+            this.Server_Start.Click += new System.EventHandler(this.Server_Start_Click);
             // 
             // groupBox5
             // 
@@ -460,38 +538,6 @@
             this.comboBox1.TabIndex = 2;
             this.comboBox1.Text = "DockerGC 3.1";
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.Server_DL_DB);
-            this.groupBox4.Controls.Add(this.Server_DL_JAVA);
-            this.groupBox4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.groupBox4.Location = new System.Drawing.Point(6, 6);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(155, 100);
-            this.groupBox4.TabIndex = 5;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Download Package";
-            // 
-            // Server_DL_DB
-            // 
-            this.Server_DL_DB.Location = new System.Drawing.Point(6, 63);
-            this.Server_DL_DB.Name = "Server_DL_DB";
-            this.Server_DL_DB.Size = new System.Drawing.Size(143, 29);
-            this.Server_DL_DB.TabIndex = 1;
-            this.Server_DL_DB.Text = "MongoDB";
-            this.Server_DL_DB.UseVisualStyleBackColor = true;
-            this.Server_DL_DB.Click += new System.EventHandler(this.Server_DL_DB_Click);
-            // 
-            // Server_DL_JAVA
-            // 
-            this.Server_DL_JAVA.Location = new System.Drawing.Point(6, 28);
-            this.Server_DL_JAVA.Name = "Server_DL_JAVA";
-            this.Server_DL_JAVA.Size = new System.Drawing.Size(143, 29);
-            this.Server_DL_JAVA.TabIndex = 0;
-            this.Server_DL_JAVA.Text = "Java";
-            this.Server_DL_JAVA.UseVisualStyleBackColor = true;
-            this.Server_DL_JAVA.Click += new System.EventHandler(this.Server_DL_JAVA_Click);
-            // 
             // Server_Config_OpenFolder
             // 
             this.Server_Config_OpenFolder.Location = new System.Drawing.Point(12, 218);
@@ -502,15 +548,101 @@
             this.Server_Config_OpenFolder.UseVisualStyleBackColor = true;
             this.Server_Config_OpenFolder.Click += new System.EventHandler(this.Server_Config_OpenFolder_Click);
             // 
-            // Server_Start
+            // tabPage11
             // 
-            this.Server_Start.Location = new System.Drawing.Point(107, 218);
-            this.Server_Start.Name = "Server_Start";
-            this.Server_Start.Size = new System.Drawing.Size(93, 23);
-            this.Server_Start.TabIndex = 0;
-            this.Server_Start.Text = "Start";
-            this.Server_Start.UseVisualStyleBackColor = true;
-            this.Server_Start.Click += new System.EventHandler(this.Server_Start_Click);
+            this.tabPage11.Controls.Add(this.textBox4);
+            this.tabPage11.Controls.Add(this.label17);
+            this.tabPage11.Controls.Add(this.textBox3);
+            this.tabPage11.Controls.Add(this.label16);
+            this.tabPage11.Controls.Add(this.button1);
+            this.tabPage11.Controls.Add(this.textBox2);
+            this.tabPage11.Controls.Add(this.label15);
+            this.tabPage11.Controls.Add(this.textBox1);
+            this.tabPage11.Controls.Add(this.label14);
+            this.tabPage11.Location = new System.Drawing.Point(4, 24);
+            this.tabPage11.Name = "tabPage11";
+            this.tabPage11.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage11.Size = new System.Drawing.Size(638, 247);
+            this.tabPage11.TabIndex = 1;
+            this.tabPage11.Text = "Custom";
+            this.tabPage11.UseVisualStyleBackColor = true;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(6, 192);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(626, 23);
+            this.textBox4.TabIndex = 8;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label17.Location = new System.Drawing.Point(6, 165);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(206, 25);
+            this.label17.TabIndex = 7;
+            this.label17.Text = "Folder MongoDB (BIN):";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(6, 139);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(626, 23);
+            this.textBox3.TabIndex = 6;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label16.Location = new System.Drawing.Point(6, 111);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(157, 25);
+            this.label16.TabIndex = 5;
+            this.label16.Text = "Folder Java (BIN):";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(557, 221);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "Save";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(6, 85);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(626, 23);
+            this.textBox2.TabIndex = 3;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label15.Location = new System.Drawing.Point(6, 57);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(258, 25);
+            this.label15.TabIndex = 2;
+            this.label15.Text = "Grasscutter Resources Folder:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(6, 31);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(626, 23);
+            this.textBox1.TabIndex = 1;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label14.Location = new System.Drawing.Point(3, 3);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(169, 25);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "Grasscutter Folder:";
             // 
             // tabPage3
             // 
@@ -545,6 +677,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.bt_GetKey);
             this.tabPage5.Controls.Add(this.Set_UA_Folder);
             this.tabPage5.Controls.Add(this.Set_Metadata_Folder);
             this.tabPage5.Controls.Add(this.label6);
@@ -565,6 +698,16 @@
             this.tabPage5.TabIndex = 0;
             this.tabPage5.Text = "Launcher";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // bt_GetKey
+            // 
+            this.bt_GetKey.Location = new System.Drawing.Point(13, 214);
+            this.bt_GetKey.Name = "bt_GetKey";
+            this.bt_GetKey.Size = new System.Drawing.Size(75, 23);
+            this.bt_GetKey.TabIndex = 14;
+            this.bt_GetKey.Text = "Get Key";
+            this.bt_GetKey.UseVisualStyleBackColor = true;
+            this.bt_GetKey.Click += new System.EventHandler(this.bt_GetKey_Click);
             // 
             // Set_UA_Folder
             // 
@@ -754,6 +897,8 @@
             // Config_Discord_Enable
             // 
             this.Config_Discord_Enable.AutoSize = true;
+            this.Config_Discord_Enable.Checked = true;
+            this.Config_Discord_Enable.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Config_Discord_Enable.Location = new System.Drawing.Point(14, 13);
             this.Config_Discord_Enable.Name = "Config_Discord_Enable";
             this.Config_Discord_Enable.Size = new System.Drawing.Size(142, 19);
@@ -911,10 +1056,18 @@
             this.DEV_MA_bt_Patch.TabIndex = 0;
             this.DEV_MA_bt_Patch.Text = "Patch";
             this.DEV_MA_bt_Patch.UseVisualStyleBackColor = true;
-            this.DEV_MA_bt_Patch.Click += new System.EventHandler(this.DEV_UA_bt_Patch_Click);
+            this.DEV_MA_bt_Patch.Click += new System.EventHandler(this.DEV_MA_bt_Patch_Click);
             // 
             // tabPage7
             // 
+            this.tabPage7.Controls.Add(this.DEV_UA_Set_Key2_Patch);
+            this.tabPage7.Controls.Add(this.label20);
+            this.tabPage7.Controls.Add(this.DEV_UA_Set_Key1_NoPatch);
+            this.tabPage7.Controls.Add(this.label21);
+            this.tabPage7.Controls.Add(this.DEV_UA_bt_Selectfile);
+            this.tabPage7.Controls.Add(this.label22);
+            this.tabPage7.Controls.Add(this.DEV_UA_get_file);
+            this.tabPage7.Controls.Add(this.DEV_UA_bt_Patch);
             this.tabPage7.Location = new System.Drawing.Point(4, 24);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
@@ -922,6 +1075,79 @@
             this.tabPage7.TabIndex = 1;
             this.tabPage7.Text = "UserAssembly";
             this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // DEV_UA_Set_Key2_Patch
+            // 
+            this.DEV_UA_Set_Key2_Patch.Location = new System.Drawing.Point(329, 53);
+            this.DEV_UA_Set_Key2_Patch.Multiline = true;
+            this.DEV_UA_Set_Key2_Patch.Name = "DEV_UA_Set_Key2_Patch";
+            this.DEV_UA_Set_Key2_Patch.Size = new System.Drawing.Size(302, 194);
+            this.DEV_UA_Set_Key2_Patch.TabIndex = 19;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label20.Location = new System.Drawing.Point(329, 29);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(95, 21);
+            this.label20.TabIndex = 18;
+            this.label20.Text = "Key2 (Patch)";
+            // 
+            // DEV_UA_Set_Key1_NoPatch
+            // 
+            this.DEV_UA_Set_Key1_NoPatch.Location = new System.Drawing.Point(17, 53);
+            this.DEV_UA_Set_Key1_NoPatch.Multiline = true;
+            this.DEV_UA_Set_Key1_NoPatch.Name = "DEV_UA_Set_Key1_NoPatch";
+            this.DEV_UA_Set_Key1_NoPatch.Size = new System.Drawing.Size(306, 194);
+            this.DEV_UA_Set_Key1_NoPatch.TabIndex = 17;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label21.Location = new System.Drawing.Point(17, 29);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(114, 21);
+            this.label21.TabIndex = 16;
+            this.label21.Text = "Key1 (Original)";
+            // 
+            // DEV_UA_bt_Selectfile
+            // 
+            this.DEV_UA_bt_Selectfile.Location = new System.Drawing.Point(498, 7);
+            this.DEV_UA_bt_Selectfile.Name = "DEV_UA_bt_Selectfile";
+            this.DEV_UA_bt_Selectfile.Size = new System.Drawing.Size(75, 23);
+            this.DEV_UA_bt_Selectfile.TabIndex = 15;
+            this.DEV_UA_bt_Selectfile.Text = "Select File";
+            this.DEV_UA_bt_Selectfile.UseVisualStyleBackColor = true;
+            this.DEV_UA_bt_Selectfile.Click += new System.EventHandler(this.DEV_UA_bt_Selectfile_Click_1);
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label22.Location = new System.Drawing.Point(0, 6);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(37, 21);
+            this.label22.TabIndex = 14;
+            this.label22.Text = "File:";
+            // 
+            // DEV_UA_get_file
+            // 
+            this.DEV_UA_get_file.Location = new System.Drawing.Point(40, 6);
+            this.DEV_UA_get_file.Name = "DEV_UA_get_file";
+            this.DEV_UA_get_file.Size = new System.Drawing.Size(457, 23);
+            this.DEV_UA_get_file.TabIndex = 13;
+            // 
+            // DEV_UA_bt_Patch
+            // 
+            this.DEV_UA_bt_Patch.Location = new System.Drawing.Point(579, 7);
+            this.DEV_UA_bt_Patch.Name = "DEV_UA_bt_Patch";
+            this.DEV_UA_bt_Patch.Size = new System.Drawing.Size(59, 23);
+            this.DEV_UA_bt_Patch.TabIndex = 12;
+            this.DEV_UA_bt_Patch.Text = "Patch";
+            this.DEV_UA_bt_Patch.UseVisualStyleBackColor = true;
+            this.DEV_UA_bt_Patch.Click += new System.EventHandler(this.DEV_UA_bt_Patch_Click_1);
             // 
             // Set_Version
             // 
@@ -984,128 +1210,6 @@
             this.CheckProxyRun.Interval = 1000;
             this.CheckProxyRun.Tick += new System.EventHandler(this.CheckProxyRun_Tick);
             // 
-            // tabControl2
-            // 
-            this.tabControl2.Controls.Add(this.tabPage10);
-            this.tabControl2.Controls.Add(this.tabPage11);
-            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl2.Location = new System.Drawing.Point(3, 3);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(646, 275);
-            this.tabControl2.TabIndex = 8;
-            // 
-            // tabPage10
-            // 
-            this.tabPage10.Controls.Add(this.groupBox4);
-            this.tabPage10.Controls.Add(this.groupBox6);
-            this.tabPage10.Controls.Add(this.Server_Start);
-            this.tabPage10.Controls.Add(this.groupBox5);
-            this.tabPage10.Controls.Add(this.Server_Config_OpenFolder);
-            this.tabPage10.Location = new System.Drawing.Point(4, 24);
-            this.tabPage10.Name = "tabPage10";
-            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(638, 247);
-            this.tabPage10.TabIndex = 0;
-            this.tabPage10.Text = "Home";
-            this.tabPage10.UseVisualStyleBackColor = true;
-            // 
-            // tabPage11
-            // 
-            this.tabPage11.Controls.Add(this.textBox4);
-            this.tabPage11.Controls.Add(this.label17);
-            this.tabPage11.Controls.Add(this.textBox3);
-            this.tabPage11.Controls.Add(this.label16);
-            this.tabPage11.Controls.Add(this.button1);
-            this.tabPage11.Controls.Add(this.textBox2);
-            this.tabPage11.Controls.Add(this.label15);
-            this.tabPage11.Controls.Add(this.textBox1);
-            this.tabPage11.Controls.Add(this.label14);
-            this.tabPage11.Location = new System.Drawing.Point(4, 24);
-            this.tabPage11.Name = "tabPage11";
-            this.tabPage11.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage11.Size = new System.Drawing.Size(638, 247);
-            this.tabPage11.TabIndex = 1;
-            this.tabPage11.Text = "Custom";
-            this.tabPage11.UseVisualStyleBackColor = true;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label14.Location = new System.Drawing.Point(3, 3);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(169, 25);
-            this.label14.TabIndex = 0;
-            this.label14.Text = "Grasscutter Folder:";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(6, 31);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(626, 23);
-            this.textBox1.TabIndex = 1;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label15.Location = new System.Drawing.Point(6, 57);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(258, 25);
-            this.label15.TabIndex = 2;
-            this.label15.Text = "Grasscutter Resources Folder:";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(6, 85);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(626, 23);
-            this.textBox2.TabIndex = 3;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(557, 221);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Save";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label16.Location = new System.Drawing.Point(6, 111);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(157, 25);
-            this.label16.TabIndex = 5;
-            this.label16.Text = "Folder Java (BIN):";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(6, 139);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(626, 23);
-            this.textBox3.TabIndex = 6;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label17.Location = new System.Drawing.Point(6, 165);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(206, 25);
-            this.label17.TabIndex = 7;
-            this.label17.Text = "Folder MongoDB (BIN):";
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(6, 192);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(626, 23);
-            this.textBox4.TabIndex = 8;
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1130,9 +1234,13 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage10.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
+            this.tabPage11.ResumeLayout(false);
+            this.tabPage11.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.TabConfig.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
@@ -1145,10 +1253,8 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
-            this.tabControl2.ResumeLayout(false);
-            this.tabPage10.ResumeLayout(false);
-            this.tabPage11.ResumeLayout(false);
-            this.tabPage11.PerformLayout();
+            this.tabPage7.ResumeLayout(false);
+            this.tabPage7.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1249,5 +1355,14 @@
         private Label label15;
         private TextBox textBox1;
         private Label label14;
+        private Button bt_GetKey;
+        private TextBox DEV_UA_Set_Key2_Patch;
+        private Label label20;
+        private TextBox DEV_UA_Set_Key1_NoPatch;
+        private Label label21;
+        private Button DEV_UA_bt_Selectfile;
+        private Label label22;
+        private TextBox DEV_UA_get_file;
+        private Button DEV_UA_bt_Patch;
     }
 }

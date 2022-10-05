@@ -3,7 +3,7 @@
     public class VersionServer
     {
         public int retcode { get; set; }
-        public Status status { get; set; }
+        public Status status { get; set; } = new Status();
     }
 
     public class Status
@@ -18,7 +18,8 @@
         public int TotalAccount { get; set; }
         public int playerCount { get; set; }
         public int maxPlayer { get; set; }
-        public string DockerGS { get; set; }
-        public string Version { get; set; }
+        public string DockerGS { get; set; } = "unknown";
+        public string Version { get; set; } = "unknown";
+        public string runMode { get; set; } = "HYBRID";
     }
 }
