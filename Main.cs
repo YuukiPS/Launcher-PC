@@ -455,9 +455,23 @@ namespace YuukiPS_Launcher
                     else if (MD5_UA_API_Patched != MD5_UA_LOC_Currently)
                     {
                         // Jika User pilih patch (MD5_UA_API_Patched doesn't match MD5_UA_LOC_Currently)
+                        var download_patch = false;
                         if (!File.Exists(PathfileUA_Patched))
                         {
-                            // If you don't have PathfileUA_Patched, download it
+                            download_patch = true;
+                        }
+                        else
+                        {
+                            // If UA_API_Patches_MD5 (patch file from api) matches UA_LOC_Patched_MD5 (current patch file)
+                            if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
+                            {
+                                download_patch = true;
+                            }
+                        }
+
+                        // If you don't have PathfileUA_Patched, download it
+                        if (download_patch)
+                        {
                             var DL2 = new Download(DL_Patch + "UserAssembly-patched.dll", PathfileUA_Patched);
                             if (DL2.ShowDialog() != DialogResult.OK)
                             {
@@ -470,8 +484,11 @@ namespace YuukiPS_Launcher
                             }
                         }
 
-                        // If UA_API_Patches_MD5 (patch file from api) matches UA_LOC_Patched_MD5 (current patch file)
-                        if (MD5_UA_API_Patched == MD5_UA_LOC_Patched)
+                        if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
+                        {
+                            return "(UA) Failed because file doesn't match from md5 api";
+                        }
+                        else
                         {
                             // Patch to PathfileUA_Now                            
                             try
@@ -480,16 +497,14 @@ namespace YuukiPS_Launcher
                                 MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
 
                                 Console.WriteLine("Patch done...");
+                                download_patch = false;
                             }
                             catch (Exception x)
                             {
                                 return "Failed Patch: " + x.ToString();
                             }
                         }
-                        else
-                        {
-                            return "Failed because file doesn't match from md5 api";
-                        }
+
                     }
                     else
                     {
@@ -723,8 +738,26 @@ namespace YuukiPS_Launcher
                     }
                     else if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Currently)
                     {
-                        // Jika User pilih patch (MD5_Metadata_API_Patched doesn't match MD5_Metadata_LOC_Currently)
+                        // Jika md5 patch tidak cocok dengan metadata sekarang
+
+                        var download_patch = false;
+
+                        // jIka file tidak ada
                         if (!File.Exists(PathfileMetadata_Patched))
+                        {
+                            download_patch = true;
+                        }
+                        else
+                        {
+                            // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
+                            if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Patched)
+                            {
+                                download_patch = true;
+                            }
+                        }
+
+                        // re-download
+                        if (download_patch)
                         {
                             // If you don't have PathfileMetadata_Patched, download it
                             var DL2 = new Download(DL_Patch + "global-metadata-patched.dat", PathfileMetadata_Patched);
@@ -739,8 +772,11 @@ namespace YuukiPS_Launcher
                             }
                         }
 
-                        // If Metadata_API_Patches_MD5 (patch file from api) matches Metadata_LOC_Patched_MD5 (current patch file)
-                        if (MD5_Metadata_API_Patched == MD5_Metadata_LOC_Patched)
+                        if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Patched)
+                        {
+                            return "(MA) Failed because file doesn't match from md5 api";
+                        }
+                        else
                         {
                             // Patch to PathfileMetadata_Now                            
                             try
@@ -749,16 +785,14 @@ namespace YuukiPS_Launcher
                                 MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
 
                                 Console.WriteLine("Patch done...");
+                                download_patch = false;
                             }
                             catch (Exception x)
                             {
                                 return "Failed Patch: " + x.ToString();
                             }
                         }
-                        else
-                        {
-                            return "Failed because file doesn't match from md5 api";
-                        }
+
                     }
                     else
                     {
