@@ -47,6 +47,23 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
             return str;
         }
 
+        public static string Decrypt(string original_file, string patch_file)
+        {
+            if (!File.Exists(original_file))
+            {
+                return "Metadata file not found";
+            }
+            byte[] filebytes = File.ReadAllBytes(original_file);
+            byte[] data = decrypt(filebytes);
+            Array.Resize<byte>(ref data, data.Length - 16384);
+            FileStream stream = File.Create(patch_file);
+            stream.Write(data, 0, data.Length);
+            stream.Close();
+
+            var str = "";
+            return str;
+        }
+
         public static byte[] ToFixBytesP1(string key)
         {
             byte[] bp1 = Encoding.UTF8.GetBytes(key.Substring(0, 48));

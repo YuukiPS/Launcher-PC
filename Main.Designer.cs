@@ -109,6 +109,7 @@
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.DEV_MA_bt_Decrypt = new System.Windows.Forms.Button();
             this.DEV_MA_Set_Key2_Patch = new System.Windows.Forms.TextBox();
             this.DEV_MA_Set_Key2_NoPatch = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -929,6 +930,7 @@
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.DEV_MA_bt_Decrypt);
             this.tabPage6.Controls.Add(this.DEV_MA_Set_Key2_Patch);
             this.tabPage6.Controls.Add(this.DEV_MA_Set_Key2_NoPatch);
             this.tabPage6.Controls.Add(this.label13);
@@ -948,6 +950,16 @@
             this.tabPage6.TabIndex = 0;
             this.tabPage6.Text = "Metadata";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // DEV_MA_bt_Decrypt
+            // 
+            this.DEV_MA_bt_Decrypt.Location = new System.Drawing.Point(579, 7);
+            this.DEV_MA_bt_Decrypt.Name = "DEV_MA_bt_Decrypt";
+            this.DEV_MA_bt_Decrypt.Size = new System.Drawing.Size(59, 23);
+            this.DEV_MA_bt_Decrypt.TabIndex = 12;
+            this.DEV_MA_bt_Decrypt.Text = "Decrypt";
+            this.DEV_MA_bt_Decrypt.UseVisualStyleBackColor = true;
+            this.DEV_MA_bt_Decrypt.Click += new System.EventHandler(this.DEV_MA_bt_Decrypt_Click);
             // 
             // DEV_MA_Set_Key2_Patch
             // 
@@ -1023,9 +1035,9 @@
             // 
             // DEV_MA_bt_Selectfile
             // 
-            this.DEV_MA_bt_Selectfile.Location = new System.Drawing.Point(503, 7);
+            this.DEV_MA_bt_Selectfile.Location = new System.Drawing.Point(438, 7);
             this.DEV_MA_bt_Selectfile.Name = "DEV_MA_bt_Selectfile";
-            this.DEV_MA_bt_Selectfile.Size = new System.Drawing.Size(75, 23);
+            this.DEV_MA_bt_Selectfile.Size = new System.Drawing.Size(70, 23);
             this.DEV_MA_bt_Selectfile.TabIndex = 3;
             this.DEV_MA_bt_Selectfile.Text = "Select File";
             this.DEV_MA_bt_Selectfile.UseVisualStyleBackColor = true;
@@ -1045,12 +1057,12 @@
             // 
             this.DEV_MA_get_file.Location = new System.Drawing.Point(40, 6);
             this.DEV_MA_get_file.Name = "DEV_MA_get_file";
-            this.DEV_MA_get_file.Size = new System.Drawing.Size(457, 23);
+            this.DEV_MA_get_file.Size = new System.Drawing.Size(392, 23);
             this.DEV_MA_get_file.TabIndex = 1;
             // 
             // DEV_MA_bt_Patch
             // 
-            this.DEV_MA_bt_Patch.Location = new System.Drawing.Point(579, 7);
+            this.DEV_MA_bt_Patch.Location = new System.Drawing.Point(514, 7);
             this.DEV_MA_bt_Patch.Name = "DEV_MA_bt_Patch";
             this.DEV_MA_bt_Patch.Size = new System.Drawing.Size(59, 23);
             this.DEV_MA_bt_Patch.TabIndex = 0;
@@ -1364,5 +1376,6 @@
         private Label label22;
         private TextBox DEV_UA_get_file;
         private Button DEV_UA_bt_Patch;
+        private Button DEV_MA_bt_Decrypt;
     }
 }

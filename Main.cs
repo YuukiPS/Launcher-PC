@@ -130,11 +130,11 @@ namespace YuukiPS_Launcher
         {
             Console.WriteLine("Loading....");
 
-            // Load config and check version game
-            LoadConfig();
-
             // Before starting make sure proxy is turned off
             CheckProxy(true);
+
+            // Load config and check version game
+            LoadConfig();
 
             // Check Update
             CheckUpdate();
@@ -1500,7 +1500,7 @@ namespace YuukiPS_Launcher
 
                 if (Config_Discord_Enable.Checked)
                 {
-                    discord.UpdateStatus($"Server: {HostName} Version: 3.1.51", "In Game", "on", 1);
+                    discord.UpdateStatus($"Server: {HostName} Version: {VersionGame}", "In Game", "on", 1);
                 }
 
             }
@@ -1575,10 +1575,13 @@ namespace YuukiPS_Launcher
             {
                 return;
             }
-            var name_server = item.SubItems[0].Text;
-            var host_server = item.SubItems[1].Text;
-            GetHost.Text = host_server;
-            HostName = name_server;
+            var g = ListServer[item.Index];
+            if (g != null)
+            {
+                GetHost.Text = g.host;
+                CheckProxyUseHTTPS.Checked = g.https;
+                HostName = g.name;
+            }
         }
 
         private void linkDiscord_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1631,35 +1634,48 @@ namespace YuukiPS_Launcher
             try
             {
                 // Metode 1
-                RegistryKey registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
+                RegistryKey? registry = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", true);
 
-                if ((int)registry.GetValue("ProxyEnable") == 1)
+                if (registry != null)
                 {
-                    if (force_off)
+                    object? v = registry.GetValue("ProxyEnable");
+                    if (v != null && (int)v == 1)
                     {
-                        registry.SetValue("ProxyEnable", 0);
-                    }
+                        // Metode 2
+                        if (proxy != null)
+                        {
+                            stIsRunProxy.Text = "Status: ON (Internal)";
+                        }
+                        else
+                        {
+                            stIsRunProxy.Text = "Status: ON (External)";
+                            // If external is on and proxy app is enabled, make sure external proxy is off
+                            if (CheckProxyEnable.Checked)
+                            {
+                                force_off = true;
+                            }
+                        }
 
-                    // Metode 2
-                    if (proxy != null)
-                    {
-                        stIsRunProxy.Text = "Status: ON (Internal)";
+                        if (force_off)
+                        {
+                            registry.SetValue("ProxyEnable", 0);
+                        }
+
                     }
                     else
                     {
-                        stIsRunProxy.Text = "Status: ON (External)";
+                        StopProxy();
+                        stIsRunProxy.Text = "Status: OFF";
                     }
-
                 }
                 else
                 {
-                    StopProxy();
-                    stIsRunProxy.Text = "Status: OFF";
+                    Console.WriteLine("Does not support proxy check!");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Does not support proxy check support: " + ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
         }
 
@@ -1771,7 +1787,7 @@ namespace YuukiPS_Launcher
             var DEV_UA_KEY1_NOPATCH = DEV_UA_Set_Key1_NoPatch.Text;
             var DEV_UA_KEY2_PATCH = DEV_UA_Set_Key2_Patch.Text;
 
-            var IsPatchOK = Game.Genshin.Patch.UserAssembly.Do(DEV_UA_file, DEV_UA_file, DEV_UA_KEY1_NOPATCH, DEV_UA_KEY2_PATCH);
+            var IsPatchOK = Game.Genshin.Patch.UserAssembly.Do(DEV_UA_file, DEV_UA_file + ".patch", DEV_UA_KEY1_NOPATCH, DEV_UA_KEY2_PATCH);
             if (!string.IsNullOrEmpty(IsPatchOK))
             {
                 MessageBox.Show(IsPatchOK);
@@ -1801,7 +1817,7 @@ namespace YuukiPS_Launcher
             var DEV_MA_KEY2_NOPATCH = DEV_MA_Set_Key2_NoPatch.Text;
             var DEV_MA_KEY2_PATCH = DEV_MA_Set_Key2_Patch.Text;
 
-            var IsPatchOK = Game.Genshin.Patch.Metadata.Do(DEV_metadata_file, DEV_metadata_file, DEV_MA_KEY1_NOPATCH, DEV_MA_KEY1_PATCH, DEV_MA_KEY2_NOPATCH, DEV_MA_KEY2_PATCH);
+            var IsPatchOK = Game.Genshin.Patch.Metadata.Do(DEV_metadata_file, DEV_metadata_file + ".patch", DEV_MA_KEY1_NOPATCH, DEV_MA_KEY1_PATCH, DEV_MA_KEY2_NOPATCH, DEV_MA_KEY2_PATCH);
             if (!string.IsNullOrEmpty(IsPatchOK))
             {
                 MessageBox.Show(IsPatchOK);
@@ -1809,6 +1825,30 @@ namespace YuukiPS_Launcher
             else
             {
                 MessageBox.Show("Patching is successful");
+            }
+        }
+
+        private void DEV_MA_bt_Decrypt_Click(object sender, EventArgs e)
+        {
+            var DEV_metadata_file = DEV_MA_get_file.Text;
+            if (String.IsNullOrEmpty(DEV_metadata_file))
+            {
+                MessageBox.Show("No metadata found (1)");
+                return;
+            }
+            if (!File.Exists(DEV_metadata_file))
+            {
+                MessageBox.Show("No file metadata found (2)");
+                return;
+            }
+            var IsPatchOK = Game.Genshin.Patch.Metadata.Decrypt(DEV_metadata_file, DEV_metadata_file + ".dec");
+            if (!string.IsNullOrEmpty(IsPatchOK))
+            {
+                MessageBox.Show(IsPatchOK);
+            }
+            else
+            {
+                MessageBox.Show("Decrypt is successful");
             }
         }
     }
