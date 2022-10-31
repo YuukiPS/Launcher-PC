@@ -486,7 +486,8 @@ namespace YuukiPS_Launcher
 
                         if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
                         {
-                            return "(UA) Failed because file doesn't match from md5 api";
+                            // Failed because file doesn't match from md5 api
+                            return "(UA) Your version Game is not supported, or it needs latest update or file is corrupted.";
                         }
                         else
                         {
@@ -774,7 +775,8 @@ namespace YuukiPS_Launcher
 
                         if (MD5_Metadata_API_Patched != MD5_Metadata_LOC_Patched)
                         {
-                            return "(MA) Failed because file doesn't match from md5 api";
+                            return "(MA) Your version Game is not supported, or it needs latest update or file is corrupted.";
+                            // Failed because file doesn't match from md5 api
                         }
                         else
                         {
@@ -1287,6 +1289,11 @@ namespace YuukiPS_Launcher
                     if (tes.Contains("Key1") || tes.Contains("Key2"))
                     {
                         MessageBox.Show("This may happen because you have already patched or you are using an unsupported version game. The solution is you can use Online Method (you can find it in Config Tab) to make sure you have right file.", "Error Patch Offline");
+                    }
+                    else if (tes.Contains("corrupted"))
+                    {
+                        MessageBox.Show("Looks like you're using an unsupported version, try updating game data to latest version", "Game Version not supported (Online Mode)");
+                        Process.Start(new ProcessStartInfo("https://ps.yuuki.me/genshin") { UseShellExecute = true });
                     }
                     else
                     {
