@@ -3,6 +3,7 @@ using RestSharp;
 using System.Diagnostics;
 using System.Net;
 using YuukiPS_Launcher.Json;
+using YuukiPS_Launcher.Json.GameClient;
 
 namespace YuukiPS_Launcher.Yuuki
 {
@@ -14,17 +15,17 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
         public static string API_GITHUB_Akebi = "https://api.github.com/repos/Taiga74164/Akebi-GC/";
-        public static GS GS_DL(string dl = "os")
+        public static Cient GS_DL(string dl = "os")
         {
             var client = new RestClient(API_DL_WB);
             var request = new RestRequest("genshin/download/latest/" + dl);
 
             var response = client.Execute(request);
             var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            return JsonConvert.DeserializeObject<GS>(getme);
+            return JsonConvert.DeserializeObject<Cient>(getme);
         }
 
-        public static VersionGenshin? GetMD5VersionGS(string md5)
+        public static VersionGenshin GetMD5VersionGS(string md5)
         {
             var client = new RestClient(API_DL_WB);
             var request = new RestRequest("genshin/version?md5=" + md5.ToUpper());
@@ -37,6 +38,37 @@ namespace YuukiPS_Launcher.Yuuki
                     if (response.Content != null)
                     {
                         var tes = JsonConvert.DeserializeObject<VersionGenshin>(response.Content);
+                        if (tes != null)
+                        {
+                            return tes;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: ", ex);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error: " + response.StatusCode);
+            }
+            return null;
+        }
+
+        public static Patch GetMD5Game(string md5)
+        {
+            var client = new RestClient(API_DL_WB);
+            var request = new RestRequest("genshin/patch/" + md5.ToUpper());
+
+            var response = client.Execute(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                try
+                {
+                    if (response.Content != null)
+                    {
+                        var tes = JsonConvert.DeserializeObject<Patch>(response.Content);
                         if (tes != null)
                         {
                             return tes;

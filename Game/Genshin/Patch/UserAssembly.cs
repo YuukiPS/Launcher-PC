@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using YuukiPS_Launcher.patch;
 
 namespace YuukiPS_Launcher.Game.Genshin.Patch
 {
@@ -11,30 +10,57 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
 
         public static string Do(string original_file, string patch_file, string keynopatch, string keypatch)
         {
+            //Console.WriteLine("KeyNopatch" + "\n" + keynopatch);
+            //Console.WriteLine("KeyPatch" + "\n" + keypatch);
+
             if (!File.Exists(original_file))
             {
                 return "UserAssembly file not found";
             }
-            byte[] data = File.ReadAllBytes(original_file);
 
-            int count = 0;
-            string str;
+            byte[] UA_Original = Encoding.ASCII.GetBytes(keynopatch);
+            byte[] UA_key = Encoding.ASCII.GetBytes(keypatch);
 
-            data = Methods.ReplaceBytes(data, ToUABytes(keynopatch), ToUABytes(keypatch), ref count);
+            // Get Byte file original
+            byte[] UA = File.ReadAllBytes(original_file);
 
-            if (count != 0)
+            int Offset = 0;
+            int DataLength;
+
+            List<HexReplaceEntity> UA_list = new List<HexReplaceEntity>();
+
+            while ((DataLength = UA_Original.Length - Offset) > 0)
             {
-                str = "";
-                FileStream stream = File.Create(patch_file);
-                stream.Write(data, 0, data.Length);
-                stream.Close();
-            }
-            else
-            {
-                str = "Patch UserAssembly Failed";
+                if (DataLength > 8)
+                    DataLength = 8;
+
+                HexReplaceEntity hexReplaceEntity = new HexReplaceEntity();
+
+                hexReplaceEntity.oldValue = new byte[8];
+                Buffer.BlockCopy(UA_Original, Offset, hexReplaceEntity.oldValue, 0, DataLength);
+
+                hexReplaceEntity.newValue = new byte[8];
+                Buffer.BlockCopy(UA_key, Offset, hexReplaceEntity.newValue, 0, DataLength);
+
+                UA_list.Add(hexReplaceEntity);
+                Offset += DataLength;
             }
 
-            return str;
+            byte[] UA_OS_patched = HexUtility.Replace(UA, UA_list);
+
+            if (!HexUtility.EqualsBytes(UA, UA_OS_patched))
+            {
+                try
+                {
+                    File.WriteAllBytes(patch_file, UA_OS_patched);
+                    return "";
+                }
+                catch (IOException e)
+                {
+                    return e.Message + "\n Cannot write to file.";
+                }
+            }
+            return "Patch UserAssembly Failed";
         }
 
         public static byte[] ToUABytes(string key)

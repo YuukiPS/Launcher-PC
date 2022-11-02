@@ -1,4 +1,4 @@
-﻿namespace YuukiPS_Launcher.Json
+﻿namespace YuukiPS_Launcher.Json.GameClient
 {
     public class Data
     {
@@ -27,7 +27,7 @@
     public class Diff
     {
         public string name { get; set; }
-        public string version { get; set; }
+        public string version { get; set; } = "0.0.0";
         public string path { get; set; }
         public string size { get; set; }
         public string md5 { get; set; }
@@ -72,7 +72,7 @@
         public string entry { get; set; }
     }
 
-    public class GS
+    public class Cient
     {
         public int retcode { get; set; }
         public string message { get; set; }

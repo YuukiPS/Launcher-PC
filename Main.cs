@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using YuukiPS_Launcher.Json;
+using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Yuuki;
 
 namespace YuukiPS_Launcher
@@ -43,7 +44,8 @@ namespace YuukiPS_Launcher
         // Game
         public Game.Genshin.Settings settings_genshin;
 
-        KeyGS key;
+        //KeyGS key;
+        Patch get_version;
 
         public void LoadConfig()
         {
@@ -238,7 +240,7 @@ namespace YuukiPS_Launcher
             string Game_LOC_Original_MD5 = Tool.CalculateMD5(PathfileGame);
 
             // Check MD5 in Server API
-            VersionGenshin get_version = API.GetMD5VersionGS(Game_LOC_Original_MD5);
+            get_version = API.GetMD5Game(Game_LOC_Original_MD5);
             if (get_version == null)
             {
                 //0.0.0
@@ -265,6 +267,9 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
+            var get_channel = get_version.channel;
+            var get_metode = get_version.patched.metode;
+
             // Set Folder Patch
             Set_Metadata_Folder.Text = PathMetadata;
             Set_UA_Folder.Text = PathUA;
@@ -275,20 +280,39 @@ namespace YuukiPS_Launcher
 
             // Set Version
             Get_LA_Version.Text = "Version: " + get_version.version;
-            Get_LA_CH.Text = "Channel: " + get_version.channel;
+            Get_LA_CH.Text = "Channel: " + get_channel;
             Get_LA_REL.Text = "Release: " + get_version.release;
-            Get_LA_Metode.Text = "Metode: " + get_version.metode;
-            Get_LA_MD5.Text = "MD5: " + get_version.md5;
+            Get_LA_Metode.Text = "Metode: " + get_metode;
+
+            var md5_ori = "??";
 
             // Pilih Metode
-            if (get_version.metode == "Metadata")
+            if (get_metode == "Metadata")
             {
                 GameMetode = 1;
+                if (get_channel == "Chinese")
+                {
+                    md5_ori = get_version.original.md5_check.cn.metadata;
+                }
+                if (get_channel == "Global")
+                {
+                    md5_ori = get_version.original.md5_check.os.metadata;
+                }
             }
-            else if (get_version.metode == "UserAssembly")
+            else if (get_metode == "UserAssembly")
             {
                 GameMetode = 2;
+                if (get_channel == "Chinese")
+                {
+                    md5_ori = get_version.original.md5_check.cn.userassembly;
+                }
+                if (get_channel == "Global")
+                {
+                    md5_ori = get_version.original.md5_check.os.userassembly;
+                }
             }
+
+            Get_LA_MD5.Text = "MD5: " + md5_ori;
 
             Console.WriteLine("Currently using version game " + VersionGame);
 
@@ -313,9 +337,9 @@ namespace YuukiPS_Launcher
                 return "No game folder found (2)";
             }
 
-            if (key == null)
+            if (get_version == null)
             {
-                return "Can't find key, try clicking 'Get Key' in config tab";
+                return "Can't find version, try clicking 'Get Key' in config tab";
             }
 
             // Check version
@@ -324,35 +348,53 @@ namespace YuukiPS_Launcher
                 return "This Game Version is not compatible with this method patch";
             }
 
+            if (get_version.patched == null)
+            {
+                return "Can't find config patch cloud";
+            }
+
+            var use_metode = get_version.patched.metode;
+            var use_release = get_version.release;
+
             // API            
             string MD5_UA_API_Original;
             string MD5_UA_API_Patched;
             string MD5_Metadata_API_Original;
             string MD5_Metadata_API_Patched;
-            // Select CH
-            var cno = "Global";
-            if (ch == 1)
+
+            var key_to_patch = "";
+            var key_to_find = "";
+
+            // Select Metode (via API Cloud)
+            //var cno = "Global";
+            if (use_release == "Global")
             {
-                // Global
-                MD5_UA_API_Original = key.Original.UserAssembly.md5_os.ToUpper();
-                MD5_UA_API_Patched = key.Patched.UserAssembly.md5_os.ToUpper();
-                MD5_Metadata_API_Original = key.Original.MetaData.md5_os.ToUpper();
-                MD5_Metadata_API_Patched = key.Patched.MetaData.md5_os.ToUpper();
+                MD5_UA_API_Original = get_version.original.md5_check.os.userassembly.ToUpper();
+                MD5_UA_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+
+                MD5_Metadata_API_Original = get_version.original.md5_check.os.metadata;
+                MD5_Metadata_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+
+                key_to_patch = get_version.patched.key_patch;
+                key_to_find = get_version.original.key_find.os;
             }
-            else if (ch == 2)
+            else if (use_release == "Chinese")
             {
-                // Chinese
-                MD5_UA_API_Original = key.Original.UserAssembly.md5_cn.ToUpper();
-                MD5_UA_API_Patched = key.Patched.UserAssembly.md5_cn.ToUpper();
-                MD5_Metadata_API_Original = key.Original.MetaData.md5_cn.ToUpper();
-                MD5_Metadata_API_Patched = key.Patched.MetaData.md5_cn.ToUpper();
-                cno = "Chinese";
+                MD5_UA_API_Original = get_version.original.md5_check.cn.userassembly.ToUpper();
+                MD5_UA_API_Patched = get_version.patched.md5_vaild.cn.ToUpper();
+
+                MD5_Metadata_API_Original = get_version.original.md5_check.cn.metadata;
+                MD5_Metadata_API_Patched = get_version.patched.md5_vaild.cn.ToUpper();
+
+                key_to_patch = get_version.patched.key_patch;
+                key_to_find = get_version.original.key_find.cn;
             }
             else
             {
                 return "This Game Version is not compatible with Method Patch UserAssembly";
             }
-            var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/" + cno + "/Patch/";
+
+            var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/" + use_metode + "/Patch/";
 
             if (metode == 2)
             {
@@ -571,16 +613,7 @@ namespace YuukiPS_Launcher
                             }
                         }
 
-                        var ManualUA = "???";
-                        // Select CH
-                        if (ch == 1)
-                        {
-                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key.Original.MetaData.key2_os, key.Patched.UserAssembly.key2);
-                        }
-                        else if (ch == 2)
-                        {
-                            ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key.Original.MetaData.key2_cn, key.Patched.UserAssembly.key2);
-                        }
+                        var ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key_to_find, key_to_patch);
                         if (!String.IsNullOrEmpty(ManualUA))
                         {
                             return "Error Patch UserAssembly: " + ManualUA;
@@ -870,11 +903,11 @@ namespace YuukiPS_Launcher
                         // Select CH
                         if (ch == 1)
                         {
-                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, key.Original.MetaData.key1, key.Patched.MetaData.key1, key.Original.MetaData.key2_os, key.Patched.MetaData.key2);
+                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, "ORIKEY1", "PATCHKEY1", "ORIKEY2", "PATCHKEY2");
                         }
                         else if (ch == 2)
                         {
-                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, key.Original.MetaData.key1, key.Patched.MetaData.key1, key.Original.MetaData.key2_cn, key.Patched.MetaData.key2);
+                            ManualMetadata = Game.Genshin.Patch.Metadata.Do(PathfileMetadata_Currently, PathfileMetadata_Patched, "ORIKEY1", "PATCHKEY1", "ORIKEY2", "PATCHKEY2");
                         }
                         if (!String.IsNullOrEmpty(ManualMetadata))
                         {
@@ -1745,22 +1778,22 @@ namespace YuukiPS_Launcher
 
         public string UpdateKey()
         {
-            key = API.GSKEY();
-            if (key == null)
+            //key = API.GSKEY();
+            if (get_version == null)
             {
                 return "Maybe your internet has problems or there is an active proxy";
             }
             else
             {
                 //MA
-                DEV_MA_Set_Key1_NoPatch.Text = key.Original.MetaData.key1;
-                DEV_MA_Set_Key2_NoPatch.Text = key.Original.MetaData.key2_os;
-                DEV_MA_Set_Key1_Patch.Text = key.Patched.MetaData.key1;
-                DEV_MA_Set_Key2_Patch.Text = key.Patched.MetaData.key2;
+                DEV_MA_Set_Key1_NoPatch.Text = "";
+                DEV_MA_Set_Key2_NoPatch.Text = "";
+                DEV_MA_Set_Key1_Patch.Text = "";
+                DEV_MA_Set_Key2_Patch.Text = "";
 
                 //UA
-                DEV_UA_Set_Key1_NoPatch.Text = key.Original.MetaData.key2_os;
-                DEV_UA_Set_Key2_Patch.Text = key.Patched.UserAssembly.key2;
+                DEV_UA_Set_Key1_NoPatch.Text = get_version.original.key_find.os;
+                DEV_UA_Set_Key2_Patch.Text = get_version.patched.key_patch;
             }
             return "Successfully got Key, you can see update in developer tab";
         }
