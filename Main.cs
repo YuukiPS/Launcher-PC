@@ -244,7 +244,7 @@ namespace YuukiPS_Launcher
             if (get_version == null)
             {
                 //0.0.0
-                Console.WriteLine("Could not find version via API Check");
+                Console.WriteLine("No Support Game with MD5: " + Game_LOC_Original_MD5 + " (Send this log to admin)");
                 return false;
             }
 
@@ -284,17 +284,17 @@ namespace YuukiPS_Launcher
             Get_LA_REL.Text = "Release: " + get_version.release;
             Get_LA_Metode.Text = "Metode: " + get_metode;
 
-            var md5_ori = "??";
+            var md5_ori = "???";
 
             // Pilih Metode
             if (get_metode == "Metadata")
             {
                 GameMetode = 1;
-                if (get_channel == "Chinese")
+                if (get_channel == "CN")
                 {
                     md5_ori = get_version.original.md5_check.cn.metadata;
                 }
-                if (get_channel == "Global")
+                if (get_channel == "OS")
                 {
                     md5_ori = get_version.original.md5_check.os.metadata;
                 }
@@ -302,11 +302,11 @@ namespace YuukiPS_Launcher
             else if (get_metode == "UserAssembly")
             {
                 GameMetode = 2;
-                if (get_channel == "Chinese")
+                if (get_channel == "CN")
                 {
                     md5_ori = get_version.original.md5_check.cn.userassembly;
                 }
-                if (get_channel == "Global")
+                if (get_channel == "OS")
                 {
                     md5_ori = get_version.original.md5_check.os.userassembly;
                 }
@@ -354,7 +354,7 @@ namespace YuukiPS_Launcher
             }
 
             var use_metode = get_version.patched.metode;
-            var use_release = get_version.release;
+            var use_channel = get_version.channel;
 
             // API            
             string MD5_UA_API_Original;
@@ -367,7 +367,7 @@ namespace YuukiPS_Launcher
 
             // Select Metode (via API Cloud)
             //var cno = "Global";
-            if (use_release == "Global")
+            if (use_channel == "OS")
             {
                 MD5_UA_API_Original = get_version.original.md5_check.os.userassembly.ToUpper();
                 MD5_UA_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
@@ -378,7 +378,7 @@ namespace YuukiPS_Launcher
                 key_to_patch = get_version.patched.key_patch;
                 key_to_find = get_version.original.key_find.os;
             }
-            else if (use_release == "Chinese")
+            else if (use_channel == "CN")
             {
                 MD5_UA_API_Original = get_version.original.md5_check.cn.userassembly.ToUpper();
                 MD5_UA_API_Patched = get_version.patched.md5_vaild.cn.ToUpper();
@@ -394,7 +394,7 @@ namespace YuukiPS_Launcher
                 return "This Game Version is not compatible with Method Patch UserAssembly";
             }
 
-            var DL_Patch = API.API_DL_OW + "api/public/dl/ZOrLF1E5/GenshinImpact/Data/PC/" + VersionGame + "/" + use_metode + "/Patch/";
+            var DL_Patch = get_version.patched.resources + "Patch/";
 
             if (metode == 2)
             {

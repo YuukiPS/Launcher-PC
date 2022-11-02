@@ -17,7 +17,6 @@ A simple Launcher that run several anime games.
 * Auto update.
 * More coming soon (PR)
 
-
 ### Installation
 
 For Nightly Releases [Download here](https://github.com/akbaryahya/YuukiPS-Launcher/releases)
@@ -28,3 +27,8 @@ Required
 ### Screenshot
 
 ![ConsoleControl Screenshot](./Docs/show.jpg "ConsoleControl Screenshot")
+
+### How to use
+<a href="http://www.youtube.com/watch?feature=github&v=wYqJdCS3wUc" target="_blank">
+ <img src="http://img.youtube.com/vi/wYqJdCS3wUc/mqdefault.jpg" alt="Watch the video" width="50%" height="210" />
+</a>
