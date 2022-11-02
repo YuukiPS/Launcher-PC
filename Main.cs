@@ -353,20 +353,31 @@ namespace YuukiPS_Launcher
                 return "Can't find config patch cloud";
             }
 
+            if (get_version.original == null)
+            {
+                return "Can't find config original cloud";
+            }
+
+            // API STUFF
             var use_metode = get_version.patched.metode;
             var use_channel = get_version.channel;
 
-            // API            
+            // LOCALHOST            
             string MD5_UA_API_Original;
             string MD5_UA_API_Patched;
             string MD5_Metadata_API_Original;
             string MD5_Metadata_API_Patched;
 
+            var DL_Patch = get_version.patched.resources + "Patch/";
+            var DL_Original = get_version.original.resources;
+
+            var Original_file_MA = "";
+            var Original_file_UA = "";
+
             var key_to_patch = "";
             var key_to_find = "";
 
             // Select Metode (via API Cloud)
-            //var cno = "Global";
             if (use_channel == "OS")
             {
                 MD5_UA_API_Original = get_version.original.md5_check.os.userassembly.ToUpper();
@@ -377,6 +388,10 @@ namespace YuukiPS_Launcher
 
                 key_to_patch = get_version.patched.key_patch;
                 key_to_find = get_version.original.key_find.os;
+
+                Original_file_MA = DL_Original + "GenshinImpact_Data/Managed/Metadata/global-metadata.dat";
+                Original_file_UA = DL_Original + "GenshinImpact_Data/Native/UserAssembly.dll";
+
             }
             else if (use_channel == "CN")
             {
@@ -388,38 +403,218 @@ namespace YuukiPS_Launcher
 
                 key_to_patch = get_version.patched.key_patch;
                 key_to_find = get_version.original.key_find.cn;
+
+                Original_file_MA = DL_Original + "YuanShen_Data/Managed/Metadata/global-metadata.dat";
+                Original_file_UA = DL_Original + "YuanShen_Data/Native/UserAssembly.dll";
             }
             else
             {
-                return "This Game Version is not compatible with Method Patch UserAssembly";
+                return "This Game Version is not compatible with Any Method Patch";
             }
 
-            var DL_Patch = get_version.patched.resources + "Patch/";
+            // >> All <<
+
+            // Check Folder UA
+            var cst_folder_UA = Set_UA_Folder.Text;
+            if (String.IsNullOrEmpty(cst_folder_UA))
+            {
+                return "No UserAssembly folder found (1)";
+            }
+            if (!Directory.Exists(cst_folder_UA))
+            {
+                return "No UserAssembly folder found (2)";
+            }
+            // Check file UserAssembly
+            string PathfileUA_Currently = Path.Combine(cst_folder_UA, "UserAssembly.dll");
+            string PathfileUA_Patched = Path.Combine(cst_folder_UA, "UserAssembly-patched.dll");
+            string PathfileUA_Original = Path.Combine(cst_folder_UA, "UserAssembly-original.dll");
+            // Check MD5 local (First time)
+            string MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+            string MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
+            string MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
+
+            // Check folder Metadata
+            var cst_folder_metadata = Set_Metadata_Folder.Text;
+            if (String.IsNullOrEmpty(cst_folder_metadata))
+            {
+                return "No MetaData folder found (1)";
+            }
+            if (!Directory.Exists(cst_folder_metadata))
+            {
+                return "No MetaData folder found (2)";
+            }
+            // Check file MetaData
+            string PathfileMetadata_Currently = Path.Combine(cst_folder_metadata, "global-metadata.dat");
+            string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
+            string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
+            // Get MD5 local Metadata (First time)
+            string MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+            string MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
+            string MD5_Metadata_LOC_Patched = Tool.CalculateMD5(PathfileMetadata_Patched);
+
+            // Two-method verification even when using offline mode
+            // >> If UserAssembly is broken <<
+            var download_ua = false;
+            if (!File.Exists(PathfileUA_Currently))
+            {
+                // Check if found file original
+                if (File.Exists(PathfileUA_Original))
+                {
+                    // Check if API Original same with Original LOC
+                    if (MD5_UA_API_Original == MD5_UA_LOC_Original)
+                    {
+                        File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                        MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                        Console.WriteLine("We detect you have non file (Currently UserAssembly) files so we return them with Original File.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Download UserAssembly, because it's not original (5)");
+                        download_ua = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Download UserAssembly, because file was not found");
+                    download_ua = true;
+                }
+            }
+            else
+            {
+                // File found, so check md5
+                if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
+                {
+                    if (patchit)
+                    {
+                        Console.WriteLine("Download UserAssembly, because it's not original 1");
+                        download_ua = true;
+                    }
+                    else
+                    {
+                        if (MD5_UA_API_Original != MD5_UA_LOC_Original)
+                        {
+                            Console.WriteLine("Download UserAssembly, because it's not original 2");
+                            download_ua = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Skip download UserAssembly, it's up-to-date (3)");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Skip download UserAssembly, it's up-to-date (4)");
+                }
+            }
+            if (download_ua)
+            {
+                try
+                {
+                    //Console.WriteLine("DL: " + Original_file_UA);
+                    var CEKDL1 = new Download(Original_file_UA, PathfileUA_Currently);
+                    if (CEKDL1.ShowDialog() != DialogResult.OK)
+                    {
+                        return "Get Original UserAssembly failed";
+                    }
+                    else
+                    {
+                        MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                    }
+                    Console.WriteLine("Get Original UserAssembly");
+                }
+                catch (Exception exx)
+                {
+                    return "Error Get Original UserAssembly: " + exx.ToString();
+                }
+            }
+            // >> If Metadata is broken <<
+            var download_metadata = false;
+            if (!File.Exists(PathfileMetadata_Currently))
+            {
+                // Check if found file original
+                if (File.Exists(PathfileUA_Original))
+                {
+                    // Check if API Original same with Original LOC
+                    if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
+                    {
+                        File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                        MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                        Console.WriteLine("We detect you have non file (Currently Metadata) file so we return them with Original File.");
+                    }
+                    else
+                    {
+                        // file not vaild so download
+                        download_metadata = true;
+                        Console.WriteLine("Download UserAssembly, because it's not original (5)");
+                    }
+                }
+                else
+                {
+                    // file not found, so download
+                    download_metadata = true;
+                    Console.WriteLine("Download Metadata, because file was not found");
+                }
+            }
+            else
+            {
+                // File found, so check md5
+                if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
+                {
+                    if (patchit)
+                    {
+                        download_metadata = true;
+                        Console.WriteLine("Download UserAssembly, because it's not original (1)");
+                    }
+                    else
+                    {
+                        if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original)
+                        {
+                            download_metadata = true;
+                            Console.WriteLine("Download UserAssembly, because it's not original (2)");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Skip download Metadata, it's up-to-date (3)");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Skip download Metadata, it's up-to-date (4)");
+                }
+            }
+            if (download_metadata)
+            {
+                try
+                {
+                    //Console.WriteLine("DL: " + Original_file_MA);
+                    var CEKDL2 = new Download(Original_file_MA, PathfileMetadata_Currently);
+                    if (CEKDL2.ShowDialog() != DialogResult.OK)
+                    {
+                        return "Get Original Metadata failed";
+                    }
+                    else
+                    {
+                        MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                    }
+                    Console.WriteLine("Get Original Metadata");
+                }
+                catch (Exception exx)
+                {
+                    return "Error Get Original Metadata: " + exx.ToString();
+                }
+            }
+
+            // It should be here that all files are complete, unless you want to check other vaild files again
+
 
             if (metode == 2)
             {
+                // >> UA <<
+
                 // debug
-                //online = false;
-
-                // Check Folder UA
-                var cst_folder_UA = Set_UA_Folder.Text;
-                if (String.IsNullOrEmpty(cst_folder_UA))
-                {
-                    return "No UserAssembly folder found (1)";
-                }
-                if (!Directory.Exists(cst_folder_UA))
-                {
-                    return "No UserAssembly folder found (2)";
-                }
-
-                string PathfileUA_Currently = Path.Combine(cst_folder_UA, "UserAssembly.dll");
-                string PathfileUA_Patched = Path.Combine(cst_folder_UA, "UserAssembly-patched.dll");
-                string PathfileUA_Original = Path.Combine(cst_folder_UA, "UserAssembly-original.dll");
-
-                // Check MD5 local (First time)
-                string MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                string MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
-                string MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
+                //online = false;                
 
                 if (online)
                 {
@@ -444,7 +639,7 @@ namespace YuukiPS_Launcher
                         else
                         {
                             // Download Original UA
-                            var DL3 = new Download(DL_Patch + "UserAssembly-original.dll", PathfileUA_Original);
+                            var DL3 = new Download(Original_file_UA, PathfileUA_Original);
                             if (DL3.ShowDialog() != DialogResult.OK)
                             {
                                 return "Original Backup failed because md5 doesn't match";
@@ -673,26 +868,6 @@ namespace YuukiPS_Launcher
             }
             else if (metode == 1)
             {
-                // Check folder Metadata
-                var cst_folder_metadata = Set_Metadata_Folder.Text;
-                if (String.IsNullOrEmpty(cst_folder_metadata))
-                {
-                    return "No metadata folder found (1)";
-                }
-                if (!Directory.Exists(cst_folder_metadata))
-                {
-                    return "No metadata folder found (2)";
-                }
-
-                // Check file metadata
-                string PathfileMetadata_Currently = Path.Combine(cst_folder_metadata, "global-metadata.dat");
-                string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
-                string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
-
-                // Get MD5 local Metadata (First time)
-                string MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                string MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
-                string MD5_Metadata_LOC_Patched = Tool.CalculateMD5(PathfileMetadata_Patched);
 
                 // debug
                 //online = false;
@@ -720,7 +895,7 @@ namespace YuukiPS_Launcher
                         else
                         {
                             // Download Original MetaData
-                            var DL3 = new Download(DL_Patch + "global-metadata-original.dat", PathfileMetadata_Original);
+                            var DL3 = new Download(Original_file_MA, PathfileMetadata_Original);
                             if (DL3.ShowDialog() != DialogResult.OK)
                             {
                                 return "Original Backup failed because md5 doesn't match";
