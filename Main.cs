@@ -481,16 +481,40 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                // File found, so check md5
+                // File found, but unvaild file
                 if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
                 {
                     if (patchit)
                     {
-                        Console.WriteLine("Download UserAssembly, because it's not original 1");
-                        download_ua = true;
+                        // >> if in patch mode <<
+
+                        // Check if found file original
+                        if (File.Exists(PathfileUA_Original))
+                        {
+                            // Check if API Original same with Original LOC
+                            if (MD5_UA_API_Original == MD5_UA_LOC_Original)
+                            {
+                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                                Console.WriteLine("We detect you have non original file in Currently UserAssembly files so we return them with Original File. (6)");
+                            }
+                            else
+                            {
+                                // download if Original file unvaild
+                                Console.WriteLine("Download UserAssembly, because it's not original (7)");
+                                download_ua = true;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Download UserAssembly, because file was not found (8)");
+                            download_ua = true;
+                        }
+
                     }
                     else
                     {
+                        // >> no patch <<
                         if (MD5_UA_API_Original != MD5_UA_LOC_Original)
                         {
                             Console.WriteLine("Download UserAssembly, because it's not original 2");
@@ -533,7 +557,7 @@ namespace YuukiPS_Launcher
             if (!File.Exists(PathfileMetadata_Currently))
             {
                 // Check if found file original
-                if (File.Exists(PathfileUA_Original))
+                if (File.Exists(PathfileMetadata_Original))
                 {
                     // Check if API Original same with Original LOC
                     if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
@@ -563,11 +587,36 @@ namespace YuukiPS_Launcher
                 {
                     if (patchit)
                     {
-                        download_metadata = true;
-                        Console.WriteLine("Download UserAssembly, because it's not original (1)");
+                        // >> if in patch mode <<
+
+                        // Check if found file original
+                        if (File.Exists(PathfileMetadata_Original))
+                        {
+                            // Check if API Original same with Original LOC
+                            if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
+                            {
+                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                                Console.WriteLine("We detect you have non Original file in Currently Metadata, file so we return them with Original File (6)");
+                            }
+                            else
+                            {
+                                // file not vaild so download
+                                download_metadata = true;
+                                Console.WriteLine("Download UserAssembly, because it's not original (7)");
+                            }
+                        }
+                        else
+                        {
+                            // file not found, so download
+                            download_metadata = true;
+                            Console.WriteLine("Download Metadata, because file was not found (8)");
+                        }
                     }
                     else
                     {
+                        // >> if in no patch mode <<
+
                         if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original)
                         {
                             download_metadata = true;
@@ -1555,7 +1604,7 @@ namespace YuukiPS_Launcher
                 var cekAkebi = API.GetAkebi(GameChannel, VersionGame);
                 if (string.IsNullOrEmpty(cekAkebi))
                 {
-                    MessageBox.Show("Can't check latest Akebi");
+                    MessageBox.Show("No update for this version so far or error check version, check console");
                     return;
                 }
                 string[] SplitAkebiGC = cekAkebi.Split("|");
@@ -1563,7 +1612,7 @@ namespace YuukiPS_Launcher
                 // Check file update, jika tidak ada
                 if (!File.Exists(get_AkebiGC_md5))
                 {
-                    Console.WriteLine("Md5 no found, update!!!");
+                    Console.WriteLine("MD5 no found, update!!!");
                     Update_AkebiGC = true;
                 }
                 else

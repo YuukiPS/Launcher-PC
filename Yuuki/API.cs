@@ -238,7 +238,8 @@ namespace YuukiPS_Launcher.Yuuki
                             // Get List Releases
                             foreach (var GetVersion in GetData)
                             {
-                                if (GetVersion.name.Contains(ver_set))
+                                //Console.WriteLine(GetVersion.body);
+                                if (GetVersion.body.Contains("Game Version: " + ver_set))
                                 {
                                     var version = GetVersion.tag_name + "_" + whos + "_" + ver_set;
                                     var aseet = GetVersion.assets;
