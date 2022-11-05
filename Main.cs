@@ -548,6 +548,10 @@ namespace YuukiPS_Launcher
             {
                 try
                 {
+                    if (!patchit)
+                    {
+                        return "Unable to download files " + Original_file_UA + " in a closed game state, please try again or download manual and put it in " + PathfileUA_Currently;
+                    }
                     var CEKDL1 = new Download(Original_file_UA, PathfileUA_Currently);
                     if (CEKDL1.ShowDialog() != DialogResult.OK)
                     {
@@ -557,7 +561,6 @@ namespace YuukiPS_Launcher
                     {
                         MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
                         Console.WriteLine("Currently UserAssembly: " + MD5_UA_LOC_Currently);
-
                     }
                 }
                 catch (Exception exx)
@@ -671,7 +674,10 @@ namespace YuukiPS_Launcher
             {
                 try
                 {
-                    //Console.WriteLine("DL: " + Original_file_MA);
+                    if (!patchit)
+                    {
+                        return "Unable to download files " + Original_file_MA + " in a closed game state, please try again or download manual and put it in " + PathfileMetadata_Currently;
+                    }
                     var CEKDL2 = new Download(Original_file_MA, PathfileMetadata_Currently);
                     if (CEKDL2.ShowDialog() != DialogResult.OK)
                     {
