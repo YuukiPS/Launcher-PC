@@ -586,11 +586,7 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                // if file found
-                if (MD5_UA_API_Original != MD5_UA_LOC_Original)
-                {
-                    return "For some reason I don't know why this (666)";
-                }
+                // if file found (skip)               
             }
 
 
@@ -712,11 +708,40 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                // if file found
-                if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original)
+                // if file found (skip)
+            }
+
+            // >>> Final Tes <<<
+
+            //UA
+            MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
+            MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+            if (MD5_UA_API_Original != MD5_UA_LOC_Original && MD5_UA_API_Original != MD5_UA_LOC_Currently)
+            {
+                try
                 {
-                    return "For some reason I don't know why this (777)";
+                    File.Delete(PathfileUA_Original);
                 }
+                catch (Exception exx)
+                {
+                    // skip
+                }
+                return MD5_UA_LOC_Original + " and " + MD5_UA_LOC_Currently + " value should be " + MD5_UA_API_Original + ", This might happen because file is corrupted, try again or manual update. (g1)";
+            }
+            // Metadata
+            MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
+            MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+            if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original && MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
+            {
+                try
+                {
+                    File.Delete(PathfileMetadata_Original);
+                }
+                catch (Exception exx)
+                {
+                    // skip
+                }
+                return MD5_Metadata_LOC_Original + " and " + MD5_Metadata_LOC_Currently + " value should be " + MD5_Metadata_API_Original + ", This might happen because file is corrupted, try again or manual update. (g1)";
             }
 
             // It should be here that all files already verified, unless you want to check other vaild files again.
