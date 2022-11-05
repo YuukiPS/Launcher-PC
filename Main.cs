@@ -87,9 +87,6 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("No Config file found...");
             }
 
-            // Get Key
-            Console.WriteLine(UpdateKey());
-
             // Check Game Version
             CheckVersionGame();
         }
@@ -412,6 +409,25 @@ namespace YuukiPS_Launcher
                 return "This Game Version is not compatible with Any Method Patch";
             }
 
+            // >> Make sure MD5 API is not empty <<
+
+            if (String.IsNullOrEmpty(MD5_UA_API_Original))
+            {
+                return "Game version is not supported (4)";
+            }
+            if (String.IsNullOrEmpty(MD5_UA_API_Patched))
+            {
+                return "Game version is not supported (3)";
+            }
+            if (String.IsNullOrEmpty(MD5_Metadata_API_Original))
+            {
+                return "Game version is not supported (2)";
+            }
+            if (String.IsNullOrEmpty(MD5_Metadata_API_Patched))
+            {
+                return "Game version is not supported (1)";
+            }
+
             // >> All <<
 
             // Check Folder UA
@@ -453,6 +469,7 @@ namespace YuukiPS_Launcher
             string MD5_Metadata_LOC_Patched = Tool.CalculateMD5(PathfileMetadata_Patched);
 
             // Two-method verification even when using offline mode
+
             // >> If UserAssembly is broken <<
             var download_ua = false;
             if (!File.Exists(PathfileUA_Currently))
@@ -463,67 +480,62 @@ namespace YuukiPS_Launcher
                     // Check if API Original same with Original LOC
                     if (MD5_UA_API_Original == MD5_UA_LOC_Original)
                     {
-                        File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                        MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                        Console.WriteLine("We detect you have non file (Currently UserAssembly) files so we return them with Original File.");
+                        try
+                        {
+                            File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
+                            MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                            Console.WriteLine("We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (33)");
+                        }
+                        catch (Exception exx)
+                        {
+                            return "Error copy (1)";
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Download UserAssembly, because it's not original (5)");
+                        Console.WriteLine("Download UserAssembly, because PathfileUA_Original with md5 " + MD5_UA_LOC_Original + " does not match " + MD5_UA_API_Original + " (5)");
                         download_ua = true;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Download UserAssembly, because file was not found");
+                    Console.WriteLine("Download UserAssembly, because file PathfileUA_Original was not found");
                     download_ua = true;
                 }
             }
             else
             {
-                // File found, but unvaild file
+                // If file is found and original file doesn't match currently (Make sure current data is really original before patch)
                 if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
                 {
-                    if (patchit)
+                    // Check if found file original
+                    if (File.Exists(PathfileUA_Original))
                     {
-                        // >> if in patch mode <<
-
-                        // Check if found file original
-                        if (File.Exists(PathfileUA_Original))
+                        // Check if API Original same with Original LOC
+                        if (MD5_UA_API_Original == MD5_UA_LOC_Original)
                         {
-                            // Check if API Original same with Original LOC
-                            if (MD5_UA_API_Original == MD5_UA_LOC_Original)
+                            try
                             {
                                 File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
                                 MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                Console.WriteLine("We detect you have non original file in Currently UserAssembly files so we return them with Original File. (6)");
+                                Console.WriteLine("We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (6)");
                             }
-                            else
+                            catch (Exception exx)
                             {
-                                // download if Original file unvaild
-                                Console.WriteLine("Download UserAssembly, because it's not original (7)");
-                                download_ua = true;
+                                return "Error copy (2)";
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Download UserAssembly, because file was not found (8)");
+                            // download if Original file unvaild
+                            Console.WriteLine("Download UserAssembly in 'Currently', because 'PathfileUA_Original' it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Original + " (7)");
                             download_ua = true;
                         }
-
                     }
                     else
                     {
-                        // >> no patch <<
-                        if (MD5_UA_API_Original != MD5_UA_LOC_Original)
-                        {
-                            Console.WriteLine("Download UserAssembly, because it's not original 2");
-                            download_ua = true;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Skip download UserAssembly, it's up-to-date (3)");
-                        }
+                        Console.WriteLine("Download UserAssembly in 'Currently' because file PathfileUA_Original not found and it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Currently + " Currently file (8)");
+                        download_ua = true;
                     }
                 }
                 else
@@ -531,11 +543,11 @@ namespace YuukiPS_Launcher
                     Console.WriteLine("Skip download UserAssembly, it's up-to-date (4)");
                 }
             }
+            // if need download ua
             if (download_ua)
             {
                 try
                 {
-                    //Console.WriteLine("DL: " + Original_file_UA);
                     var CEKDL1 = new Download(Original_file_UA, PathfileUA_Currently);
                     if (CEKDL1.ShowDialog() != DialogResult.OK)
                     {
@@ -544,14 +556,44 @@ namespace YuukiPS_Launcher
                     else
                     {
                         MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+                        Console.WriteLine("Currently UserAssembly: " + MD5_UA_LOC_Currently);
+
                     }
-                    Console.WriteLine("Get Original UserAssembly");
                 }
                 catch (Exception exx)
                 {
                     return "Error Get Original UserAssembly: " + exx.ToString();
                 }
             }
+            else
+            {
+                Console.WriteLine("Currently UserAssembly: " + MD5_UA_LOC_Currently);
+            }
+
+            // here current file should match so if original file is not found use current file to copy to original file
+            if (!File.Exists(PathfileUA_Original))
+            {
+                try
+                {
+                    File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
+                    MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
+                    Console.WriteLine("We copy file in PathfileUA_Currently to PathfileUA_Original files (22)");
+                }
+                catch (Exception exx)
+                {
+                    return "Error copy PathfileUA_Currently to PathfileUA_Original (1)";
+                }
+            }
+            else
+            {
+                // if file found
+                if (MD5_UA_API_Original != MD5_UA_LOC_Original)
+                {
+                    return "For some reason I don't know why this (666)";
+                }
+            }
+
+
             // >> If Metadata is broken <<
             var download_metadata = false;
             if (!File.Exists(PathfileMetadata_Currently))
@@ -562,70 +604,65 @@ namespace YuukiPS_Launcher
                     // Check if API Original same with Original LOC
                     if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
                     {
-                        File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                        MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                        Console.WriteLine("We detect you have non file (Currently Metadata) file so we return them with Original File.");
+                        try
+                        {
+                            File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
+                            MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                            Console.WriteLine("We copy PathfileMetadata_Original to PathfileMetadata_Currently");
+                        }
+                        catch (Exception exx)
+                        {
+                            return "Error copy PathfileMetadata_Original to PathfileMetadata_Currently (111)";
+                        }
                     }
                     else
                     {
                         // file not vaild so download
                         download_metadata = true;
-                        Console.WriteLine("Download UserAssembly, because it's not original (5)");
+                        Console.WriteLine("Download Metadata in Currently,because file Original with md5 " + MD5_Metadata_API_Original + " doesn't match " + MD5_Metadata_LOC_Original + " (5)");
                     }
                 }
                 else
                 {
                     // file not found, so download
                     download_metadata = true;
-                    Console.WriteLine("Download Metadata, because file was not found");
+                    Console.WriteLine("Download Metadata, because file PathfileMetadata_Original was not found");
                 }
             }
             else
             {
-                // File found, so check md5
+                // If file is found and original file doesn't match currently (Make sure current data is really original before patch)
                 if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
                 {
-                    if (patchit)
+                    // Check if found file original
+                    if (File.Exists(PathfileMetadata_Original))
                     {
-                        // >> if in patch mode <<
-
-                        // Check if found file original
-                        if (File.Exists(PathfileMetadata_Original))
+                        // Check if API Original same with Original LOC
+                        if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
                         {
-                            // Check if API Original same with Original LOC
-                            if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
+                            try
                             {
                                 File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
                                 MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                                Console.WriteLine("We detect you have non Original file in Currently Metadata, file so we return them with Original File (6)");
+                                Console.WriteLine("We copy file PathfileMetadata_Original to PathfileMetadata_Currently (6)");
                             }
-                            else
+                            catch (Exception exx)
                             {
-                                // file not vaild so download
-                                download_metadata = true;
-                                Console.WriteLine("Download UserAssembly, because it's not original (7)");
+                                return "Error copy PathfileMetadata_Original to PathfileMetadata_Currently (111)";
                             }
                         }
                         else
                         {
-                            // file not found, so download
+                            // file not vaild so download
                             download_metadata = true;
-                            Console.WriteLine("Download Metadata, because file was not found (8)");
+                            Console.WriteLine("Download Metadata in Currently, because PathfileMetadata_Original file does not match " + MD5_Metadata_API_Original + " with " + MD5_Metadata_LOC_Original + " (7)");
                         }
                     }
                     else
                     {
-                        // >> if in no patch mode <<
-
-                        if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original)
-                        {
-                            download_metadata = true;
-                            Console.WriteLine("Download UserAssembly, because it's not original (2)");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Skip download Metadata, it's up-to-date (3)");
-                        }
+                        // file not found, so download
+                        download_metadata = true;
+                        Console.WriteLine("Download Metadata in Currently, because file PathfileMetadata_Original was not found (8)");
                     }
                 }
                 else
@@ -633,6 +670,7 @@ namespace YuukiPS_Launcher
                     Console.WriteLine("Skip download Metadata, it's up-to-date (4)");
                 }
             }
+            // if need download
             if (download_metadata)
             {
                 try
@@ -646,17 +684,42 @@ namespace YuukiPS_Launcher
                     else
                     {
                         MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
+                        Console.WriteLine("Currently Metadata: " + MD5_Metadata_LOC_Currently);
                     }
-                    Console.WriteLine("Get Original Metadata");
                 }
                 catch (Exception exx)
                 {
                     return "Error Get Original Metadata: " + exx.ToString();
                 }
             }
+            else
+            {
+                Console.WriteLine("Currently Metadata: " + MD5_Metadata_LOC_Currently);
+            }
+            // here current file should match so if original file is not found use current file to copy to original file
+            if (!File.Exists(PathfileMetadata_Original))
+            {
+                try
+                {
+                    File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
+                    MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
+                    Console.WriteLine("We copy file in PathfileMetadata_Currently to PathfileMetadata_Original files (22)");
+                }
+                catch (Exception exx)
+                {
+                    return "Error copy PathfileMetadata_Currently to PathfileMetadata_Original (1)";
+                }
+            }
+            else
+            {
+                // if file found
+                if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original)
+                {
+                    return "For some reason I don't know why this (777)";
+                }
+            }
 
-            // It should be here that all files are complete, unless you want to check other vaild files again
-
+            // It should be here that all files already verified, unless you want to check other vaild files again.
 
             if (metode == 2)
             {
@@ -667,138 +730,84 @@ namespace YuukiPS_Launcher
 
                 if (online)
                 {
-                    // If original backup file is not found, start backup process
+                    // If original backup file is not found.
                     if (!File.Exists(PathfileUA_Original))
                     {
-                        // Check if MD5_UA_API_Original (original file from api) matches MD5_UA_LOC_Currently (file in current use)
-                        if (MD5_UA_API_Original == MD5_UA_LOC_Currently)
-                        {
-                            try
-                            {
-                                File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
-                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-
-                                Console.WriteLine("Backup UA Original");
-                            }
-                            catch (Exception ex)
-                            {
-                                return "Failed: Backup UA Original1: " + ex.ToString();
-                            }
-                        }
-                        else
-                        {
-                            // Download Original UA
-                            var DL3 = new Download(Original_file_UA, PathfileUA_Original);
-                            if (DL3.ShowDialog() != DialogResult.OK)
-                            {
-                                return "Original Backup failed because md5 doesn't match";
-                            }
-                            else
-                            {
-                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-                            }
-                        }
+                        return "Why does this pass (1)";
                     }
 
-                    // Jika file UA sekarang tidak ada gunakan UserAssembly-original.dat
+                    // If current UA file doesn't exist use UserAssembly-Original.dll
                     if (!File.Exists(PathfileUA_Currently))
                     {
-                        try
-                        {
-                            File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                            MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                            Console.WriteLine("Get Backup Original");
-                        }
-                        catch (Exception exx)
-                        {
-                            return "Error Get Backup Original: " + exx.ToString();
-                        }
+                        return "Why does this pass (2)";
                     }
 
-                    // Jik User tidak ingin patch kembalikan ke aslinya. (If MD5_UA_API_Original doesn't match MD5_UA_LOC_Currently)
-                    if (!patchit)
+                    if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
                     {
-                        if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
-                        {
-                            try
-                            {
-                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                                Console.WriteLine(MD5_UA_API_Original + " doesn't match with " + MD5_UA_LOC_Currently + ", backup it....");
-                            }
-                            catch (Exception exx)
-                            {
-                                return "Failed: Backup UA Original: " + exx.ToString();
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Skip, it's up-to-date");
-                        }
-                    }
-                    else if (MD5_UA_API_Patched != MD5_UA_LOC_Currently)
-                    {
-                        // Jika User pilih patch (MD5_UA_API_Patched doesn't match MD5_UA_LOC_Currently)
-                        var download_patch = false;
-                        if (!File.Exists(PathfileUA_Patched))
-                        {
-                            download_patch = true;
-                        }
-                        else
-                        {
-                            // If UA_API_Patches_MD5 (patch file from api) matches UA_LOC_Patched_MD5 (current patch file)
-                            if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
-                            {
-                                download_patch = true;
-                            }
-                        }
-
-                        // If you don't have PathfileUA_Patched, download it
-                        if (download_patch)
-                        {
-                            var DL2 = new Download(DL_Patch + "UserAssembly-patched.dll", PathfileUA_Patched);
-                            if (DL2.ShowDialog() != DialogResult.OK)
-                            {
-                                // If PathfileUA_Patched (Patched file) doesn't exist
-                                return "No Found Patch file....";
-                            }
-                            else
-                            {
-                                MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
-                            }
-                        }
-
-                        if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
-                        {
-                            // Failed because file doesn't match from md5 api
-                            return "(UA) Your version Game is not supported, or it needs latest update or file is corrupted.";
-                        }
-                        else
-                        {
-                            // Patch to PathfileUA_Now                            
-                            try
-                            {
-                                File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                                Console.WriteLine("Patch done...");
-                                download_patch = false;
-                            }
-                            catch (Exception x)
-                            {
-                                return "Failed Patch: " + x.ToString();
-                            }
-                        }
-
+                        return "Why does this pass (3)";
                     }
                     else
                     {
-                        // If UA_API_Patches_MD5 match UA_LOC_Now_MD5
-                    }
+                        if (patchit)
+                        {
+                            // if current file is original and need patch
 
-                    //return "TODO: not yet available";
+                            var download_patch = false;
+                            if (!File.Exists(PathfileUA_Patched))
+                            {
+                                download_patch = true;
+                            }
+                            else
+                            {
+                                // If UA_API_Patches_MD5 (patch file from api) matches UA_LOC_Patched_MD5 (current patch file)
+                                if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
+                                {
+                                    download_patch = true;
+                                }
+                            }
+
+                            // If download_patch true, download it
+                            if (download_patch)
+                            {
+                                var DL2 = new Download(DL_Patch + "UserAssembly-patched.dll", PathfileUA_Patched);
+                                if (DL2.ShowDialog() != DialogResult.OK)
+                                {
+                                    return "No Found Patch file....";
+                                }
+                                else
+                                {
+                                    MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
+                                }
+                            }
+
+                            if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
+                            {
+                                // Failed because file doesn't match from md5 api
+                                return "(UA) Your version Game is not supported, or it needs latest update or file is corrupted.";
+                            }
+                            else
+                            {
+                                // Patch file                           
+                                try
+                                {
+                                    File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
+                                    MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
+
+                                    Console.WriteLine("Patch PathfileUA_Patched to PathfileUA_Currently done");
+                                    download_patch = false;
+                                }
+                                catch (Exception x)
+                                {
+                                    return "Failed Patch: " + x.ToString();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // No Patch
+                            Console.WriteLine("Skip, because file is original (x1)");
+                        }
+                    }
                 }
                 else
                 {
@@ -808,107 +817,47 @@ namespace YuukiPS_Launcher
                         // Use PathfileUA_Currently to backup PathfileUA_Original file, but since without md5 api we can't check is original or not.
                         if (!File.Exists(PathfileUA_Original))
                         {
-                            try
-                            {
-                                File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
-                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-
-                                Console.WriteLine("Backup UserAssembly Original");
-                            }
-                            catch (Exception ex)
-                            {
-                                return "UserAssembly backup failed because file not found in offline mode: " + ex.ToString();
-                            }
+                            return "Why does this pass (1-1)";
                         }
 
                         // Check PathfileMetadata_Currently if no found
                         if (!File.Exists(PathfileUA_Currently))
                         {
-                            if (File.Exists(PathfileUA_Original))
-                            {
-                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                                Console.WriteLine("We detected that you did not have files (Currently) so we returned them with Original");
-                            }
-                            else
-                            {
-                                return "Can't find Original UA file in offline mode (0)";
-                            }
-                        }
-                        else
-                        {
-                            // jika PathfileMetadata_Currently ada coba cek PathfileMetadata_Original apakah sama
-                            if (File.Exists(PathfileUA_Original))
-                            {
-                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-                                if (MD5_UA_LOC_Currently != MD5_UA_LOC_Original)
-                                {
-                                    File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                    MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                                    Console.WriteLine("We detect you have non-original (Currently) files so we return them with Original");
-                                }
-                            }
-                            else
-                            {
-                                return "Can't find Original UA file in offline mode (1)";
-                            }
+                            return "Why does this pass (1-2)";
                         }
 
+                        // keep patch
                         var ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key_to_find, key_to_patch);
                         if (!String.IsNullOrEmpty(ManualUA))
                         {
                             return "Error Patch UserAssembly: " + ManualUA;
                         }
-                        /* 
-                        if (!File.Exists(PathfileUA_Patched))
-                        {
-                            Console.WriteLine("No manual patch found so let's patch");                            
-                        }
-                        */
 
-                        // Patch PathfileUA_Patched ke PathfileUA_Currently
+                        // If patch is successful
                         if (File.Exists(PathfileUA_Patched))
                         {
+                            MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
                             try
                             {
                                 File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
                                 MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
                                 Console.WriteLine("Patch UserAssembly...");
                             }
                             catch (Exception ex)
                             {
-                                return "Failed Patch UserAssembly Original1: " + ex.ToString();
+                                return "Failed copy PathfileUA_Patched to PathfileUA_Currently: " + ex.ToString();
                             }
                         }
                         else
                         {
-                            return "Failed Patch UserAssembly (0)";
+                            return "Why does this pass (1-3)";
                         }
                     }
                     else
                     {
-                        // Jika PathfileUA_Original ada kembalikan ke PathfileUA_Currently
-                        if (File.Exists(PathfileUA_Original))
-                        {
-                            try
-                            {
-                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                                Console.WriteLine("Back to Original UserAssembly Version...");
-                            }
-                            catch (Exception ex)
-                            {
-                                return "Failed: Backup UserAssembly Original2: " + ex.ToString();
-                            }
-                        }
-
+                        // No Patch
+                        Console.WriteLine("Skip, because file is original (x2)");
                     }
-
                 }
 
                 Console.WriteLine("MD5 UA Currently: " + MD5_UA_LOC_Currently);
@@ -921,6 +870,7 @@ namespace YuukiPS_Launcher
                 // debug
                 //online = false;
 
+                /*
                 if (online)
                 {
                     // If original backup file is not found, start backup process
@@ -1192,6 +1142,9 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("MD5 Metadata Currently: " + MD5_Metadata_LOC_Currently);
                 Console.WriteLine("MD5 Metadata Original: " + MD5_Metadata_LOC_Original);
                 Console.WriteLine("MD5 Metadata Patched: " + MD5_Metadata_LOC_Patched);
+                */
+
+                return "I'm tired Checking Metadata";
             }
             else
             {
@@ -2002,7 +1955,6 @@ namespace YuukiPS_Launcher
 
         public string UpdateKey()
         {
-            //key = API.GSKEY();
             if (get_version == null)
             {
                 return "Maybe your internet has problems or there is an active proxy";

@@ -60,7 +60,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                     return e.Message + "\n Cannot write to file.";
                 }
             }
-            return "Patch UserAssembly Failed";
+            return "Patch UserAssembly Failed, Send console logs don't just screenshot this message.";
         }
 
         public static byte[] ToUABytes(string key)
