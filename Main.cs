@@ -1585,33 +1585,53 @@ namespace YuukiPS_Launcher
 
                 var Update_AkebiGC = false;
 
+                var version_akebi = "";
+                var url_download = "";
+
                 var cekAkebi = API.GetAkebi(GameChannel, VersionGame);
                 if (string.IsNullOrEmpty(cekAkebi))
                 {
                     MessageBox.Show("No update for this version so far or error check version, check console");
-                    return;
+                    //return;
                 }
-                string[] SplitAkebiGC = cekAkebi.Split("|");
+                else
+                {
+                    string[] SplitAkebiGC = cekAkebi.Split("|");
+                    version_akebi = SplitAkebiGC[0];
+                    url_download = SplitAkebiGC[1];
+                }                
 
                 // Check file update, jika tidak ada
                 if (!File.Exists(get_AkebiGC_md5))
                 {
+                    Console.WriteLine("Akebi file md5 not found");
+                    if (string.IsNullOrEmpty(cekAkebi))
+                    {
+                        return;
+                    }
                     Console.WriteLine("MD5 no found, update!!!");
                     Update_AkebiGC = true;
                 }
                 else
                 {
-                    string readText = File.ReadAllText(get_AkebiGC_md5);
-                    if (!readText.Contains(SplitAkebiGC[0]))
+                    if (!string.IsNullOrEmpty(version_akebi))
                     {
-                        Console.WriteLine("Found a new version, time to download");
-                        Update_AkebiGC = true;
+                        string readText = File.ReadAllText(get_AkebiGC_md5);
+                        if (!readText.Contains(version_akebi))
+                        {
+                            Console.WriteLine("Found a new version, time to download");
+                            Update_AkebiGC = true;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No new Akebi found");
                     }
                 }
 
                 if (Update_AkebiGC)//!File.Exists(get_AkebiGC)
                 {
-                    var DL2 = new Download(SplitAkebiGC[1], get_AkebiGC_zip);
+                    var DL2 = new Download(url_download, get_AkebiGC_zip);
                     if (DL2.ShowDialog() != DialogResult.OK)
                     {
                         MessageBox.Show("Download Akebi failed");
@@ -1654,7 +1674,7 @@ namespace YuukiPS_Launcher
                             p.WaitForExit();
 
                             // Update MD5
-                            File.WriteAllText(get_AkebiGC_md5, SplitAkebiGC[0]);
+                            File.WriteAllText(get_AkebiGC_md5, version_akebi);
 
                         }
                         catch (Exception ex)

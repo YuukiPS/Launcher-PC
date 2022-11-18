@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using System;
 using System.Diagnostics;
 using System.Net;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
+using YuukiPS_Launcher.Json.Mod;
 
 namespace YuukiPS_Launcher.Yuuki
 {
@@ -14,7 +16,6 @@ namespace YuukiPS_Launcher.Yuuki
         public static string API_DL_WB = "https://ps.yuuki.me/api/";
 
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
-        public static string API_GITHUB_Akebi = "https://api.github.com/repos/Taiga74164/Akebi-GC/";
         public static Cient GS_DL(string dl = "os")
         {
             var client = new RestClient(API_DL_WB);
@@ -212,19 +213,17 @@ namespace YuukiPS_Launcher.Yuuki
             return null;
         }
 
-        public static string? GetAkebi(int ch = 1, string ver_set = "3.1")
+        public static string? GetAkebi(int ch = 1, string ver_set = "3.2.0")
         {
-            var client = new RestClient(API_GITHUB_Akebi);
-            var request = new RestRequest("releases");
+            var client = new RestClient(API_DL_WB);
+            var request = new RestRequest("genshin/mod/akebi/"+ver_set);
             var response = client.Execute(request);
 
-            var whos = "global";
+            var whos = "cn";
             if (ch == 2)
             {
-                whos = "china";
+                whos = "os";
             }
-
-            ver_set = ver_set.Replace(".0", "");
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -232,30 +231,17 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var GetData = JsonConvert.DeserializeObject<List<Update>>(response.Content);
+                        var GetData = JsonConvert.DeserializeObject<Akebi>(response.Content);
                         if (GetData != null)
                         {
-                            // Get List Releases
-                            foreach (var GetVersion in GetData)
+                            if(ch == 2)
                             {
-                                //Console.WriteLine(GetVersion.body);
-                                if (GetVersion.body.Contains("Game Version: " + ver_set))
-                                {
-                                    var version = GetVersion.tag_name + "_" + whos + "_" + ver_set;
-                                    var aseet = GetVersion.assets;
-                                    if (aseet != null)
-                                    {
-                                        // Get List Asset
-                                        foreach (var file in aseet)
-                                        {
-                                            if (file.name.Contains(whos))
-                                            {
-                                                return version + "|" + file.browser_download_url;
-                                            }
-                                        }
-                                    }
-                                }
+                                return GetData.package.cn.md6 + "|" + GetData.package.cn.url;
                             }
+                            else
+                            {
+                                return GetData.package.os.md6 + "|" + GetData.package.os.url;
+                            }                            
                         }
                     }
                     catch (Exception ex)
