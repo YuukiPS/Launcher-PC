@@ -15,7 +15,9 @@ namespace YuukiPS_Launcher.Yuuki
         public static string API_DL_OW = "https://drive.yuuki.me/";
         public static string API_DL_WB = "https://ps.yuuki.me/api/";
 
-        public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/akbaryahya/YuukiPS-Launcher/";
+        public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/YuukiPS/Launcher-PC/";
+        public static string API_GITHUB_RSA = "https://api.github.com/repos/34736384/RSAPatch/";
+
         public static Cient GS_DL(string dl = "os")
         {
             var client = new RestClient(API_DL_WB);
@@ -236,11 +238,11 @@ namespace YuukiPS_Launcher.Yuuki
                         {
                             if(ch == 2)
                             {
-                                return GetData.package.cn.md6 + "|" + GetData.package.cn.url;
+                                return GetData.package.cn.md5 + "|" + GetData.package.cn.url;
                             }
                             else
                             {
-                                return GetData.package.os.md6 + "|" + GetData.package.os.url;
+                                return GetData.package.os.md5 + "|" + GetData.package.os.url;
                             }                            
                         }
                     }

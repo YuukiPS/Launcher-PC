@@ -1,7 +1,7 @@
 ## YuukiPS Launcher
 A simple Launcher that run several anime games.
 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/akbaryahya/YuukiPS-Launcher/latest/total) ![GitHub all releases](https://img.shields.io/github/downloads/akbaryahya/YuukiPS-Launcher/total) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fakbaryahya%2FYuukiPS-Launcher&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/YuukiPS/Launcher-PC/latest/total) ![GitHub all releases](https://img.shields.io/github/downloads/akbaryahya/YuukiPS-Launcher/total) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fakbaryahya%2FYuukiPS-Launcher&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
 
 ### Features
 
@@ -19,7 +19,7 @@ A simple Launcher that run several anime games.
 
 ### Installation
 
-For Nightly Releases [Download here](https://github.com/akbaryahya/YuukiPS-Launcher/releases)
+For Nightly Releases [Download here](https://github.com/YuukiPS/Launcher-PC/releases)
 
 Required
  * [.NET 6.0 Runtime (Desktop)](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)

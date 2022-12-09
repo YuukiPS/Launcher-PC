@@ -9,7 +9,7 @@ namespace YuukiPS_Launcher.Yuuki
 {
     public class Server
     {
-        private static string API_GITHUB_DockerGS = "https://api.github.com/repos/akbaryahya/DockerGS/";
+        private static string API_GITHUB_DockerGS = "https://api.github.com/repos/YuukiPS/DockerGS/";
         private static string API_GITHUB_Grasscutter = "https://api.github.com/repos/Grasscutters/Grasscutter/";
         private static string API_DL_Grasscutter_Resources = "https://gitlab.com/yukiz/GrasscutterResources/";
 

@@ -308,6 +308,11 @@ namespace YuukiPS_Launcher
                     md5_ori = get_version.original.md5_check.os.userassembly;
                 }
             }
+            else if (get_metode == "RSA")
+            {
+                GameMetode = 3;
+                md5_ori = "No need to check";
+            }
 
             Get_LA_MD5.Text = "MD5: " + md5_ori;
 
@@ -364,6 +369,7 @@ namespace YuukiPS_Launcher
             string MD5_UA_API_Patched;
             string MD5_Metadata_API_Original;
             string MD5_Metadata_API_Patched;
+            string MD5_API_Patched;
 
             var DL_Patch = get_version.patched.resources + "Patch/";
             var DL_Original = get_version.original.resources;
@@ -389,6 +395,8 @@ namespace YuukiPS_Launcher
                 Original_file_MA = DL_Original + "GenshinImpact_Data/Managed/Metadata/global-metadata.dat";
                 Original_file_UA = DL_Original + "GenshinImpact_Data/Native/UserAssembly.dll";
 
+                MD5_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+
             }
             else if (use_channel == "CN")
             {
@@ -403,6 +411,8 @@ namespace YuukiPS_Launcher
 
                 Original_file_MA = DL_Original + "YuanShen_Data/Managed/Metadata/global-metadata.dat";
                 Original_file_UA = DL_Original + "YuanShen_Data/Native/UserAssembly.dll";
+
+                MD5_API_Patched = get_version.patched.md5_vaild.cn.ToUpper();
             }
             else
             {
@@ -411,27 +421,35 @@ namespace YuukiPS_Launcher
 
             // >> Make sure MD5 API is not empty <<
 
+            // skip check patch
+            if (metode != 3)
+            {                
+                if (String.IsNullOrEmpty(MD5_UA_API_Patched))
+                {
+                    return "Game version is not supported (3)";
+                }
+                if (String.IsNullOrEmpty(MD5_Metadata_API_Patched))
+                {
+                    return "Game version is not supported (1)";
+                }
+            }
+
             if (String.IsNullOrEmpty(MD5_UA_API_Original))
             {
                 return "Game version is not supported (4)";
-            }
-            if (String.IsNullOrEmpty(MD5_UA_API_Patched))
-            {
-                return "Game version is not supported (3)";
             }
             if (String.IsNullOrEmpty(MD5_Metadata_API_Original))
             {
                 return "Game version is not supported (2)";
             }
-            if (String.IsNullOrEmpty(MD5_Metadata_API_Patched))
-            {
-                return "Game version is not supported (1)";
-            }
+            
 
             // >> All <<
 
             // Check Folder UA
             var cst_folder_UA = Set_UA_Folder.Text;
+            var cst_folder_Game = Set_LA_GameFolder.Text;
+
             if (String.IsNullOrEmpty(cst_folder_UA))
             {
                 return "No UserAssembly folder found (1)";
@@ -1176,10 +1194,126 @@ namespace YuukiPS_Launcher
                 */
 
                 return "I'm tired Checking Metadata";
+            } else if(metode == 3) {
+
+                var fileRSA = cst_folder_Game + "/version.dll";
+                var fileRSA_BK = cst_folder_Game + "/version.bk";
+
+                var fileRSA_Public = cst_folder_Game + "/PublicKey.txt";
+
+                // TODO: ADD KEY SERVER
+                File.WriteAllText(fileRSA_Public, "<RSAKeyValue><Modulus>xbbx2m1feHyrQ7jP+8mtDF/pyYLrJWKWAdEv3wZrOtjOZzeLGPzsmkcgncgoRhX4dT+1itSMR9j9m0/OwsH2UoF6U32LxCOQWQD1AMgIZjAkJeJvFTrtn8fMQ1701CkbaLTVIjRMlTw8kNXvNA/A9UatoiDmi4TFG6mrxTKZpIcTInvPEpkK2A7Qsp1E4skFK8jmysy7uRhMaYHtPTsBvxP0zn3lhKB3W+HTqpneewXWHjCDfL7Nbby91jbz5EKPZXWLuhXIvR1Cu4tiruorwXJxmXaP1HQZonytECNU/UOzP6GNLdq0eFDE4b04Wjp396551G99YiFP2nqHVJ5OMQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
+
+                Console.WriteLine("Find file: "+ fileRSA);
+
+                var dl_rsa = false;
+                var RSAMD5 = "";
+
+                if (patchit)
+                {
+                    if (File.Exists(fileRSA))
+                    {
+                        // check if source true
+                        RSAMD5 = Tool.CalculateMD5(fileRSA);
+                        if (RSAMD5 == MD5_API_Patched)
+                        {
+                            // if not found backup rsa key, copy dll to bk
+                            if (!File.Exists(fileRSA_BK))
+                            {
+                                Console.WriteLine("No found backup file rsa key so copy");
+                                File.Copy(fileRSA, fileRSA_BK, true);
+                            }
+
+                            Console.WriteLine("Skip download RSAKEY");
+                        }
+                        else
+                        {
+                            Console.WriteLine("file not same " + RSAMD5 + " download rsa key " + MD5_API_Patched);
+                            dl_rsa = true;
+                        }
+
+                    }
+                    else
+                    {
+                        if (File.Exists(fileRSA_BK))
+                        {
+                            if (RSAMD5 == MD5_API_Patched)
+                            {
+                                Console.WriteLine("found backup file rsa key so copy");
+                                try
+                                {
+                                    File.Copy(fileRSA_BK, fileRSA, true);
+                                }
+                                catch  (Exception ex) {
+                                    Console.WriteLine(ex.Message);
+                                    return "error1";
+                                }                                
+                            }
+                            else
+                            {
+                                Console.WriteLine("key rsa not same so just download it");
+                                dl_rsa = true;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No found file so just download it");
+                            dl_rsa = true;
+                        }
+                    }
+                }
+                else
+                {
+                    // remove file
+                    try
+                    {
+                        if (File.Exists(fileRSA))
+                        {
+                            Console.WriteLine("Remove file rsa key");
+                            File.Delete(fileRSA);
+                        }
+                    }
+                    catch (Exception ex) { 
+                        Console.WriteLine(ex.Message);
+                        return "error";
+                    }
+                }
+
+                if (dl_rsa)
+                {
+                    var DL2 = new Download(DL_Patch+ "RSAPatch.dll", fileRSA);
+                    if (DL2.ShowDialog() != DialogResult.OK)
+                    {
+                        return "No Found Patch file....";
+                    }
+                    else
+                    {
+                        RSAMD5 = Tool.CalculateMD5(fileRSA);
+                    }
+                }
+
+                Console.WriteLine("RSA MD5: " + RSAMD5);
+                //return "TODO: "+ DL_Patch;
             }
-            else
-            {
+            else {
                 return "No other method found";
+            }
+
+            if(metode != 3)
+            {
+                var fileRSA = cst_folder_Game + "/version.dll";
+                if (File.Exists(fileRSA))
+                {
+                    try
+                    {
+                        Console.WriteLine("remove file rsa key (2)");
+                        File.Delete(fileRSA);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
             }
 
             return "";
@@ -1625,7 +1759,7 @@ namespace YuukiPS_Launcher
                     }
                     else
                     {
-                        Console.WriteLine("No new Akebi found");
+                        Console.WriteLine("No new Akebi found: "+ cekAkebi);
                     }
                 }
 
@@ -1859,7 +1993,7 @@ namespace YuukiPS_Launcher
 
         private void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("https://github.com/akbaryahya/YuukiPS-Launcher") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/YuukiPS/Launcher-PC") { UseShellExecute = true });
         }
 
         private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

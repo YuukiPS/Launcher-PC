@@ -9,13 +9,13 @@ namespace YuukiPS_Launcher.Json.Mod
     public class Cn
     {
         public string? url { get; set; }
-        public string? md6 { get; set; }
+        public string? md5 { get; set; }
     }
 
     public class Os
     {
         public string? url { get; set; }
-        public string? md6 { get; set; }
+        public string? md5 { get; set; }
     }
 
     public class Akebi
