@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Memory;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
@@ -1903,6 +1904,45 @@ namespace YuukiPS_Launcher
                 if (Config_Discord_Enable.Checked)
                 {
                     discord.UpdateStatus($"Server: {HostName} Version: {VersionGame}", "In Game", "on", 1);
+                }
+
+                // Check Gay
+                try
+                {
+                    if (Extra_AkebiGC.Checked == true && VersionGame == "3.4.0")
+                    {
+                        ProcessModuleCollection processModuleCollection = isrun.First().Modules;
+                        for (int i = 0; i < processModuleCollection.Count; i++)
+                        {
+                            var processModule = processModuleCollection[i];
+                            if (processModule.ModuleName == "CLibrary.dll")
+                            {
+                                Mem mem = new Mem();
+                                if (mem.OpenProcess(WatchFile))
+                                {
+                                    int value = mem.ReadInt("CLibrary.dll+395F68");
+                                    if (value != 256)
+                                    {
+                                        mem.WriteMemory("CLibrary.dll+395F68", "int", "256");
+                                        Console.WriteLine("Gay detected, delete now!");
+                                    }
+                                }
+                                else
+                                {
+                                    // skip
+                                }                                
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // skip
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // I don't care
+                    Debug.WriteLine(ex);
                 }
 
             }

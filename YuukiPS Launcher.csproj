@@ -12,8 +12,8 @@
     
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <AssemblyVersion>2022.12.9.1529</AssemblyVersion>    
-    <FileVersion>2022.12.9.1529</FileVersion>
+    <AssemblyVersion>2023.2.1.0446</AssemblyVersion>    
+    <FileVersion>2023.2.1.0446</FileVersion>
     
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
@@ -86,6 +86,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Memory">
+      <HintPath>Asset\Library\Memory.dll</HintPath>
+    </Reference>
     <Reference Include="MetadataConverter">
       <HintPath>lib\MetadataConverter.dll</HintPath>
     </Reference>
