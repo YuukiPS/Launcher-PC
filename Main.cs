@@ -1828,6 +1828,8 @@ namespace YuukiPS_Launcher
                     var w = new StreamWriter(file_config_AkebiGC);
                     w.WriteLine("[Inject]");
                     w.WriteLine("GenshinPath = " + cst_gamefile);
+                    w.WriteLine("[System]");
+                    w.WriteLine("InitializationDelayMS = 25000");
                     w.Close();
                 }
                 catch (Exception ex)
@@ -1909,30 +1911,44 @@ namespace YuukiPS_Launcher
                 // Check Gay
                 try
                 {
-                    if (Extra_AkebiGC.Checked == true && VersionGame == "3.4.0")
+                    if (Extra_AkebiGC.Checked == true)
                     {
-                        ProcessModuleCollection processModuleCollection = isrun.First().Modules;
-                        for (int i = 0; i < processModuleCollection.Count; i++)
+                        Mem mem = new Mem();
+                        if (mem.OpenProcess(WatchFile))
                         {
-                            var processModule = processModuleCollection[i];
-                            if (processModule.ModuleName == "CLibrary.dll")
+                            if (VersionGame == "3.4.0")
                             {
-                                Mem mem = new Mem();
-                                if (mem.OpenProcess(WatchFile))
+                                int value = mem.ReadInt("CLibrary.dll+395F68");
+                                if (value != 256)
                                 {
-                                    int value = mem.ReadInt("CLibrary.dll+395F68");
-                                    if (value != 256)
-                                    {
-                                        mem.WriteMemory("CLibrary.dll+395F68", "int", "256");
-                                        Console.WriteLine("Gay detected, delete now!");
-                                    }
+                                    mem.WriteMemory("CLibrary.dll+395F68", "int", "256");
+                                    Console.WriteLine("Bruh, why would anyone like gay?");
                                 }
-                                else
-                                {
-                                    // skip
-                                }                                
                             }
+                            else if (VersionGame == "3.6.0")
+                            {
+                                int value = mem.ReadInt("mhyprot.dll+377050");
+                                if (value != 7)
+                                {
+                                    mem.WriteMemory("mhyprot.dll+377050", "int", "7");
+                                    Console.WriteLine("Do you like Yuri Yuri? (1)");
+                                }
+                                int value1 = mem.ReadInt("mhyprot.dll+377064");
+                                if (value1 != 7)
+                                {
+                                    mem.WriteMemory("mhyprot.dll+377064", "int", "7");
+                                    Console.WriteLine("Do you like Yuri Yuri? (2)");
+                                }
+                            }
+                            else
+                            {
+                                // skip
+                            }                            
                         }
+                        else
+                        {
+                            Console.WriteLine("Make sure you enable 'Disable Protection' in cheat settings");
+                        }                        
                     }
                     else
                     {
