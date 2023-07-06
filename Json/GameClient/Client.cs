@@ -72,7 +72,7 @@
         public string entry { get; set; }
     }
 
-    public class Cient
+    public class Client
     {
         public int retcode { get; set; }
         public string message { get; set; }

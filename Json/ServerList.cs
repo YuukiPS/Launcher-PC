@@ -3,16 +3,13 @@
     public class ServerList
     {
         public string time { get; set; } = "123";
-        public List<List> list { get; set; } = new List<List>();
+        public List<DataServer> list { get; set; } = new List<DataServer>();
     }
 
-    public class List
+    public class DataServer
     {
-        public string name { get; set; } = "localhost";
-        public string host { get; set; } = "localhost";
-        public string game { get; set; } = "GS";
-        public int port { get; set; } = 80;
-        public bool https { get; set; } = false;
-        public string version { get; set; } = "unknown";
+        public string name { get; set; } = "YuukiPS";
+        public string host { get; set; } = "https://ps.yuuki.me";
+        public GameType game { get; set; } = GameType.GenshinImpact;
     }
 }

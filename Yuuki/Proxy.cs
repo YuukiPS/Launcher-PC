@@ -12,14 +12,12 @@ namespace YuukiPS_Launcher.Yuuki
         private ExplicitProxyEndPoint explicitEndPoint;
 
         private int port;
-        private string ps;
-        private bool usehttps;
+        private Uri our_server;
 
-        public Proxy(int port, string host, bool usehttps)
+        public Proxy(int port, string host)
         {
             this.port = port;
-            ps = host;
-            this.usehttps = usehttps;
+            this.our_server = new Uri(host);
         }
 
         [Obsolete]
@@ -122,11 +120,7 @@ namespace YuukiPS_Launcher.Yuuki
         {
             // Do not decrypt SSL if not required domain/host
             string hostname = e.WebSession.Request.RequestUri.Host;
-            if (
-                hostname.EndsWith(".yuanshen.com") |
-                hostname.EndsWith(".hoyoverse.com") |
-                hostname.EndsWith(".mihoyo.com") |
-                hostname.EndsWith(ps))
+            if (HostPrivate(hostname) | hostname.EndsWith(our_server.Host))
             {
                 e.DecryptSsl = true;
             }
@@ -142,10 +136,7 @@ namespace YuukiPS_Launcher.Yuuki
         {
             // Change Host
             string hostname = e.WebSession.Request.RequestUri.Host;
-            if (
-                hostname.EndsWith(".yuanshen.com") |
-                hostname.EndsWith(".hoyoverse.com") |
-                hostname.EndsWith(".mihoyo.com"))
+            if (HostPrivate(hostname))
             {
                 var q = e.WebSession.Request.RequestUri;
 
@@ -153,12 +144,14 @@ namespace YuukiPS_Launcher.Yuuki
 
                 //Console.WriteLine("Request Original: " + url);
 
-                if (!usehttps)
+                // if host private server have https
+                bool isHostIsHttps = our_server.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
+                if (!isHostIsHttps)
                 {
                     url = url.Replace("https", "http");
                 }
 
-                url = url.Replace(q.Host, ps);
+                url = url.Replace(q.GetLeftPart(UriPartial.Authority), our_server.GetLeftPart(UriPartial.Authority));
 
                 Tool.Logger("Request " + url, ConsoleColor.Green);
 
@@ -167,6 +160,22 @@ namespace YuukiPS_Launcher.Yuuki
 
             }
             return Task.CompletedTask;
+        }
+
+        private bool HostPrivate(string hostname)
+        {
+            if (
+                hostname.EndsWith(".zenlesszonezero.com") |
+                hostname.EndsWith(".honkaiimpact3.com") |
+                hostname.EndsWith(".bhsr.com") |
+                hostname.EndsWith(".starrails.com") |
+                hostname.EndsWith(".yuanshen.com") |
+                hostname.EndsWith(".hoyoverse.com") |
+                hostname.EndsWith(".mihoyo.com"))
+            {
+                return true;
+            }
+            return false;
         }
 
         // Allows overriding default certificate validation logic

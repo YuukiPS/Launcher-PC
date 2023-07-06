@@ -1,22 +1,60 @@
-﻿namespace YuukiPS_Launcher.Json
+﻿using Newtonsoft.Json;
+
+namespace YuukiPS_Launcher.Json
 {
     public class Config
     {
-        public string Game_Path = "";
+        // Folder
+        public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
+        public static string DataConfig = Path.Combine(CurrentlyPath, "data");
+        public static string Modfolder = Path.Combine(CurrentlyPath, "mod");
 
-        public int ProxyPort = 2242;
-        public string Hostdefault = "localhost";
-        public bool HostHTTPS = true;
+        // File Config
+        public static string ConfigPath = Path.Combine(DataConfig, "config.json");
 
-        public bool MetodeOnline = false;
+        public string profile_default = "Default";
+        public List<Profile> profile { get; set; } = new List<Profile>();
 
-        public class Extra
+        public static Config LoadConfig(string load_file = "")
         {
-            public bool Akebi = false;
+            // Create missing folder
+            Directory.CreateDirectory(Config.DataConfig);
+            Directory.CreateDirectory(Config.Modfolder);
+
+            Config config = new Config();
+
+            if (string.IsNullOrEmpty(load_file))
+            {
+                load_file = ConfigPath;
+            }
+
+            if (File.Exists(load_file))
+            {
+                string data = File.ReadAllText(load_file);
+                try
+                {
+                    var tmp_configdata = JsonConvert.DeserializeObject<Config>(data);
+                    if (tmp_configdata != null)
+                    {
+                        config = tmp_configdata;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error load config: " + ex.Message + ", so make new profile");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No config file found, so make new profile");
+            }
+
+            if (config.profile.Count == 0)
+            {
+                config.profile.Add(new Profile() { name = "Default" });
+            }
+
+            return config;
         }
-        public Extra extra { get; set; } = new();
-
-        public List<List> server { get; set; } = new();
-
     }
 }
