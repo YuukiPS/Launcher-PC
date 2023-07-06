@@ -17,7 +17,7 @@ namespace YuukiPS_Launcher
         private Process? progress;
 
         // Server List
-        Thread thServerList;
+        Thread? thServerList = null;
         List<DataServer> ListServer = new List<DataServer> { new DataServer() };
 
 
@@ -40,17 +40,17 @@ namespace YuukiPS_Launcher
         Extra.Discord discord = new Extra.Discord();
 
         // Game
-        public Game.Genshin.Settings settings_genshin;
+        public Game.Genshin.Settings? settings_genshin = null;
 
         //KeyGS key;
-        Patch get_version;
+        Patch? get_version = null;
 
         public Main()
         {
             InitializeComponent();
         }
 
-        [Obsolete]
+
         private void Main_Load(object sender, EventArgs e)
         {
             Console.WriteLine("Loading....");
@@ -76,26 +76,26 @@ namespace YuukiPS_Launcher
             notbootyet = false;
         }
 
-        private void btload_Click(object sender, EventArgs e)
+        private void btload_Click(object? sender, EventArgs e)
         {
             var get_select_profile = GetProfileServer.Text;
             LoadProfile(get_select_profile);
         }
 
-        private void Set_LA_Save_Click(object sender, EventArgs e)
+        private void Set_LA_Save_Click(object? sender, EventArgs e)
         {
             var get_select_profile = GetProfileServer.Text;
             SaveProfile(get_select_profile);
         }
 
-        private void GetProfileServer_SelectedIndexChanged(object sender, EventArgs e)
+        private void GetProfileServer_SelectedIndexChanged(object? sender, EventArgs e)
         {
             var get_select_profile = GetProfileServer.Text;
             Console.WriteLine("GetProfileServer_SelectedIndexChanged " + get_select_profile);
             LoadProfile(get_select_profile);
         }
 
-        private void GetTypeGame_SelectedIndexChanged(object sender, EventArgs e)
+        private void GetTypeGame_SelectedIndexChanged(object? sender, EventArgs e)
         {
             default_profile.game.type = (GameType)GetTypeGame.SelectedItem;
         }
@@ -221,7 +221,7 @@ namespace YuukiPS_Launcher
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error save config, so reload it");
+                    Console.WriteLine("Error save config (" + ex.Message + "), so reload it");
                     configdata = new Config() { profile = new List<Profile>() { tmp_profile } };
                 }
 
@@ -240,8 +240,6 @@ namespace YuukiPS_Launcher
             }
         }
 
-
-
         private void btStartOfficialServer_Click(object sender, EventArgs e)
         {
             GetServerHost.Text = "official";
@@ -249,7 +247,14 @@ namespace YuukiPS_Launcher
             DoStart();
         }
 
-        private void btStart_Click(object sender, EventArgs e)
+        private void btStartYuukiServer_Click(object sender, EventArgs e)
+        {
+            GetServerHost.Text = "https://ps.yuuki.me";
+            CheckProxyEnable.Checked = true;
+            DoStart();
+        }
+
+        private void btStartNormal_Click(object sender, EventArgs e)
         {
             DoStart();
         }
@@ -453,11 +458,7 @@ namespace YuukiPS_Launcher
                             //open bat
                             //Process.Start(file_update_AkebiGC);
 
-                            ProcessStartInfo pInfo = new ProcessStartInfo();
-                            pInfo.FileName = file_update_AkebiGC;
-                            Process p = Process.Start(pInfo);
-
-                            p.WaitForExit();
+                            Process.Start(new ProcessStartInfo(file_update_AkebiGC))?.WaitForExit();
 
                             // Update MD5
                             File.WriteAllText(get_AkebiGC_md5, version_akebi);
@@ -761,11 +762,11 @@ namespace YuukiPS_Launcher
             var use_channel = get_version.channel;
 
             // LOCALHOST            
-            string MD5_UA_API_Original;
-            string MD5_UA_API_Patched;
-            string MD5_Metadata_API_Original;
-            string MD5_Metadata_API_Patched;
-            string MD5_API_Patched;
+            string MD5_UA_API_Original = "";
+            string MD5_UA_API_Patched = "";
+            string MD5_Metadata_API_Original = "";
+            string MD5_Metadata_API_Patched = "";
+            string MD5_API_Patched = "";
 
             var DL_Patch = "";
             if (get_version.patched != null)
@@ -790,34 +791,34 @@ namespace YuukiPS_Launcher
                 // Select Metode (via API Cloud)
                 if (use_channel == "OS")
                 {
-                    MD5_UA_API_Original = get_version.original.md5_check.os.userassembly.ToUpper();
-                    MD5_UA_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+                    MD5_UA_API_Original = get_version.original?.md5_check.os.userassembly.ToUpper() ?? string.Empty;
+                    MD5_UA_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
 
-                    MD5_Metadata_API_Original = get_version.original.md5_check.os.metadata;
-                    MD5_Metadata_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+                    MD5_Metadata_API_Original = get_version.original?.md5_check.os.metadata ?? string.Empty;
+                    MD5_Metadata_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
 
-                    key_to_patch = get_version.patched.key_patch;
-                    key_to_find = get_version.original.key_find.os;
+                    key_to_patch = get_version.patched?.key_patch;
+                    key_to_find = get_version.original?.key_find.os;
 
                     Original_file_MA = DL_Original + "GenshinImpact_Data/Managed/Metadata/global-metadata.dat";
                     Original_file_UA = DL_Original + "GenshinImpact_Data/Native/UserAssembly.dll";
-                    MD5_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+                    MD5_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
 
                 }
                 else if (use_channel == "CN")
                 {
-                    MD5_UA_API_Original = get_version.original.md5_check.cn.userassembly.ToUpper();
-                    MD5_UA_API_Patched = get_version.patched.md5_vaild.cn.ToUpper();
+                    MD5_UA_API_Original = get_version.original?.md5_check.cn.userassembly.ToUpper() ?? string.Empty;
+                    MD5_UA_API_Patched = get_version.patched?.md5_vaild.cn.ToUpper() ?? string.Empty;
 
-                    MD5_Metadata_API_Original = get_version.original.md5_check.cn.metadata;
-                    MD5_Metadata_API_Patched = get_version.patched.md5_vaild.cn.ToUpper();
+                    MD5_Metadata_API_Original = get_version.original?.md5_check.cn.metadata ?? string.Empty;
+                    MD5_Metadata_API_Patched = get_version.patched?.md5_vaild.cn.ToUpper() ?? string.Empty;
 
-                    key_to_patch = get_version.patched.key_patch;
-                    key_to_find = get_version.original.key_find.cn;
+                    key_to_patch = get_version.patched?.key_patch;
+                    key_to_find = get_version.original?.key_find.cn;
 
                     Original_file_MA = DL_Original + "YuanShen_Data/Managed/Metadata/global-metadata.dat";
                     Original_file_UA = DL_Original + "YuanShen_Data/Native/UserAssembly.dll";
-                    MD5_API_Patched = get_version.patched.md5_vaild.os.ToUpper();
+                    MD5_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
                 }
                 else
                 {
@@ -907,8 +908,9 @@ namespace YuukiPS_Launcher
                                 MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
                                 Console.WriteLine("We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (33)");
                             }
-                            catch (Exception exx)
+                            catch (Exception)
                             {
+                                // skip
                                 return "Error copy (1)";
                             }
                         }
@@ -941,8 +943,9 @@ namespace YuukiPS_Launcher
                                     MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
                                     Console.WriteLine("We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (6)");
                                 }
-                                catch (Exception exx)
+                                catch (Exception)
                                 {
+                                    // skip
                                     return "Error copy (2)";
                                 }
                             }
@@ -1003,8 +1006,9 @@ namespace YuukiPS_Launcher
                         MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
                         Console.WriteLine("We copy file in PathfileUA_Currently to PathfileUA_Original files (22)");
                     }
-                    catch (Exception exx)
+                    catch (Exception)
                     {
+                        // skip
                         return "Error copy PathfileUA_Currently to PathfileUA_Original (1)";
                     }
                 }
@@ -1030,8 +1034,9 @@ namespace YuukiPS_Launcher
                                 MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
                                 Console.WriteLine("We copy PathfileMetadata_Original to PathfileMetadata_Currently");
                             }
-                            catch (Exception exx)
+                            catch (Exception)
                             {
+                                // skip
                                 return "Error copy PathfileMetadata_Original to PathfileMetadata_Currently (111)";
                             }
                         }
@@ -1066,8 +1071,9 @@ namespace YuukiPS_Launcher
                                     MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
                                     Console.WriteLine("We copy file PathfileMetadata_Original to PathfileMetadata_Currently (6)");
                                 }
-                                catch (Exception exx)
+                                catch (Exception)
                                 {
+                                    // skip
                                     return "Error copy PathfileMetadata_Original to PathfileMetadata_Currently (111)";
                                 }
                             }
@@ -1128,7 +1134,7 @@ namespace YuukiPS_Launcher
                         MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
                         Console.WriteLine("We copy file in PathfileMetadata_Currently to PathfileMetadata_Original files (22)");
                     }
-                    catch (Exception exx)
+                    catch (Exception)
                     {
                         return "Error copy PathfileMetadata_Currently to PathfileMetadata_Original (1)";
                     }
@@ -1149,7 +1155,7 @@ namespace YuukiPS_Launcher
                     {
                         File.Delete(PathfileUA_Original);
                     }
-                    catch (Exception exx)
+                    catch (Exception)
                     {
                         // skip
                     }
@@ -1164,7 +1170,7 @@ namespace YuukiPS_Launcher
                     {
                         File.Delete(PathfileMetadata_Original);
                     }
-                    catch (Exception exx)
+                    catch (Exception)
                     {
                         // skip
                     }
@@ -1279,7 +1285,7 @@ namespace YuukiPS_Launcher
                             }
 
                             // keep patch
-                            var ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key_to_find, key_to_patch);
+                            var ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key_to_find!, key_to_patch!);
                             if (!String.IsNullOrEmpty(ManualUA))
                             {
                                 return "Error Patch UserAssembly: " + ManualUA;
@@ -1568,7 +1574,7 @@ namespace YuukiPS_Launcher
                 var GetDataUpdate = API.GetUpdate();
                 if (GetDataUpdate != null)
                 {
-                    var judul = GetDataUpdate.name; // is dev or nightly or name update
+                    var judul = "New Update: " + GetDataUpdate.name; // is dev or nightly or name update
                     var name_version = GetDataUpdate.tag_name; // version name
                     var infobody = GetDataUpdate.body; // info
 
@@ -1730,6 +1736,7 @@ namespace YuukiPS_Launcher
         {
             GetTypeGame.Enabled = onoff;
             btStartOfficialServer.Enabled = onoff;
+            btStartYuukiServer.Enabled = onoff;
             GetServerHost.Enabled = onoff;
 
             grProxy.Enabled = onoff;
@@ -1738,8 +1745,6 @@ namespace YuukiPS_Launcher
             grProfile.Enabled = onoff;
         }
 
-
-        [Obsolete]
         private void CheckGameRun_Tick(object sender, EventArgs e)
         {
             var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == "YuanShen" || pr.ProcessName == "GenshinImpact" || pr.ProcessName == "StarRail" || pr.ProcessName == "injector");
@@ -1747,7 +1752,7 @@ namespace YuukiPS_Launcher
             {
                 // Jika Game tidak berjalan....
                 IsGameRun = false;
-                btStart.Text = "Launch";
+                btStartNormal.Text = "Launch";
                 IsAcess(true);
 
                 AllStop();
@@ -1774,7 +1779,7 @@ namespace YuukiPS_Launcher
             {
                 // jika game jalan
                 IsGameRun = true;
-                btStart.Text = "Stop";
+                btStartNormal.Text = "Stop";
                 DoneCheck = false;
                 IsAcess(false);
 
@@ -1786,14 +1791,12 @@ namespace YuukiPS_Launcher
             }
         }
 
-        [Obsolete]
         public void AllStop()
         {
             StopProxy();
             StopGame();
         }
 
-        [Obsolete]
         public void StopProxy()
         {
             if (proxy != null)
@@ -1870,7 +1873,7 @@ namespace YuukiPS_Launcher
 
         private void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("https://github.com/YuukiPS/Launcher-PC") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/YuukiPS/") { UseShellExecute = true });
         }
 
         private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1886,7 +1889,6 @@ namespace YuukiPS_Launcher
             }
         }
 
-        [Obsolete]
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (IsGameRun)
@@ -1896,15 +1898,11 @@ namespace YuukiPS_Launcher
             }
         }
 
-
-
-        [Obsolete]
         private void CheckProxyRun_Tick(object sender, EventArgs e)
         {
             CheckProxy(false);
         }
 
-        [Obsolete]
         void CheckProxy(bool force_off = false)
         {
             try
@@ -2027,8 +2025,8 @@ namespace YuukiPS_Launcher
                 DEV_MA_Set_Key2_Patch.Text = "";
 
                 //UA
-                DEV_UA_Set_Key1_NoPatch.Text = get_version.original.key_find.os;
-                DEV_UA_Set_Key2_Patch.Text = get_version.patched.key_patch;
+                DEV_UA_Set_Key1_NoPatch.Text = get_version.original?.key_find.os;
+                DEV_UA_Set_Key2_Patch.Text = get_version.patched?.key_patch;
             }
             return "Successfully got Key, you can see update in developer tab";
         }

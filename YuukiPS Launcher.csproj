@@ -12,14 +12,15 @@
     
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <AssemblyVersion>2023.7.6.1005</AssemblyVersion>    
-    <FileVersion>2023.7.6.1005</FileVersion>
+    <AssemblyVersion>2023.7.6.1139</AssemblyVersion>    
+    <FileVersion>2023.7.6.1139</FileVersion>
     
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
     <OutputType>Exe</OutputType>
     <ApplicationIcon>Asset\Image\yuuki.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

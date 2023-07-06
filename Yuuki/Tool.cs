@@ -85,16 +85,17 @@ namespace YuukiPS_Launcher.Yuuki
             try
             {
                 Console.WriteLine(strCommand);
-                ProcessStartInfo commandInfo = new ProcessStartInfo();
-                commandInfo.CreateNoWindow = true;
-                commandInfo.UseShellExecute = false;
-                commandInfo.RedirectStandardInput = false;
-                commandInfo.RedirectStandardOutput = false;
-                commandInfo.FileName = "cmd.exe";
-                commandInfo.Arguments = strCommand;
+                ProcessStartInfo? commandInfo = new ProcessStartInfo();
+                commandInfo!.CreateNoWindow = true;
+                commandInfo!.UseShellExecute = false;
+                commandInfo!.RedirectStandardInput = false;
+                commandInfo!.RedirectStandardOutput = false;
+                commandInfo!.FileName = "cmd.exe";
+                commandInfo!.Arguments = strCommand;
+
                 if (commandInfo != null)
                 {
-                    Process process = Process.Start(commandInfo);
+                    Process? process = Process.Start(commandInfo!);
                     if (process != null)
                     {
                         //process.WaitForExit();
@@ -102,7 +103,7 @@ namespace YuukiPS_Launcher.Yuuki
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // skip
             }

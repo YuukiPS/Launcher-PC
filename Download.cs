@@ -8,7 +8,7 @@ namespace YuukiPS_Launcher
     {
         private string set_download = "";
         private string set_folder = "";
-        private DownloadService dl;
+        private DownloadService? dl = null;
 
         public Download(string url_download = "", string folder_download = "")
         {
@@ -56,7 +56,7 @@ namespace YuukiPS_Launcher
                 }
                 catch (Exception ek)
                 {
-                    MessageBox.Show($"Failed downloading Data", "Oh Snap!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    MessageBox.Show($"Failed downloading Data: "+ek.Message, "Oh Snap!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 }
             }
             else

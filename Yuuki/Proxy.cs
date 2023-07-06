@@ -8,8 +8,8 @@ namespace YuukiPS_Launcher.Yuuki
 {
     public class Proxy
     {
-        public ProxyServer proxyServer;
-        private ExplicitProxyEndPoint explicitEndPoint;
+        public ProxyServer? proxyServer = null;
+        private ExplicitProxyEndPoint? explicitEndPoint = null;
 
         private int port;
         private Uri our_server;
@@ -20,7 +20,6 @@ namespace YuukiPS_Launcher.Yuuki
             this.our_server = new Uri(host);
         }
 
-        [Obsolete]
         public bool Start()
         {
             proxyServer = new ProxyServer();
@@ -36,7 +35,7 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 //Tool.findAndKillProcessRuningOn("" + port + "");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // skip
             }
@@ -80,14 +79,19 @@ namespace YuukiPS_Launcher.Yuuki
 
         }
 
-        [Obsolete]
         public void Stop()
         {
             try
             {
-                explicitEndPoint.BeforeTunnelConnectRequest -= OnBeforeTunnelConnectRequest;
-                proxyServer.BeforeRequest -= OnRequest;
-                proxyServer.ServerCertificateValidationCallback -= OnCertificateValidation;
+                if (explicitEndPoint != null)
+                {
+                    explicitEndPoint.BeforeTunnelConnectRequest -= OnBeforeTunnelConnectRequest;
+                }
+                if (proxyServer != null)
+                {
+                    proxyServer.BeforeRequest -= OnRequest;
+                    proxyServer.ServerCertificateValidationCallback -= OnCertificateValidation;
+                }
             }
             catch (Exception ex)
             {
@@ -95,7 +99,7 @@ namespace YuukiPS_Launcher.Yuuki
             }
             finally
             {
-                if (proxyServer.ProxyRunning)
+                if (proxyServer != null && proxyServer.ProxyRunning)
                 {
                     Console.WriteLine("Proxy Stop");
                     proxyServer.Stop();
@@ -111,16 +115,19 @@ namespace YuukiPS_Launcher.Yuuki
 
         public void UninstallCertificate()
         {
+            if (proxyServer == null)
+            {
+                return;
+            }
             proxyServer.CertificateManager.RemoveTrustedRootCertificate();
             proxyServer.CertificateManager.RemoveTrustedRootCertificateAsAdmin();
         }
 
-        [Obsolete]
-        private Task OnBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
+        private async Task OnBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
             // Do not decrypt SSL if not required domain/host
-            string hostname = e.WebSession.Request.RequestUri.Host;
-            if (HostPrivate(hostname) | hostname.EndsWith(our_server.Host))
+            string hostname = e.HttpClient.Request.RequestUri.Host;
+            if (HostPrivate(hostname) || hostname.EndsWith(our_server.Host))
             {
                 e.DecryptSsl = true;
             }
@@ -128,17 +135,16 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 e.DecryptSsl = false;
             }
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
-        [Obsolete]
         private Task OnRequest(object sender, SessionEventArgs e)
         {
             // Change Host
-            string hostname = e.WebSession.Request.RequestUri.Host;
+            string hostname = e.HttpClient.Request.RequestUri.Host;
             if (HostPrivate(hostname))
             {
-                var q = e.WebSession.Request.RequestUri;
+                var q = e.HttpClient.Request.RequestUri;
 
                 var url = e.HttpClient.Request.Url;
 

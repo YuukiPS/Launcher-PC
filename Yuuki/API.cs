@@ -17,17 +17,17 @@ namespace YuukiPS_Launcher.Yuuki
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/YuukiPS/Launcher-PC/";
         public static string API_GITHUB_RSA = "https://api.github.com/repos/34736384/RSAPatch/";
 
-        public static Client GS_DL(string dl = "os")
+        public static Client? GS_DL(string dl = "os")
         {
             var client = new RestClient(API_DL_WB);
             var request = new RestRequest("genshin/download/latest/" + dl);
 
             var response = client.Execute(request);
             var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            return JsonConvert.DeserializeObject<Client>(getme);
+            return JsonConvert.DeserializeObject<Client>(getme!);
         }
 
-        public static VersionGenshin GetMD5VersionGS(string md5)
+        public static VersionGenshin? GetMD5VersionGS(string md5)
         {
             var client = new RestClient(API_DL_WB);
             var request = new RestRequest("genshin/version?md5=" + md5.ToUpper());
@@ -58,7 +58,7 @@ namespace YuukiPS_Launcher.Yuuki
             return null;
         }
 
-        public static Patch GetMD5Game(string md5, GameType type_game)
+        public static Patch? GetMD5Game(string md5, GameType type_game)
         {
             var url = type_game + "/patch/" + md5.ToUpper();
             Console.WriteLine("GetMD5Game: " + md5 + " url: " + url);
@@ -222,12 +222,6 @@ namespace YuukiPS_Launcher.Yuuki
             var request = new RestRequest("genshin/mod/akebi/" + ver_set);
             var response = client.Execute(request);
 
-            var whos = "cn";
-            if (ch == 2)
-            {
-                whos = "os";
-            }
-
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 if (response.Content != null)
@@ -237,13 +231,17 @@ namespace YuukiPS_Launcher.Yuuki
                         var GetData = JsonConvert.DeserializeObject<Akebi>(response.Content);
                         if (GetData != null)
                         {
-                            if (ch == 2)
+                            var paket = GetData.package;
+                            if (paket != null)
                             {
-                                return GetData.package.cn.md5 + "|" + GetData.package.cn.url;
-                            }
-                            else
-                            {
-                                return GetData.package.os.md5 + "|" + GetData.package.os.url;
+                                if (ch == 2)
+                                {
+                                    return $"{paket.cn?.md5}|{paket.cn?.url}";
+                                }
+                                else
+                                {
+                                    return paket.os?.md5 + "|" + paket.os?.url;
+                                }
                             }
                         }
                     }

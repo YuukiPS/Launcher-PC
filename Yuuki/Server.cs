@@ -73,7 +73,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     Console.WriteLine("Unzip java");
                     FastZip fastZip = new FastZip();
-                    string fileFilter = null;
+                    string? fileFilter = null;
                     fastZip.ExtractZip(GetJavaZip, JAVA_FOLDER, fileFilter);
                 }
                 catch (Exception e)
@@ -105,24 +105,25 @@ namespace YuukiPS_Launcher.Yuuki
         }
         public static bool CheckJava(string p = "")
         {
-            //Console.WriteLine("JAVA Folder: " + p);
-            string version = "";
             try
             {
-                ProcessStartInfo procStartInfo = new ProcessStartInfo(p + "\\java", "-version ");
-                procStartInfo.RedirectStandardOutput = true;
-                procStartInfo.RedirectStandardError = true;
-                procStartInfo.UseShellExecute = false;
-                procStartInfo.CreateNoWindow = true;
-                Process proc = new Process();
-                proc.StartInfo = procStartInfo;
-                proc.Start();
-                version = proc.StandardError.ReadLine();
-                //Console.WriteLine("JAVA: " + version);
-                if (version.Contains(JAVA_RQS))
+                ProcessStartInfo? procStartInfo = new ProcessStartInfo(p + "\\java", "-version ");
+                procStartInfo!.RedirectStandardOutput = true;
+                procStartInfo!.RedirectStandardError = true;
+                procStartInfo!.UseShellExecute = false;
+                procStartInfo!.CreateNoWindow = true;
+
+                if (procStartInfo != null)
                 {
-                    //string strOutput = version.Split(' ')[2].Replace("\"", ""); 
-                    return true;
+                    Process proc = new Process();
+                    proc.StartInfo = procStartInfo!;
+                    proc.Start();
+                    //Console.WriteLine("JAVA Folder: " + p);
+                    string? version = proc.StandardError?.ReadLine();
+                    if (version != null && version.Contains(JAVA_RQS))
+                    {
+                        return true;
+                    }
                 }
             }
             catch (Exception e)

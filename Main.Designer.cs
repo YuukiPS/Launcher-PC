@@ -30,7 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             ListViewItem listViewItem1 = new ListViewItem(new string[] { "Yuuki", "tes.yuuki.me", "N/A", "N/A", "N/A" }, -1);
-            btStart = new Button();
+            btStartNormal = new Button();
             GetServerHost = new TextBox();
             label2 = new Label();
             GetProxyPort = new TextBox();
@@ -41,6 +41,7 @@
             Set_LA_GameFolder = new TextBox();
             label5 = new Label();
             groupBox8 = new GroupBox();
+            btStartYuukiServer = new Button();
             GetTypeGame = new ComboBox();
             btStartOfficialServer = new Button();
             grProfile = new GroupBox();
@@ -162,23 +163,23 @@
             tabPage7.SuspendLayout();
             SuspendLayout();
             // 
-            // btStart
+            // btStartNormal
             // 
-            btStart.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
-            btStart.Location = new Point(6, 61);
-            btStart.Name = "btStart";
-            btStart.Size = new Size(105, 38);
-            btStart.TabIndex = 0;
-            btStart.Text = "Launch";
-            btStart.UseVisualStyleBackColor = true;
-            btStart.Click += btStart_Click;
+            btStartNormal.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            btStartNormal.Location = new Point(6, 61);
+            btStartNormal.Name = "btStartNormal";
+            btStartNormal.Size = new Size(105, 38);
+            btStartNormal.TabIndex = 0;
+            btStartNormal.Text = "Launch";
+            btStartNormal.UseVisualStyleBackColor = true;
+            btStartNormal.Click += btStartNormal_Click;
             // 
             // GetServerHost
             // 
             GetServerHost.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
             GetServerHost.Location = new Point(6, 20);
             GetServerHost.Name = "GetServerHost";
-            GetServerHost.Size = new Size(253, 35);
+            GetServerHost.Size = new Size(232, 35);
             GetServerHost.TabIndex = 2;
             // 
             // label2
@@ -236,7 +237,7 @@
             grConfigGameLite.Controls.Add(Set_LA_GameFolder);
             grConfigGameLite.Controls.Add(label5);
             grConfigGameLite.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            grConfigGameLite.Location = new Point(8, 126);
+            grConfigGameLite.Location = new Point(8, 111);
             grConfigGameLite.Name = "grConfigGameLite";
             grConfigGameLite.Size = new Size(420, 59);
             grConfigGameLite.TabIndex = 19;
@@ -273,17 +274,29 @@
             // 
             // groupBox8
             // 
+            groupBox8.Controls.Add(btStartYuukiServer);
             groupBox8.Controls.Add(GetServerHost);
-            groupBox8.Controls.Add(btStart);
+            groupBox8.Controls.Add(btStartNormal);
             groupBox8.Controls.Add(GetTypeGame);
             groupBox8.Controls.Add(btStartOfficialServer);
             groupBox8.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             groupBox8.Location = new Point(8, 6);
             groupBox8.Name = "groupBox8";
-            groupBox8.Size = new Size(420, 114);
+            groupBox8.Size = new Size(420, 106);
             groupBox8.TabIndex = 18;
             groupBox8.TabStop = false;
             groupBox8.Text = "Connect to server";
+            // 
+            // btStartYuukiServer
+            // 
+            btStartYuukiServer.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            btStartYuukiServer.Location = new Point(326, 20);
+            btStartYuukiServer.Name = "btStartYuukiServer";
+            btStartYuukiServer.Size = new Size(91, 35);
+            btStartYuukiServer.TabIndex = 20;
+            btStartYuukiServer.Text = "YuukiPS";
+            btStartYuukiServer.UseVisualStyleBackColor = true;
+            btStartYuukiServer.Click += btStartYuukiServer_Click;
             // 
             // GetTypeGame
             // 
@@ -291,18 +304,18 @@
             GetTypeGame.FormattingEnabled = true;
             GetTypeGame.Location = new Point(117, 61);
             GetTypeGame.Name = "GetTypeGame";
-            GetTypeGame.Size = new Size(290, 38);
+            GetTypeGame.Size = new Size(300, 38);
             GetTypeGame.TabIndex = 14;
             GetTypeGame.SelectedIndexChanged += GetTypeGame_SelectedIndexChanged;
             // 
             // btStartOfficialServer
             // 
             btStartOfficialServer.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
-            btStartOfficialServer.Location = new Point(265, 20);
+            btStartOfficialServer.Location = new Point(244, 20);
             btStartOfficialServer.Name = "btStartOfficialServer";
-            btStartOfficialServer.Size = new Size(142, 35);
+            btStartOfficialServer.Size = new Size(81, 35);
             btStartOfficialServer.TabIndex = 13;
-            btStartOfficialServer.Text = "Official Server";
+            btStartOfficialServer.Text = "Official";
             btStartOfficialServer.UseVisualStyleBackColor = true;
             btStartOfficialServer.Click += btStartOfficialServer_Click;
             // 
@@ -313,7 +326,7 @@
             grProfile.Controls.Add(btsave);
             grProfile.Controls.Add(label8);
             grProfile.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            grProfile.Location = new Point(8, 191);
+            grProfile.Location = new Point(6, 176);
             grProfile.Name = "grProfile";
             grProfile.Size = new Size(420, 108);
             grProfile.TabIndex = 17;
@@ -365,9 +378,9 @@
             // grExtra
             // 
             grExtra.Controls.Add(Extra_AkebiGC);
-            grExtra.Location = new Point(277, 302);
+            grExtra.Location = new Point(431, 264);
             grExtra.Name = "grExtra";
-            grExtra.Size = new Size(151, 70);
+            grExtra.Size = new Size(217, 52);
             grExtra.TabIndex = 12;
             grExtra.TabStop = false;
             grExtra.Text = "Extra";
@@ -388,9 +401,9 @@
             grProxy.Controls.Add(stIsRunProxy);
             grProxy.Controls.Add(CheckProxyEnable);
             grProxy.Controls.Add(label2);
-            grProxy.Location = new Point(8, 305);
+            grProxy.Location = new Point(431, 191);
             grProxy.Name = "grProxy";
-            grProxy.Size = new Size(263, 67);
+            grProxy.Size = new Size(215, 67);
             grProxy.TabIndex = 11;
             grProxy.TabStop = false;
             grProxy.Text = "Proxy";
@@ -1303,7 +1316,7 @@
 
         #endregion
 
-        private Button btStart;
+        private Button btStartNormal;
         private TextBox GetServerHost;
         private Label label2;
         private TextBox GetProxyPort;
@@ -1409,5 +1422,6 @@
         private Button btload;
         private GroupBox groupBox8;
         private GroupBox grConfigGameLite;
+        private Button btStartYuukiServer;
     }
 }
