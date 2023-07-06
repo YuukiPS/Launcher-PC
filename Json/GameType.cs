@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 
 public enum GameType
 {
@@ -30,5 +31,11 @@ public static class EnumExtensions
         StringValueAttribute attribute = member.GetCustomAttribute<StringValueAttribute>();
 
         return attribute != null ? attribute.Value : value.ToString();
+    }
+    public static string SEOUrl(this GameType gameType)
+    {
+        string gameTypeName = gameType.ToString();
+        string kebabCase = Regex.Replace(gameTypeName, "([a-z])([A-Z])", "$1-$2").ToLower();
+        return kebabCase;
     }
 }

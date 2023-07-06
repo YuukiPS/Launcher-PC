@@ -171,7 +171,7 @@ namespace YuukiPS_Launcher
             CheckProxyEnable.Checked = default_profile.server.proxy.enable;
             GetServerHost.Text = default_profile.server.url;
             // Extra
-            Extra_AkebiGC.Checked = default_profile.game.extra.Akebi;
+            Extra_Cheat.Checked = default_profile.game.extra.Akebi;
 
             // Get Data Game
             if (!CheckVersionGame(default_profile.game.type))
@@ -200,7 +200,7 @@ namespace YuukiPS_Launcher
                 }
 
                 // Extra
-                tmp_profile.game.extra.Akebi = Extra_AkebiGC.Checked;
+                tmp_profile.game.extra.Akebi = Extra_Cheat.Checked;
 
                 // Nama Profile
                 tmp_profile.name = name_save;
@@ -249,7 +249,7 @@ namespace YuukiPS_Launcher
 
         private void btStartYuukiServer_Click(object sender, EventArgs e)
         {
-            GetServerHost.Text = "https://ps.yuuki.me";
+            GetServerHost.Text = API.WEB_LINK;
             CheckProxyEnable.Checked = true;
             DoStart();
         }
@@ -269,7 +269,7 @@ namespace YuukiPS_Launcher
             }
 
             // Setup
-            bool isAkebiGC = Extra_AkebiGC.Checked;
+            bool isCheat = Extra_Cheat.Checked;
             bool isProxyNeed = CheckProxyEnable.Checked;
             GameType selectedGame = (GameType)GetTypeGame.SelectedItem;
 
@@ -325,7 +325,7 @@ namespace YuukiPS_Launcher
                     else if (tes.Contains("corrupted"))
                     {
                         MessageBox.Show("Looks like you're using an unsupported version, try updating game data to latest version", "Game Version not supported (Online Mode)");
-                        Process.Start(new ProcessStartInfo("https://ps.yuuki.me/genshin") { UseShellExecute = true });
+                        Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
                     }
                     else
                     {
@@ -366,129 +366,25 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("Proxy is still running...");
             }
 
-            if (isAkebiGC)
+            // For Cheat (tmp)
+            if (isCheat)
             {
-                var set_AkebiGC = Path.Combine(Config.Modfolder, "AkebiGC");
-                Directory.CreateDirectory(set_AkebiGC);
-                string get_AkebiGC = Path.Combine(set_AkebiGC, "injector.exe");
-                string get_AkebiGC_zip = Path.Combine(set_AkebiGC, "update.zip");
-                string get_AkebiGC_md5 = Path.Combine(set_AkebiGC, "md5.txt");
-
-                var Update_AkebiGC = false;
-
-                var version_akebi = "";
-                var url_download = "";
-
-                var cekAkebi = API.GetAkebi(GameChannel, VersionGame);
-                if (string.IsNullOrEmpty(cekAkebi))
-                {
-                    MessageBox.Show("No update for this version so far or error check version, check console");
-                    //return;
-                }
-                else
-                {
-                    string[] SplitAkebiGC = cekAkebi.Split("|");
-                    version_akebi = SplitAkebiGC[0];
-                    url_download = SplitAkebiGC[1];
-                }
-
-                // Check file update, jika tidak ada
-                if (!File.Exists(get_AkebiGC_md5))
-                {
-                    Console.WriteLine("Akebi file md5 not found");
-                    if (string.IsNullOrEmpty(cekAkebi))
-                    {
-                        return;
-                    }
-                    Console.WriteLine("MD5 no found, update!!!");
-                    Update_AkebiGC = true;
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(version_akebi))
-                    {
-                        string readText = File.ReadAllText(get_AkebiGC_md5);
-                        if (!readText.Contains(version_akebi))
-                        {
-                            Console.WriteLine("Found a new version, time to download");
-                            Update_AkebiGC = true;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No new Akebi found");
-                    }
-                }
-
-                if (Update_AkebiGC)//!File.Exists(get_AkebiGC)
-                {
-                    var DL2 = new Download(url_download, get_AkebiGC_zip);
-                    if (DL2.ShowDialog() != DialogResult.OK)
-                    {
-                        MessageBox.Show("Download Akebi failed");
-                        return;
-                    }
-                    else
-                    {
-                        // if download done....
-                        var file_update_AkebiGC = set_AkebiGC + @"\update.bat";
-                        try
-                        {
-                            // Make bat file for update
-                            var w = new StreamWriter(file_update_AkebiGC);
-                            w.WriteLine("@echo off");
-
-                            w.WriteLine("cd \"" + set_AkebiGC + "\" ");
-
-                            // Kill Akebi
-                            w.WriteLine("Taskkill /IM injector.exe /F");
-
-                            // Unzip file
-                            w.WriteLine("echo unzip file...");
-                            w.WriteLine("tar -xvf update.zip");
-
-                            //delete file old
-                            w.WriteLine("echo delete file zip");
-                            w.WriteLine("del /F update.zip");
-
-                            // del update
-                            w.WriteLine("del /F update.bat");
-                            w.Close();
-
-                            //open bat
-                            //Process.Start(file_update_AkebiGC);
-
-                            Process.Start(new ProcessStartInfo(file_update_AkebiGC))?.WaitForExit();
-
-                            // Update MD5
-                            File.WriteAllText(get_AkebiGC_md5, version_akebi);
-
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                            return;
-                        }
-                    }
-
-                }
-
-                //Update Path
-                var file_config_AkebiGC = set_AkebiGC + @"\cfg.ini";
+                Console.WriteLine("Cheat enable");
                 try
                 {
-                    var w = new StreamWriter(file_config_AkebiGC);
-                    w.WriteLine("[Inject]");
-                    w.WriteLine("GenshinPath = " + cst_gamefile);
-                    w.Close();
+                    var get_file_cheat = API.GetCheat(selectedGame, GameChannel, VersionGame);
+                    if (string.IsNullOrEmpty(get_file_cheat))
+                    {
+                        MessageBox.Show("No update for this version so far or check console");
+                        return;
+                    }
+                    cst_gamefile = get_file_cheat;
+
                 }
-                catch (Exception ex)
+                catch (Exception x)
                 {
-                    MessageBox.Show(ex.Message);
-                    return;
+                    Console.WriteLine(x);
                 }
-                cst_gamefile = get_AkebiGC;
-                Console.WriteLine("RUN: " + cst_gamefile);
             }
 
             // For Game
@@ -602,7 +498,7 @@ namespace YuukiPS_Launcher
                     {
                         Console.WriteLine("Game Text Language: " + settings_genshin.GetGameLanguage());
                         Console.WriteLine("Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
-                        Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
+                        //Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
                     }
                 }
                 catch (Exception ex)
@@ -1452,7 +1348,8 @@ namespace YuukiPS_Launcher
                 Set_LA_GameFolder.Text = Folder_Game_Now;
                 if (!CheckVersionGame(default_profile.game.type))
                 {
-                    MessageBox.Show("This folder has been set manually but game is still not detected maybe because it is not supported");
+                    MessageBox.Show("You have set the folder manually but we can't detect this game version yet, maybe because it's not supported yet so please download it on our official website with the currently supported version.");
+                    Process.Start(new ProcessStartInfo(API.WEB_LINK + "/game/" + default_profile.game.type.SEOUrl()) { UseShellExecute = true });
                 }
             }
             else
@@ -1747,7 +1644,7 @@ namespace YuukiPS_Launcher
 
         private void CheckGameRun_Tick(object sender, EventArgs e)
         {
-            var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == "YuanShen" || pr.ProcessName == "GenshinImpact" || pr.ProcessName == "StarRail" || pr.ProcessName == "injector");
+            var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == "YuanShen" || pr.ProcessName == "GenshinImpact" || pr.ProcessName == "StarRail" || pr.ProcessName == "Launcher");
             if (!isrun.Any())
             {
                 // Jika Game tidak berjalan....
@@ -1878,7 +1775,7 @@ namespace YuukiPS_Launcher
 
         private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("https://ps.yuuki.me/") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
         }
 
         private void CekUpdateTT_Tick(object sender, EventArgs e)
@@ -2125,6 +2022,9 @@ namespace YuukiPS_Launcher
             }
         }
 
+        private void Extra_Cheat_CheckedChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 }

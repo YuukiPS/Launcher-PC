@@ -1,4 +1,6 @@
-﻿namespace YuukiPS_Launcher.Json
+﻿using YuukiPS_Launcher.Yuuki;
+
+namespace YuukiPS_Launcher.Json
 {
     public class Profile
     {
@@ -11,7 +13,7 @@
 
         public class Server
         {
-            public string url = "https://ps.yuuki.me";
+            public string url = API.WEB_LINK;
             public Proxy proxy = new();
             public class Proxy
             {

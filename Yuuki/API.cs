@@ -12,15 +12,16 @@ namespace YuukiPS_Launcher.Yuuki
     {
         public static string API_DL_CF = "https://file.yuuki.me/";
         public static string API_DL_OW = "https://drive.yuuki.me/";
-        public static string API_DL_WB = "https://ps.yuuki.me/api/";
+        public static string API_Yuuki = "https://ps.yuuki.me/";
+        public static string WEB_LINK = "https://ps.yuuki.me";
 
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/YuukiPS/Launcher-PC/";
         public static string API_GITHUB_RSA = "https://api.github.com/repos/34736384/RSAPatch/";
 
         public static Client? GS_DL(string dl = "os")
         {
-            var client = new RestClient(API_DL_WB);
-            var request = new RestRequest("genshin/download/latest/" + dl);
+            var client = new RestClient(API_Yuuki);
+            var request = new RestRequest("api/genshin/download/latest/" + dl);
 
             var response = client.Execute(request);
             var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
@@ -29,8 +30,8 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static VersionGenshin? GetMD5VersionGS(string md5)
         {
-            var client = new RestClient(API_DL_WB);
-            var request = new RestRequest("genshin/version?md5=" + md5.ToUpper());
+            var client = new RestClient(API_Yuuki);
+            var request = new RestRequest("api/genshin/version?md5=" + md5.ToUpper());
 
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -60,9 +61,11 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static Patch? GetMD5Game(string md5, GameType type_game)
         {
-            var url = type_game + "/patch/" + md5.ToUpper();
+            var url = "json/" + type_game.SEOUrl() + "/version/patch/" + md5.ToUpper() + ".json";
+
             Console.WriteLine("GetMD5Game: " + md5 + " url: " + url);
-            var client = new RestClient(API_DL_WB);
+
+            var client = new RestClient(API_Yuuki);
             var request = new RestRequest(url);
 
             var response = client.Execute(request);
@@ -93,8 +96,8 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static KeyGS? GSKEY()
         {
-            var client = new RestClient(API_DL_WB);
-            var request = new RestRequest("genshin/key/latest");
+            var client = new RestClient(API_Yuuki);
+            var request = new RestRequest("api/genshin/key/latest");
 
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -124,8 +127,8 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static ServerList? ServerList()
         {
-            var client = new RestClient(API_DL_WB);
-            var request = new RestRequest("launcher/server");
+            var client = new RestClient(API_Yuuki);
+            var request = new RestRequest("api/launcher/server");
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -216,45 +219,166 @@ namespace YuukiPS_Launcher.Yuuki
             return null;
         }
 
-        public static string? GetAkebi(int ch = 1, string ver_set = "3.2.0")
+        // TODO: Add multi support cheat
+        public static string GetCheat(GameType game_type = GameType.GenshinImpact, int ch = 1, string ver_set = "3.8.0")
         {
-            var client = new RestClient(API_DL_WB);
-            var request = new RestRequest("genshin/mod/akebi/" + ver_set);
+            var client = new RestClient(API_Yuuki);
+            var request = new RestRequest("json/" + game_type.SEOUrl() + "/cheat.json");
             var response = client.Execute(request);
-
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 if (response.Content != null)
                 {
                     try
                     {
-                        var GetData = JsonConvert.DeserializeObject<Akebi>(response.Content);
-                        if (GetData != null)
+                        //Console.WriteLine($"tes {ver_set}: " + JsonConvert.SerializeObject(response.Content));
+                        var getData = JsonConvert.DeserializeObject<List<Cheat>>(response.Content);
+                        if (getData != null)
                         {
-                            var paket = GetData.package;
-                            if (paket != null)
+                            var filteredGame = getData.Where(c => c.game == (int)game_type).ToList();
+                            foreach (var game_cheat in filteredGame)
                             {
-                                if (ch == 2)
+                                if (game_cheat.archives != null)
                                 {
-                                    return $"{paket.cn?.md5}|{paket.cn?.url}";
-                                }
-                                else
-                                {
-                                    return paket.os?.md5 + "|" + paket.os?.url;
+                                    // Filter archives based on version
+                                    var filteredArchives = game_cheat.archives.Where(a => a.support.Contains(ver_set)).ToList();
+                                    // Process the filtered archives
+                                    foreach (var archive in filteredArchives)
+                                    {
+                                        //Console.WriteLine($"{archive.url} found");
+                                        //return archive;
+
+                                        var Update_Cheat = false;
+                                        var run_Cheat = false;
+
+                                        var set_Cheat = Path.Combine(Config.Modfolder, "Cheat", $"{(GameType)game_cheat.game}", $"{game_cheat.nama}", $"{archive.support}");
+                                        Directory.CreateDirectory(set_Cheat);
+                                        string get_Cheat = Path.Combine(set_Cheat, "Launcher.exe");
+                                        string get_Cheat_zip = Path.Combine(set_Cheat, "update.zip");
+                                        string get_Cheat_md5 = Path.Combine(set_Cheat, "md5.txt");
+
+                                        // Check MD5
+                                        if (!File.Exists(get_Cheat_md5))
+                                        {
+                                            // not found md5
+                                            Update_Cheat = true;
+                                            Console.WriteLine("md5 not found");
+                                        }
+                                        else
+                                        {
+                                            // found md5
+                                            string readText = File.ReadAllText(get_Cheat_md5);
+                                            if (!readText.Contains(archive.md5))
+                                            {
+                                                Console.WriteLine("md5 is not the same maybe because it's new, time to download");
+                                                Update_Cheat = true;
+                                            }
+                                            else
+                                            {
+                                                run_Cheat = true;
+                                                Console.WriteLine("Cheat already most recent");
+                                            }
+                                            /*
+                                            if (!readText.Contains(cekCheat.version))
+                                            {
+                                                Console.WriteLine("version is not the same maybe because it's new, time to download");
+                                                Update_Cheat = true;
+                                            }
+                                            */
+                                        }
+
+                                        // Need Update
+                                        if (Update_Cheat)
+                                        {
+                                            Console.WriteLine("Update Cheat...");
+
+                                            if (string.IsNullOrEmpty(archive.url))
+                                            {
+                                                MessageBox.Show("No download links found");
+                                            }
+                                            MessageBox.Show(archive.comment, "Info Update: " + game_cheat.nama); // get better
+                                            var DL2 = new Download(archive.url, get_Cheat_zip);
+                                            if (DL2.ShowDialog() != DialogResult.OK)
+                                            {
+                                                MessageBox.Show("Download Cheat failed");
+                                            }
+                                            else
+                                            {
+                                                // if download done....
+                                                var file_update_Cheat = set_Cheat + @"\update.bat";
+                                                try
+                                                {
+                                                    // Make bat file for update
+                                                    var w = new StreamWriter(file_update_Cheat);
+                                                    w.WriteLine("@echo off");
+
+                                                    w.WriteLine("cd \"" + set_Cheat + "\" ");
+
+                                                    // Kill Cheat
+                                                    w.WriteLine("Taskkill /IM Launcher.exe /F");
+
+                                                    // Unzip file
+                                                    w.WriteLine("echo unzip file...");
+                                                    w.WriteLine("tar -xvf update.zip");
+
+                                                    //delete file old
+                                                    w.WriteLine("echo delete file zip");
+                                                    w.WriteLine("del /F update.zip");
+
+                                                    // del update
+                                                    w.WriteLine("del /F update.bat");
+                                                    w.Close();
+
+                                                    Process.Start(new ProcessStartInfo(file_update_Cheat))?.WaitForExit();
+
+                                                    // Update MD5
+                                                    File.WriteAllText(get_Cheat_md5, archive.md5);
+
+                                                    run_Cheat = true;
+
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine(ex.Message);
+                                                }
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Skip Cheat...");
+                                        }
+
+                                        // RUN
+                                        if (run_Cheat)
+                                        {
+                                            Console.WriteLine("RUN: " + get_Cheat);
+                                            return get_Cheat;
+                                        }
+
+                                        break;
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Cheat datebase found but 404");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error GetAkebi: ", ex);
+                        Console.WriteLine("Error Get Cheat 2: " + ex);
                     }
-
+                }
+                else
+                {
+                    Console.WriteLine("NoData");
                 }
             }
             else
             {
-                Console.WriteLine("Error GetUpdate2: " + response.StatusCode);
+                Console.WriteLine("Error Get Cheat 1: " + response.StatusCode);
             }
             return "";
         }

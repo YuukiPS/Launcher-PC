@@ -50,7 +50,7 @@
             btsave = new Button();
             label8 = new Label();
             grExtra = new GroupBox();
-            Extra_AkebiGC = new CheckBox();
+            Extra_Cheat = new CheckBox();
             grProxy = new GroupBox();
             stIsRunProxy = new Label();
             CheckProxyEnable = new CheckBox();
@@ -377,23 +377,24 @@
             // 
             // grExtra
             // 
-            grExtra.Controls.Add(Extra_AkebiGC);
+            grExtra.Controls.Add(Extra_Cheat);
             grExtra.Location = new Point(431, 264);
             grExtra.Name = "grExtra";
-            grExtra.Size = new Size(217, 52);
+            grExtra.Size = new Size(217, 65);
             grExtra.TabIndex = 12;
             grExtra.TabStop = false;
             grExtra.Text = "Extra";
             // 
-            // Extra_AkebiGC
+            // Extra_Cheat
             // 
-            Extra_AkebiGC.AutoSize = true;
-            Extra_AkebiGC.Location = new Point(6, 22);
-            Extra_AkebiGC.Name = "Extra_AkebiGC";
-            Extra_AkebiGC.Size = new Size(77, 19);
-            Extra_AkebiGC.TabIndex = 0;
-            Extra_AkebiGC.Text = "Akebi-GC";
-            Extra_AkebiGC.UseVisualStyleBackColor = true;
+            Extra_Cheat.AutoSize = true;
+            Extra_Cheat.Location = new Point(6, 22);
+            Extra_Cheat.Name = "Extra_Cheat";
+            Extra_Cheat.Size = new Size(57, 19);
+            Extra_Cheat.TabIndex = 0;
+            Extra_Cheat.Text = "Cheat";
+            Extra_Cheat.UseVisualStyleBackColor = true;
+            Extra_Cheat.CheckedChanged += Extra_Cheat_CheckedChanged;
             // 
             // grProxy
             // 
@@ -1340,7 +1341,7 @@
         private TabPage tabPage8;
         private System.Windows.Forms.Timer CekUpdateTT;
         private GroupBox grExtra;
-        private CheckBox Extra_AkebiGC;
+        private CheckBox Extra_Cheat;
         private TextBox Set_LA_GameFolder;
         private Label label5;
         private Button btsave;

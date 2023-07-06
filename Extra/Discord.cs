@@ -1,6 +1,7 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
 using System.Diagnostics;
+using YuukiPS_Launcher.Yuuki;
 using Button = DiscordRPC.Button;
 
 namespace YuukiPS_Launcher.Extra
@@ -70,7 +71,7 @@ namespace YuukiPS_Launcher.Extra
                 {
                     Editor.Buttons = new Button[]
                      {
-                       new Button() { Label = "Join", Url = "https://ps.yuuki.me/" }
+                       new Button() { Label = "Join", Url = API.WEB_LINK }
                      };
                 }
 

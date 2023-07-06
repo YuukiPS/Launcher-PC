@@ -1,4 +1,6 @@
-﻿namespace YuukiPS_Launcher.Json
+﻿using YuukiPS_Launcher.Yuuki;
+
+namespace YuukiPS_Launcher.Json
 {
     public class ServerList
     {
@@ -9,7 +11,7 @@
     public class DataServer
     {
         public string name { get; set; } = "YuukiPS";
-        public string host { get; set; } = "https://ps.yuuki.me";
+        public string host { get; set; } = API.WEB_LINK;
         public GameType game { get; set; } = GameType.GenshinImpact;
     }
 }
