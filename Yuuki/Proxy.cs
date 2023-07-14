@@ -144,26 +144,20 @@ namespace YuukiPS_Launcher.Yuuki
             string hostname = e.HttpClient.Request.RequestUri.Host;
             if (HostPrivate(hostname))
             {
-                var q = e.HttpClient.Request.RequestUri;
-
                 var url = e.HttpClient.Request.Url;
 
-                //Console.WriteLine("Request Original: " + url);
-
-                // if host private server have https
-                bool isHostIsHttps = our_server.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
-                if (!isHostIsHttps)
+                UriBuilder uriBuilder = new UriBuilder(url)
                 {
-                    url = url.Replace("https", "http");
-                }
+                    Scheme = our_server.Scheme,
+                    Host = our_server.Host,
+                    Port = our_server.Port
+                };
+                var newUrl = uriBuilder.Uri;
 
-                url = url.Replace(q.GetLeftPart(UriPartial.Authority), our_server.GetLeftPart(UriPartial.Authority));
-
-                Tool.Logger("Request " + url, ConsoleColor.Green);
+                Tool.Logger($"Request: {newUrl}", ConsoleColor.Green);
 
                 // Set
-                e.HttpClient.Request.Url = url;
-
+                e.HttpClient.Request.Url = newUrl.ToString();
             }
             return Task.CompletedTask;
         }

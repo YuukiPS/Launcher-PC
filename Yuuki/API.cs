@@ -89,7 +89,7 @@ namespace YuukiPS_Launcher.Yuuki
             }
             else
             {
-                Console.WriteLine("Error: " + response.StatusCode);
+                Console.WriteLine("Error: " + response.ErrorException);
             }
             return null;
         }
@@ -220,7 +220,7 @@ namespace YuukiPS_Launcher.Yuuki
         }
 
         // TODO: Add multi support cheat
-        public static string GetCheat(GameType game_type = GameType.GenshinImpact, int ch = 1, string ver_set = "3.8.0")
+        public static Json.Mod.Config GetCheat(GameType game_type = GameType.GenshinImpact, int ch = 1, string ver_set = "3.8.0", string path_game = "")
         {
             var client = new RestClient(API_Yuuki);
             var request = new RestRequest("json/" + game_type.SEOUrl() + "/cheat.json");
@@ -241,7 +241,7 @@ namespace YuukiPS_Launcher.Yuuki
                                 if (game_cheat.archives != null)
                                 {
                                     // Filter archives based on version
-                                    var filteredArchives = game_cheat.archives.Where(a => a.support.Contains(ver_set)).ToList();
+                                    var filteredArchives = game_cheat.archives.Where(a => a.support.Contains(ver_set) && a.channel.Contains(ch)).ToList();
                                     // Process the filtered archives
                                     foreach (var archive in filteredArchives)
                                     {
@@ -251,9 +251,9 @@ namespace YuukiPS_Launcher.Yuuki
                                         var Update_Cheat = false;
                                         var run_Cheat = false;
 
-                                        var set_Cheat = Path.Combine(Config.Modfolder, "Cheat", $"{(GameType)game_cheat.game}", $"{game_cheat.nama}", $"{archive.support}");
+                                        var set_Cheat = Path.Combine(Json.Config.Modfolder, "Cheat", $"{(GameType)game_cheat.game}", $"{game_cheat.nama}", $"{archive.support}");
                                         Directory.CreateDirectory(set_Cheat);
-                                        string get_Cheat = Path.Combine(set_Cheat, "Launcher.exe");
+                                        string get_Cheat = Path.Combine(set_Cheat, archive.config.launcher);
                                         string get_Cheat_zip = Path.Combine(set_Cheat, "update.zip");
                                         string get_Cheat_md5 = Path.Combine(set_Cheat, "md5.txt");
 
@@ -315,7 +315,7 @@ namespace YuukiPS_Launcher.Yuuki
                                                     w.WriteLine("cd \"" + set_Cheat + "\" ");
 
                                                     // Kill Cheat
-                                                    w.WriteLine("Taskkill /IM Launcher.exe /F");
+                                                    //w.WriteLine("Taskkill /IM Launcher.exe /F");
 
                                                     // Unzip file
                                                     w.WriteLine("echo unzip file...");
@@ -352,8 +352,33 @@ namespace YuukiPS_Launcher.Yuuki
                                         // RUN
                                         if (run_Cheat)
                                         {
-                                            Console.WriteLine("RUN: " + get_Cheat);
-                                            return get_Cheat;
+                                            // Update folder
+                                            if (!string.IsNullOrEmpty(path_game))
+                                            {
+                                                var file_config = @$"{set_Cheat}\{archive.config.save}";
+                                                try
+                                                {
+                                                    if (archive.config.format == 1)
+                                                    {
+                                                        var w = new StreamWriter(file_config);
+                                                        w.WriteLine("[Inject]");
+                                                        w.WriteLine("GenshinPath = " + path_game);
+                                                        w.WriteLine("[System]");
+                                                        w.WriteLine("InitializationDelayMS = 25000");
+                                                        w.Close();
+                                                    }
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    //MessageBox.Show(ex.Message);
+                                                    //return;
+                                                }
+                                            }
+
+                                            // set path
+                                            archive.config.launcher = get_Cheat;
+
+                                            return archive.config;
                                         }
 
                                         break;
@@ -380,7 +405,7 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 Console.WriteLine("Error Get Cheat 1: " + response.StatusCode);
             }
-            return "";
+            return null;
         }
     }
 }

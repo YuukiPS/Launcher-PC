@@ -21,12 +21,13 @@ namespace YuukiPS_Launcher
         List<DataServer> ListServer = new List<DataServer> { new DataServer() };
 
 
-        Config configdata = new Config();
+        Json.Config configdata = new Json.Config();
         Profile default_profile = new Profile();
 
         // Stats default
         public bool notbootyet = true;
         public string WatchFile = "";
+        public string WatchCheat = "melon123";
         public string HostName = "YuukiPS"; // host name
         public bool IsGameRun = false;
         public bool DoneCheck = true;
@@ -102,7 +103,7 @@ namespace YuukiPS_Launcher
 
         public void LoadConfig(string load_by)
         {
-            configdata = Config.LoadConfig();
+            configdata = Json.Config.LoadConfig();
 
             Console.WriteLine("load config by " + load_by);
 
@@ -222,13 +223,13 @@ namespace YuukiPS_Launcher
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error save config (" + ex.Message + "), so reload it");
-                    configdata = new Config() { profile = new List<Profile>() { tmp_profile } };
+                    configdata = new Json.Config() { profile = new List<Profile>() { tmp_profile } };
                 }
 
 
                 configdata.profile_default = name_save;
 
-                File.WriteAllText(Config.ConfigPath, JsonConvert.SerializeObject(configdata));
+                File.WriteAllText(Json.Config.ConfigPath, JsonConvert.SerializeObject(configdata));
 
                 Console.WriteLine("Done save config...");
 
@@ -372,13 +373,15 @@ namespace YuukiPS_Launcher
                 Console.WriteLine("Cheat enable");
                 try
                 {
-                    var get_file_cheat = API.GetCheat(selectedGame, GameChannel, VersionGame);
-                    if (string.IsNullOrEmpty(get_file_cheat))
+                    var get_file_cheat = API.GetCheat(selectedGame, GameChannel, VersionGame, cst_gamefile);
+                    if (get_file_cheat == null)
                     {
                         MessageBox.Show("No update for this version so far or check console");
                         return;
                     }
-                    cst_gamefile = get_file_cheat;
+                    cst_gamefile = get_file_cheat.launcher;
+                    WatchCheat = Path.GetFileNameWithoutExtension(cst_gamefile);
+                    Console.WriteLine($"RUN: Monitor {WatchCheat} at {cst_gamefile}");
 
                 }
                 catch (Exception x)
@@ -1498,11 +1501,11 @@ namespace YuukiPS_Launcher
                             }
                             if (!string.IsNullOrEmpty(url_dl))
                             {
-                                var DL1 = new Download(url_dl, Config.CurrentlyPath + @"\update.zip");
+                                var DL1 = new Download(url_dl, Json.Config.CurrentlyPath + @"\update.zip");
                                 if (DL1.ShowDialog() == DialogResult.OK)
                                 {
                                     // update
-                                    var file_update = Config.CurrentlyPath + @"\update.bat";
+                                    var file_update = Json.Config.CurrentlyPath + @"\update.bat";
                                     try
                                     {
                                         //buat bat
@@ -1644,7 +1647,7 @@ namespace YuukiPS_Launcher
 
         private void CheckGameRun_Tick(object sender, EventArgs e)
         {
-            var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == "YuanShen" || pr.ProcessName == "GenshinImpact" || pr.ProcessName == "StarRail" || pr.ProcessName == "Launcher");
+            var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == WatchFile || pr.ProcessName == WatchCheat);
             if (!isrun.Any())
             {
                 // Jika Game tidak berjalan....
