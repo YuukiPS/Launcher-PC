@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using RestSharp;
 using System.Diagnostics;
 using System.Net;
@@ -10,7 +10,7 @@ namespace YuukiPS_Launcher.Yuuki
 {
     public class API
     {
-        public static string API_DL_CF = "https://file.yuuki.me/";
+        public static string API_DL_CF = "https://file2.yuuki.me/";
         public static string API_DL_OW = "https://drive.yuuki.me/";
         public static string API_Yuuki = "https://ps.yuuki.me/";
         public static string WEB_LINK = "https://ps.yuuki.me";
@@ -25,7 +25,7 @@ namespace YuukiPS_Launcher.Yuuki
 
             var response = client.Execute(request);
             var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            return JsonConvert.DeserializeObject<Client>(getme!);
+            return JsonSerializer.Deserialize<Client>(getme!);
         }
 
         public static VersionGenshin? GetMD5VersionGS(string md5)
@@ -40,7 +40,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     if (response.Content != null)
                     {
-                        var tes = JsonConvert.DeserializeObject<VersionGenshin>(response.Content);
+                        var tes = JsonSerializer.Deserialize<VersionGenshin>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -49,12 +49,12 @@ namespace YuukiPS_Launcher.Yuuki
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error: ", ex);
+                    Console.WriteLine(ex);
                 }
             }
             else
             {
-                Console.WriteLine("Error: " + response.StatusCode);
+                Console.WriteLine("Error GET API: " + response.StatusCode);
             }
             return null;
         }
@@ -62,8 +62,7 @@ namespace YuukiPS_Launcher.Yuuki
         public static Patch? GetMD5Game(string md5, GameType type_game)
         {
             var url = "json/" + type_game.SEOUrl() + "/version/patch/" + md5.ToUpper() + ".json";
-
-            Console.WriteLine("GetMD5Game: " + md5 + " url: " + url);
+            Console.WriteLine($"GetMD5Game1: {url}");
 
             var client = new RestClient(API_Yuuki);
             var request = new RestRequest(url);
@@ -73,23 +72,18 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 try
                 {
-                    if (response.Content != null)
-                    {
-                        var tes = JsonConvert.DeserializeObject<Patch>(response.Content);
-                        if (tes != null)
-                        {
-                            return tes;
-                        }
-                    }
+                    var patch = JsonSerializer.Deserialize<Patch>(response.Content);
+                    return patch;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error: ", ex);
+                    Console.WriteLine(ex);
+                    Console.WriteLine(response.Content);
                 }
             }
             else
             {
-                Console.WriteLine("Error: " + response.ErrorException);
+                Console.WriteLine($"Error get patch api: {response.StatusCode}");
             }
             return null;
         }
@@ -106,7 +100,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     if (response.Content != null)
                     {
-                        var tes = JsonConvert.DeserializeObject<KeyGS>(response.Content);
+                        var tes = JsonSerializer.Deserialize<KeyGS>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -115,12 +109,12 @@ namespace YuukiPS_Launcher.Yuuki
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error: ", ex);
+                    Console.WriteLine(ex);
                 }
             }
             else
             {
-                Console.WriteLine("Error: " + response.StatusCode);
+                Console.WriteLine("Error GET KEY: " + response.StatusCode);
             }
             return null;
         }
@@ -136,7 +130,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonConvert.DeserializeObject<ServerList>(response.Content);
+                        var tes = JsonSerializer.Deserialize<ServerList>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -144,7 +138,7 @@ namespace YuukiPS_Launcher.Yuuki
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error: ", ex);
+                        Console.WriteLine(ex);
                     }
 
                 }
@@ -169,7 +163,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonConvert.DeserializeObject<VersionServer>(response.Content);
+                        var tes = JsonSerializer.Deserialize<VersionServer>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -177,7 +171,7 @@ namespace YuukiPS_Launcher.Yuuki
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error: ", ex);
+                        Console.WriteLine(ex);
                     }
                 }
             }
@@ -199,7 +193,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonConvert.DeserializeObject<List<Update>>(response.Content);
+                        var tes = JsonSerializer.Deserialize<List<Update>>(response.Content);
                         if (tes != null)
                         {
                             return tes[0];
@@ -232,7 +226,7 @@ namespace YuukiPS_Launcher.Yuuki
                     try
                     {
                         //Console.WriteLine($"tes {ver_set}: " + JsonConvert.SerializeObject(response.Content));
-                        var getData = JsonConvert.DeserializeObject<List<Cheat>>(response.Content);
+                        var getData = JsonSerializer.Deserialize<List<Cheat>>(response.Content);
                         if (getData != null)
                         {
                             var filteredGame = getData.Where(c => c.game == (int)game_type).ToList();

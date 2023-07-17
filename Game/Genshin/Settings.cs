@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Text;
 
 namespace YuukiPS_Launcher.Game.Genshin
@@ -56,7 +56,7 @@ namespace YuukiPS_Launcher.Game.Genshin
                 var tesss = Encoding.UTF8.GetString(data);
                 if (tesss != null)
                 {
-                    return JsonConvert.DeserializeObject<GeneralDataProp>(tesss);
+                    return JsonSerializer.Deserialize<GeneralDataProp>(tesss);
                 }
             }
             return null;
@@ -89,7 +89,7 @@ namespace YuukiPS_Launcher.Game.Genshin
                 return 2;
             }
             ReadOnlySpan<char> regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-            return JsonConvert.DeserializeObject<GeneralDataProp>(new string(regValue))?.deviceVoiceLanguageType ?? 2;
+            return JsonSerializer.Deserialize<GeneralDataProp>(new string(regValue))?.deviceVoiceLanguageType ?? 2;
         }
 
         public int GetRegServerNameID()
@@ -101,7 +101,7 @@ namespace YuukiPS_Launcher.Game.Genshin
                 return 0;
             }
             string regValue = new string(Encoding.UTF8.GetString(value).AsSpan().Trim('\0'));
-            return (int)(JsonConvert.DeserializeObject<GeneralDataProp>(regValue)?.selectedServerName ?? ServerRegionID.os_usa);
+            return (int)(JsonSerializer.Deserialize<GeneralDataProp>(regValue)?.selectedServerName ?? ServerRegionID.os_usa);
         }
 
         public enum ServerRegionID

@@ -42,7 +42,7 @@ namespace YuukiPS_Launcher
                 var downloadOpt = new DownloadConfiguration()
                 {
                     ChunkCount = 8, // file parts to download, default value is 1
-                    OnTheFlyDownload = true, // caching in-memory or not? default values is true
+                    //OnTheFlyDownload = true, // caching in-memory or not? default values is true
                     ParallelDownload = true // download parts of file as parallel or not. Default value is false
                 };
                 dl = new DownloadService(downloadOpt);
@@ -56,7 +56,7 @@ namespace YuukiPS_Launcher
                 }
                 catch (Exception ek)
                 {
-                    MessageBox.Show($"Failed downloading Data: "+ek.Message, "Oh Snap!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    MessageBox.Show($"Failed downloading Data: " + ek.Message, "Oh Snap!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 }
             }
             else

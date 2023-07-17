@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 namespace YuukiPS_Launcher.Json
 {
@@ -33,7 +33,7 @@ namespace YuukiPS_Launcher.Json
                 string data = File.ReadAllText(load_file);
                 try
                 {
-                    var tmp_configdata = JsonConvert.DeserializeObject<Config>(data);
+                    var tmp_configdata = JsonSerializer.Deserialize<Config>(data);
                     if (tmp_configdata != null)
                     {
                         config = tmp_configdata;

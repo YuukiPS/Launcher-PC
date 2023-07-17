@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -229,7 +229,7 @@ namespace YuukiPS_Launcher
 
                 configdata.profile_default = name_save;
 
-                File.WriteAllText(Json.Config.ConfigPath, JsonConvert.SerializeObject(configdata));
+                File.WriteAllText(Json.Config.ConfigPath, JsonSerializer.Serialize(configdata));
 
                 Console.WriteLine("Done save config...");
 
