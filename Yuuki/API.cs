@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
 using RestSharp;
 using System.Diagnostics;
 using System.Net;
@@ -25,7 +25,7 @@ namespace YuukiPS_Launcher.Yuuki
 
             var response = client.Execute(request);
             var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            return JsonSerializer.Deserialize<Client>(getme!);
+            return JsonConvert.DeserializeObject<Client>(getme!);
         }
 
         public static VersionGenshin? GetMD5VersionGS(string md5)
@@ -40,7 +40,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     if (response.Content != null)
                     {
-                        var tes = JsonSerializer.Deserialize<VersionGenshin>(response.Content);
+                        var tes = JsonConvert.DeserializeObject<VersionGenshin>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -72,7 +72,7 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 try
                 {
-                    var patch = JsonSerializer.Deserialize<Patch>(response.Content);
+                    var patch = JsonConvert.DeserializeObject<Patch>(response.Content);
                     return patch;
                 }
                 catch (Exception ex)
@@ -100,7 +100,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     if (response.Content != null)
                     {
-                        var tes = JsonSerializer.Deserialize<KeyGS>(response.Content);
+                        var tes = JsonConvert.DeserializeObject<KeyGS>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -130,7 +130,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonSerializer.Deserialize<ServerList>(response.Content);
+                        var tes = JsonConvert.DeserializeObject<ServerList>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -163,7 +163,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonSerializer.Deserialize<VersionServer>(response.Content);
+                        var tes = JsonConvert.DeserializeObject<VersionServer>(response.Content);
                         if (tes != null)
                         {
                             return tes;
@@ -193,7 +193,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonSerializer.Deserialize<List<Update>>(response.Content);
+                        var tes = JsonConvert.DeserializeObject<List<Update>>(response.Content);
                         if (tes != null)
                         {
                             return tes[0];
@@ -226,7 +226,7 @@ namespace YuukiPS_Launcher.Yuuki
                     try
                     {
                         //Console.WriteLine($"tes {ver_set}: " + JsonConvert.SerializeObject(response.Content));
-                        var getData = JsonSerializer.Deserialize<List<Cheat>>(response.Content);
+                        var getData = JsonConvert.DeserializeObject<List<Cheat>>(response.Content);
                         if (getData != null)
                         {
                             var filteredGame = getData.Where(c => c.game == (int)game_type).ToList();

@@ -1,5 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
-using System.Text.Json;
+using Newtonsoft.Json;
 using RestSharp;
 using System.Diagnostics;
 using System.Net;
@@ -145,7 +145,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var GetData = JsonSerializer.Deserialize<List<Update>>(response.Content);
+                        var GetData = JsonConvert.DeserializeObject<List<Update>>(response.Content);
                         if (GetData != null)
                         {
                             // Get List Releases

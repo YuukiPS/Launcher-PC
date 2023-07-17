@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -229,7 +229,7 @@ namespace YuukiPS_Launcher
 
                 configdata.profile_default = name_save;
 
-                File.WriteAllText(Json.Config.ConfigPath, JsonSerializer.Serialize(configdata));
+                File.WriteAllText(Json.Config.ConfigPath, JsonConvert.SerializeObject(configdata));
 
                 Console.WriteLine("Done save config...");
 
@@ -506,7 +506,7 @@ namespace YuukiPS_Launcher
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error getting game settings: " + ex.ToString());
+                    Debug.WriteLine("Error getting game settings: " + ex.ToString());
                 }
 
             }
