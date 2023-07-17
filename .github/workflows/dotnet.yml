@@ -16,13 +16,10 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-       dotnet-version: 6.0.x
+       dotnet-version: 7.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build Exe
-      run: dotnet build --no-restore --configuration Release /clp:ErrorsOnly
+    - name: Publish App
+      run: dotnet publish -r win-x64  -p:PublishSingleFile=true --self-contained true -c Release
 
     - name: Check Version
       uses: kzrnm/get-net-sdk-project-versions-action@v1
@@ -37,7 +34,7 @@ jobs:
     - name: Get Zip Release
       uses: thedoctor0/zip-release@main
       with:
-        path: './bin/Release/net6.0-windows/*' 
+        path: './bin/Release/net7.0-windows/win-x64/publish*' 
         type: 'zip'
         filename: 'YuukiPS.zip'
         exclusions: '*.git*'
