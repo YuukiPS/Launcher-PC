@@ -50,6 +50,7 @@
         public string version { get; set; } = "0.0.0";
         public string channel { get; set; } = "Global";
         public string release { get; set; } = "Official";
+        public string nosupport { get; set; } = "";
         public Patched? patched { get; set; }
         public Original? original { get; set; }
     }

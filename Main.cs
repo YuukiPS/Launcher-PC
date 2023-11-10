@@ -67,10 +67,6 @@ namespace YuukiPS_Launcher
             // Load Profile by profile_default
             LoadProfile(configdata.profile_default);
 
-            // Server List
-            //GetServerList();
-            //UpdateServerListTimer();
-
             // Extra
             discord.Ready();
 
@@ -314,18 +310,23 @@ namespace YuukiPS_Launcher
                 {
                     patch = false;
                 }
+                else
+                {
+                    if(get_version != null && get_version.nosupport != "")
+                    {
+                        MessageBox.Show(get_version.nosupport, "Game version not supported");
+                        Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
+                        return;
+                    }
+                }
 
                 // run patch
                 var tes = PatchGame(patch, true, GamePatchMetode, GameChannel);
                 if (!string.IsNullOrEmpty(tes))
                 {
-                    if (tes.Contains("Key1") || tes.Contains("Key2"))
+                    if (tes.Contains("corrupted"))
                     {
-                        MessageBox.Show("This may happen because you have already patched or you are using an unsupported version game. The solution is you can use Online Method (you can find it in Config Tab) to make sure you have right file.", "Error Patch Offline");
-                    }
-                    else if (tes.Contains("corrupted"))
-                    {
-                        MessageBox.Show("Looks like you're using an unsupported version, try updating game data to latest version", "Game Version not supported (Online Mode)");
+                        MessageBox.Show("Looks like you're using an unsupported version, try updating or downgrade game data to latest version", "Game version not supported");
                         Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
                     }
                     else
@@ -1351,7 +1352,7 @@ namespace YuukiPS_Launcher
                 Set_LA_GameFolder.Text = Folder_Game_Now;
                 if (!CheckVersionGame(default_profile.game.type))
                 {
-                    MessageBox.Show("You have set the folder manually but we can't detect this game version yet, maybe because it's not supported yet so please download it on our official website with the currently supported version.");
+                    MessageBox.Show("You have set folder manually but we can't detect this game version yet, maybe because it's not supported yet so please download it on our official website with the currently supported version.");
                     Process.Start(new ProcessStartInfo(API.WEB_LINK + "/game/" + default_profile.game.type.SEOUrl()) { UseShellExecute = true });
                 }
             }
@@ -1359,107 +1360,6 @@ namespace YuukiPS_Launcher
             {
                 MessageBox.Show("No game folder found");
             }
-        }
-
-        public void GetServerList()
-        {
-            /*
-            var GetDataServerList = API.ServerList();
-            if (GetDataServerList == null)
-            {
-                MessageBox.Show("Error get server list");
-                return;
-            }
-
-            ListServer = GetDataServerList.list;
-            */
-
-            ServerList.BeginUpdate();
-            ServerList.Items.Clear();
-
-            for (int i = 0; i < ListServer.Count; i++)
-            {
-                ListViewItem lvi = new ListViewItem();
-                lvi.Text = ListServer[i].name;
-                lvi.SubItems.Add(ListServer[i].host);
-                lvi.SubItems.Add("N/A");
-                lvi.SubItems.Add("N/A");
-                lvi.SubItems.Add("N/A");
-                ServerList.Items.Add(lvi);
-            }
-
-            ServerList.EndUpdate();
-        }
-
-        public void UpdateServerListTimer()
-        {
-            Debug.Print("Start update..");
-            if (thServerList != null)
-            {
-                thServerList.Interrupt();
-            }
-            thServerList = new Thread(() =>
-            {
-                if (ListServer == null)
-                {
-                    return;
-                }
-                for (int i = 0; i < ListServer.Count; i++)
-                {
-                    int s = i;
-                    new Thread(() =>
-                    {
-                        var host = ListServer[s].host;
-                        try
-                        {
-                            if (host == "official")
-                            {
-                                return;
-                            }
-
-                            string url_server_api = host + "/status/server";
-                            Debug.Print("Start update.. " + url_server_api);
-                            VersionServer? ig = API.GetServerStatus(url_server_api);
-                            ServerList.Invoke((Action)delegate
-                            {
-                                if (ig != null)
-                                {
-                                    ServerList.Items[s].SubItems[2].Text = ig.status.playerCount.ToString();
-                                    ServerList.Items[s].SubItems[3].Text = ig.status.Version.ToString();
-                                    if (ig.status.runMode != "HYBRID")
-                                    {
-                                        ServerList.Items[s].SubItems[2].Text = ig.status.runMode;
-                                    }
-                                }
-                                else
-                                {
-                                    ServerList.Items[s].SubItems[2].Text = "N/A";
-                                    ServerList.Items[s].SubItems[3].Text = "N/A";
-                                }
-                                try
-                                {
-                                    PingReply reply = new Ping().Send(host, 1000);
-                                    if (reply.Status == IPStatus.Success)
-                                        ServerList.Items[s].SubItems[4].Text = reply.RoundtripTime + "ms";
-                                }
-                                catch
-                                {
-                                    ServerList.Items[s].SubItems[4].Text = "N/A";
-                                }
-                            });
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.Print("Error Host " + host + "" + e.Message);
-                        }
-                        finally
-                        {
-                            //
-                        }
-                    }).Start();
-                }
-            });
-            thServerList.Start();
         }
 
         public void CheckUpdate()
@@ -1746,26 +1646,6 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void btReloadServer_Click(object sender, EventArgs e)
-        {
-            GetServerList();
-        }
-
-        private void ServerList_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            var item = ServerList.GetItemAt(e.X, e.Y);
-            if (item == null)
-            {
-                return;
-            }
-            var g = ListServer[item.Index];
-            if (g != null)
-            {
-                GetServerHost.Text = g.host;
-                HostName = g.name;
-            }
-        }
-
         private void linkDiscord_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("http://discord.yuuki.me/") { UseShellExecute = true });
@@ -1779,14 +1659,6 @@ namespace YuukiPS_Launcher
         private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
-        }
-
-        private void CekUpdateTT_Tick(object sender, EventArgs e)
-        {
-            if (Is_ServerList_Autocheck.Checked)
-            {
-                // UpdateServerListTimer();
-            }
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -1853,18 +1725,6 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void DEV_UA_bt_Selectfile_Click(object sender, EventArgs e)
-        {
-            var dialog = new OpenFileDialog();
-            dialog.Title = "Select file metadata...";
-            dialog.DefaultExt = "dat";
-            dialog.Multiselect = false;
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                DEV_MA_get_file.Text = dialog.FileName;
-            }
-        }
-
         private void Server_Config_OpenFolder_Click(object sender, EventArgs e)
         {
             Process.Start(new ProcessStartInfo()
@@ -1898,131 +1758,9 @@ namespace YuukiPS_Launcher
 
         }
 
-
-
         private void Server_DL_GC_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void bt_GetKey_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(UpdateKey());
-        }
-
-        public string UpdateKey()
-        {
-            if (get_version == null)
-            {
-                return "Maybe your internet has problems or there is an active proxy";
-            }
-            else
-            {
-                //MA
-                DEV_MA_Set_Key1_NoPatch.Text = "";
-                DEV_MA_Set_Key2_NoPatch.Text = "";
-                DEV_MA_Set_Key1_Patch.Text = "";
-                DEV_MA_Set_Key2_Patch.Text = "";
-
-                //UA
-                DEV_UA_Set_Key1_NoPatch.Text = get_version.original?.key_find.os;
-                DEV_UA_Set_Key2_Patch.Text = get_version.patched?.key_patch;
-            }
-            return "Successfully got Key, you can see update in developer tab";
-        }
-
-        private void DEV_UA_bt_Selectfile_Click_1(object sender, EventArgs e)
-        {
-            var dialog = new OpenFileDialog();
-            dialog.Title = "Select File UserAssembly...";
-            dialog.DefaultExt = "dll";
-            dialog.Multiselect = false;
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                DEV_UA_get_file.Text = dialog.FileName;
-            }
-        }
-
-        private void DEV_UA_bt_Patch_Click_1(object sender, EventArgs e)
-        {
-            // Check Folder Game
-            var DEV_UA_file = DEV_UA_get_file.Text;
-            if (String.IsNullOrEmpty(DEV_UA_file))
-            {
-                MessageBox.Show("No UA found (1)");
-                return;
-            }
-            if (!File.Exists(DEV_UA_file))
-            {
-                MessageBox.Show("No file UA found (2)");
-                return;
-            }
-            var DEV_UA_KEY1_NOPATCH = DEV_UA_Set_Key1_NoPatch.Text;
-            var DEV_UA_KEY2_PATCH = DEV_UA_Set_Key2_Patch.Text;
-
-            var IsPatchOK = Game.Genshin.Patch.UserAssembly.Do(DEV_UA_file, DEV_UA_file + ".patch", DEV_UA_KEY1_NOPATCH, DEV_UA_KEY2_PATCH);
-            if (!string.IsNullOrEmpty(IsPatchOK))
-            {
-                MessageBox.Show(IsPatchOK);
-            }
-            else
-            {
-                MessageBox.Show("Patching is successful");
-            }
-        }
-
-        private void DEV_MA_bt_Patch_Click(object sender, EventArgs e)
-        {
-            // Check Folder Game
-            var DEV_metadata_file = DEV_MA_get_file.Text;
-            if (String.IsNullOrEmpty(DEV_metadata_file))
-            {
-                MessageBox.Show("No metadata found (1)");
-                return;
-            }
-            if (!File.Exists(DEV_metadata_file))
-            {
-                MessageBox.Show("No file metadata found (2)");
-                return;
-            }
-            var DEV_MA_KEY1_NOPATCH = DEV_MA_Set_Key1_NoPatch.Text;
-            var DEV_MA_KEY1_PATCH = DEV_MA_Set_Key1_Patch.Text;
-            var DEV_MA_KEY2_NOPATCH = DEV_MA_Set_Key2_NoPatch.Text;
-            var DEV_MA_KEY2_PATCH = DEV_MA_Set_Key2_Patch.Text;
-
-            var IsPatchOK = Game.Genshin.Patch.Metadata.Do(DEV_metadata_file, DEV_metadata_file + ".patch", DEV_MA_KEY1_NOPATCH, DEV_MA_KEY1_PATCH, DEV_MA_KEY2_NOPATCH, DEV_MA_KEY2_PATCH);
-            if (!string.IsNullOrEmpty(IsPatchOK))
-            {
-                MessageBox.Show(IsPatchOK);
-            }
-            else
-            {
-                MessageBox.Show("Patching is successful");
-            }
-        }
-
-        private void DEV_MA_bt_Decrypt_Click(object sender, EventArgs e)
-        {
-            var DEV_metadata_file = DEV_MA_get_file.Text;
-            if (String.IsNullOrEmpty(DEV_metadata_file))
-            {
-                MessageBox.Show("No metadata found (1)");
-                return;
-            }
-            if (!File.Exists(DEV_metadata_file))
-            {
-                MessageBox.Show("No file metadata found (2)");
-                return;
-            }
-            var IsPatchOK = Game.Genshin.Patch.Metadata.Decrypt(DEV_metadata_file, DEV_metadata_file + ".dec");
-            if (!string.IsNullOrEmpty(IsPatchOK))
-            {
-                MessageBox.Show(IsPatchOK);
-            }
-            else
-            {
-                MessageBox.Show("Decrypt is successful");
-            }
         }
 
         private void Extra_Cheat_CheckedChanged(object sender, EventArgs e)

@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            ListViewItem listViewItem1 = new ListViewItem(new string[] { "Yuuki", "tes.yuuki.me", "N/A", "N/A", "N/A" }, -1);
             btStartNormal = new Button();
             GetServerHost = new TextBox();
             label2 = new Label();
@@ -84,16 +83,6 @@
             label15 = new Label();
             textBox1 = new TextBox();
             label14 = new Label();
-            tabPage3 = new TabPage();
-            Is_ServerList_Autocheck = new CheckBox();
-            ServerList = new ListView();
-            ServerList_GetName = new ColumnHeader();
-            ServerList_GetHost = new ColumnHeader();
-            ServerList_GetOnline = new ColumnHeader();
-            ServerList_GetVersion = new ColumnHeader();
-            ServerList_GetPing = new ColumnHeader();
-            btReloadServer = new Button();
-            label3 = new Label();
             tabPage4 = new TabPage();
             TabConfig = new TabControl();
             tabPage5 = new TabPage();
@@ -105,36 +94,10 @@
             label7 = new Label();
             tabPage9 = new TabPage();
             Config_Discord_Enable = new CheckBox();
-            tabPage8 = new TabPage();
-            tabControl1 = new TabControl();
-            tabPage6 = new TabPage();
-            DEV_MA_bt_Decrypt = new Button();
-            DEV_MA_Set_Key2_Patch = new TextBox();
-            DEV_MA_Set_Key2_NoPatch = new TextBox();
-            label13 = new Label();
-            label12 = new Label();
-            DEV_MA_Set_Key1_Patch = new TextBox();
-            label11 = new Label();
-            DEV_MA_Set_Key1_NoPatch = new TextBox();
-            label10 = new Label();
-            DEV_MA_bt_Selectfile = new Button();
-            label9 = new Label();
-            DEV_MA_get_file = new TextBox();
-            DEV_MA_bt_Patch = new Button();
-            tabPage7 = new TabPage();
-            DEV_UA_Set_Key2_Patch = new TextBox();
-            label20 = new Label();
-            DEV_UA_Set_Key1_NoPatch = new TextBox();
-            label21 = new Label();
-            DEV_UA_bt_Selectfile = new Button();
-            label22 = new Label();
-            DEV_UA_get_file = new TextBox();
-            DEV_UA_bt_Patch = new Button();
             Set_Version = new Label();
             linkDiscord = new LinkLabel();
             linkGithub = new LinkLabel();
             linkWeb = new LinkLabel();
-            CekUpdateTT = new System.Windows.Forms.Timer(components);
             CheckGameRun = new System.Windows.Forms.Timer(components);
             CheckProxyRun = new System.Windows.Forms.Timer(components);
             TabMain.SuspendLayout();
@@ -152,15 +115,10 @@
             groupBox6.SuspendLayout();
             groupBox5.SuspendLayout();
             tabPage11.SuspendLayout();
-            tabPage3.SuspendLayout();
             tabPage4.SuspendLayout();
             TabConfig.SuspendLayout();
             tabPage5.SuspendLayout();
             tabPage9.SuspendLayout();
-            tabPage8.SuspendLayout();
-            tabControl1.SuspendLayout();
-            tabPage6.SuspendLayout();
-            tabPage7.SuspendLayout();
             SuspendLayout();
             // 
             // btStartNormal
@@ -205,9 +163,7 @@
             // 
             TabMain.Controls.Add(tabPage1);
             TabMain.Controls.Add(tabPage2);
-            TabMain.Controls.Add(tabPage3);
             TabMain.Controls.Add(tabPage4);
-            TabMain.Controls.Add(tabPage8);
             TabMain.Dock = DockStyle.Top;
             TabMain.Location = new Point(0, 0);
             TabMain.Name = "TabMain";
@@ -743,91 +699,6 @@
             label14.TabIndex = 0;
             label14.Text = "Grasscutter Folder:";
             // 
-            // tabPage3
-            // 
-            tabPage3.Controls.Add(Is_ServerList_Autocheck);
-            tabPage3.Controls.Add(ServerList);
-            tabPage3.Controls.Add(btReloadServer);
-            tabPage3.Controls.Add(label3);
-            tabPage3.Location = new Point(4, 24);
-            tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(654, 383);
-            tabPage3.TabIndex = 2;
-            tabPage3.Text = "Command";
-            tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // Is_ServerList_Autocheck
-            // 
-            Is_ServerList_Autocheck.AutoSize = true;
-            Is_ServerList_Autocheck.Checked = true;
-            Is_ServerList_Autocheck.CheckState = CheckState.Checked;
-            Is_ServerList_Autocheck.Location = new Point(425, 54);
-            Is_ServerList_Autocheck.Name = "Is_ServerList_Autocheck";
-            Is_ServerList_Autocheck.Size = new Size(91, 19);
-            Is_ServerList_Autocheck.TabIndex = 13;
-            Is_ServerList_Autocheck.Text = "Auto Reload";
-            Is_ServerList_Autocheck.UseVisualStyleBackColor = true;
-            // 
-            // ServerList
-            // 
-            ServerList.AllowDrop = true;
-            ServerList.Columns.AddRange(new ColumnHeader[] { ServerList_GetName, ServerList_GetHost, ServerList_GetOnline, ServerList_GetVersion, ServerList_GetPing });
-            ServerList.FullRowSelect = true;
-            ServerList.GridLines = true;
-            ServerList.Items.AddRange(new ListViewItem[] { listViewItem1 });
-            ServerList.Location = new Point(8, 15);
-            ServerList.MultiSelect = false;
-            ServerList.Name = "ServerList";
-            ServerList.ShowGroups = false;
-            ServerList.Size = new Size(401, 239);
-            ServerList.TabIndex = 8;
-            ServerList.UseCompatibleStateImageBehavior = false;
-            ServerList.View = View.Details;
-            ServerList.MouseDoubleClick += ServerList_MouseDoubleClick;
-            // 
-            // ServerList_GetName
-            // 
-            ServerList_GetName.Text = "Name";
-            ServerList_GetName.Width = 90;
-            // 
-            // ServerList_GetHost
-            // 
-            ServerList_GetHost.Text = "Host";
-            ServerList_GetHost.Width = 120;
-            // 
-            // ServerList_GetOnline
-            // 
-            ServerList_GetOnline.Text = "Online";
-            // 
-            // ServerList_GetVersion
-            // 
-            ServerList_GetVersion.Text = "Version";
-            // 
-            // ServerList_GetPing
-            // 
-            ServerList_GetPing.Text = "Ping";
-            // 
-            // btReloadServer
-            // 
-            btReloadServer.Location = new Point(415, 15);
-            btReloadServer.Name = "btReloadServer";
-            btReloadServer.Size = new Size(75, 23);
-            btReloadServer.TabIndex = 10;
-            btReloadServer.Text = "Reload";
-            btReloadServer.UseVisualStyleBackColor = true;
-            btReloadServer.Click += btReloadServer_Click;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(415, 91);
-            label3.Name = "label3";
-            label3.Size = new Size(102, 30);
-            label3.TabIndex = 9;
-            label3.Text = "Server list";
-            // 
             // tabPage4
             // 
             tabPage4.Controls.Add(TabConfig);
@@ -941,260 +812,6 @@
             Config_Discord_Enable.Text = "Discord Rich Presence";
             Config_Discord_Enable.UseVisualStyleBackColor = true;
             // 
-            // tabPage8
-            // 
-            tabPage8.Controls.Add(tabControl1);
-            tabPage8.Location = new Point(4, 24);
-            tabPage8.Name = "tabPage8";
-            tabPage8.Size = new Size(654, 383);
-            tabPage8.TabIndex = 4;
-            tabPage8.Text = "Development Tool";
-            tabPage8.UseVisualStyleBackColor = true;
-            // 
-            // tabControl1
-            // 
-            tabControl1.Controls.Add(tabPage6);
-            tabControl1.Controls.Add(tabPage7);
-            tabControl1.Dock = DockStyle.Fill;
-            tabControl1.Location = new Point(0, 0);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(654, 383);
-            tabControl1.TabIndex = 0;
-            // 
-            // tabPage6
-            // 
-            tabPage6.Controls.Add(DEV_MA_bt_Decrypt);
-            tabPage6.Controls.Add(DEV_MA_Set_Key2_Patch);
-            tabPage6.Controls.Add(DEV_MA_Set_Key2_NoPatch);
-            tabPage6.Controls.Add(label13);
-            tabPage6.Controls.Add(label12);
-            tabPage6.Controls.Add(DEV_MA_Set_Key1_Patch);
-            tabPage6.Controls.Add(label11);
-            tabPage6.Controls.Add(DEV_MA_Set_Key1_NoPatch);
-            tabPage6.Controls.Add(label10);
-            tabPage6.Controls.Add(DEV_MA_bt_Selectfile);
-            tabPage6.Controls.Add(label9);
-            tabPage6.Controls.Add(DEV_MA_get_file);
-            tabPage6.Controls.Add(DEV_MA_bt_Patch);
-            tabPage6.Location = new Point(4, 24);
-            tabPage6.Name = "tabPage6";
-            tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(646, 355);
-            tabPage6.TabIndex = 0;
-            tabPage6.Text = "Metadata";
-            tabPage6.UseVisualStyleBackColor = true;
-            // 
-            // DEV_MA_bt_Decrypt
-            // 
-            DEV_MA_bt_Decrypt.Location = new Point(579, 7);
-            DEV_MA_bt_Decrypt.Name = "DEV_MA_bt_Decrypt";
-            DEV_MA_bt_Decrypt.Size = new Size(59, 23);
-            DEV_MA_bt_Decrypt.TabIndex = 12;
-            DEV_MA_bt_Decrypt.Text = "Decrypt";
-            DEV_MA_bt_Decrypt.UseVisualStyleBackColor = true;
-            DEV_MA_bt_Decrypt.Click += DEV_MA_bt_Decrypt_Click;
-            // 
-            // DEV_MA_Set_Key2_Patch
-            // 
-            DEV_MA_Set_Key2_Patch.Location = new Point(329, 160);
-            DEV_MA_Set_Key2_Patch.Multiline = true;
-            DEV_MA_Set_Key2_Patch.Name = "DEV_MA_Set_Key2_Patch";
-            DEV_MA_Set_Key2_Patch.Size = new Size(300, 77);
-            DEV_MA_Set_Key2_Patch.TabIndex = 11;
-            // 
-            // DEV_MA_Set_Key2_NoPatch
-            // 
-            DEV_MA_Set_Key2_NoPatch.Location = new Point(17, 160);
-            DEV_MA_Set_Key2_NoPatch.Multiline = true;
-            DEV_MA_Set_Key2_NoPatch.Name = "DEV_MA_Set_Key2_NoPatch";
-            DEV_MA_Set_Key2_NoPatch.Size = new Size(306, 77);
-            DEV_MA_Set_Key2_NoPatch.TabIndex = 10;
-            // 
-            // label13
-            // 
-            label13.AutoSize = true;
-            label13.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label13.Location = new Point(329, 136);
-            label13.Name = "label13";
-            label13.Size = new Size(95, 21);
-            label13.TabIndex = 9;
-            label13.Text = "Key2 (Patch)";
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label12.Location = new Point(17, 136);
-            label12.Name = "label12";
-            label12.Size = new Size(114, 21);
-            label12.TabIndex = 8;
-            label12.Text = "Key2 (Original)";
-            // 
-            // DEV_MA_Set_Key1_Patch
-            // 
-            DEV_MA_Set_Key1_Patch.Location = new Point(329, 56);
-            DEV_MA_Set_Key1_Patch.Multiline = true;
-            DEV_MA_Set_Key1_Patch.Name = "DEV_MA_Set_Key1_Patch";
-            DEV_MA_Set_Key1_Patch.Size = new Size(300, 77);
-            DEV_MA_Set_Key1_Patch.TabIndex = 7;
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label11.Location = new Point(329, 32);
-            label11.Name = "label11";
-            label11.Size = new Size(95, 21);
-            label11.TabIndex = 6;
-            label11.Text = "Key1 (Patch)";
-            // 
-            // DEV_MA_Set_Key1_NoPatch
-            // 
-            DEV_MA_Set_Key1_NoPatch.Location = new Point(17, 56);
-            DEV_MA_Set_Key1_NoPatch.Multiline = true;
-            DEV_MA_Set_Key1_NoPatch.Name = "DEV_MA_Set_Key1_NoPatch";
-            DEV_MA_Set_Key1_NoPatch.Size = new Size(306, 77);
-            DEV_MA_Set_Key1_NoPatch.TabIndex = 5;
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label10.Location = new Point(17, 32);
-            label10.Name = "label10";
-            label10.Size = new Size(114, 21);
-            label10.TabIndex = 4;
-            label10.Text = "Key1 (Original)";
-            // 
-            // DEV_MA_bt_Selectfile
-            // 
-            DEV_MA_bt_Selectfile.Location = new Point(438, 7);
-            DEV_MA_bt_Selectfile.Name = "DEV_MA_bt_Selectfile";
-            DEV_MA_bt_Selectfile.Size = new Size(70, 23);
-            DEV_MA_bt_Selectfile.TabIndex = 3;
-            DEV_MA_bt_Selectfile.Text = "Select File";
-            DEV_MA_bt_Selectfile.UseVisualStyleBackColor = true;
-            DEV_MA_bt_Selectfile.Click += DEV_UA_bt_Selectfile_Click;
-            // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label9.Location = new Point(6, 6);
-            label9.Name = "label9";
-            label9.Size = new Size(37, 21);
-            label9.TabIndex = 2;
-            label9.Text = "File:";
-            // 
-            // DEV_MA_get_file
-            // 
-            DEV_MA_get_file.Location = new Point(40, 6);
-            DEV_MA_get_file.Name = "DEV_MA_get_file";
-            DEV_MA_get_file.Size = new Size(392, 23);
-            DEV_MA_get_file.TabIndex = 1;
-            // 
-            // DEV_MA_bt_Patch
-            // 
-            DEV_MA_bt_Patch.Location = new Point(514, 7);
-            DEV_MA_bt_Patch.Name = "DEV_MA_bt_Patch";
-            DEV_MA_bt_Patch.Size = new Size(59, 23);
-            DEV_MA_bt_Patch.TabIndex = 0;
-            DEV_MA_bt_Patch.Text = "Patch";
-            DEV_MA_bt_Patch.UseVisualStyleBackColor = true;
-            DEV_MA_bt_Patch.Click += DEV_MA_bt_Patch_Click;
-            // 
-            // tabPage7
-            // 
-            tabPage7.Controls.Add(DEV_UA_Set_Key2_Patch);
-            tabPage7.Controls.Add(label20);
-            tabPage7.Controls.Add(DEV_UA_Set_Key1_NoPatch);
-            tabPage7.Controls.Add(label21);
-            tabPage7.Controls.Add(DEV_UA_bt_Selectfile);
-            tabPage7.Controls.Add(label22);
-            tabPage7.Controls.Add(DEV_UA_get_file);
-            tabPage7.Controls.Add(DEV_UA_bt_Patch);
-            tabPage7.Location = new Point(4, 24);
-            tabPage7.Name = "tabPage7";
-            tabPage7.Padding = new Padding(3);
-            tabPage7.Size = new Size(646, 355);
-            tabPage7.TabIndex = 1;
-            tabPage7.Text = "UserAssembly";
-            tabPage7.UseVisualStyleBackColor = true;
-            // 
-            // DEV_UA_Set_Key2_Patch
-            // 
-            DEV_UA_Set_Key2_Patch.Location = new Point(329, 53);
-            DEV_UA_Set_Key2_Patch.Multiline = true;
-            DEV_UA_Set_Key2_Patch.Name = "DEV_UA_Set_Key2_Patch";
-            DEV_UA_Set_Key2_Patch.Size = new Size(302, 194);
-            DEV_UA_Set_Key2_Patch.TabIndex = 19;
-            // 
-            // label20
-            // 
-            label20.AutoSize = true;
-            label20.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label20.Location = new Point(329, 29);
-            label20.Name = "label20";
-            label20.Size = new Size(95, 21);
-            label20.TabIndex = 18;
-            label20.Text = "Key2 (Patch)";
-            // 
-            // DEV_UA_Set_Key1_NoPatch
-            // 
-            DEV_UA_Set_Key1_NoPatch.Location = new Point(17, 53);
-            DEV_UA_Set_Key1_NoPatch.Multiline = true;
-            DEV_UA_Set_Key1_NoPatch.Name = "DEV_UA_Set_Key1_NoPatch";
-            DEV_UA_Set_Key1_NoPatch.Size = new Size(306, 194);
-            DEV_UA_Set_Key1_NoPatch.TabIndex = 17;
-            // 
-            // label21
-            // 
-            label21.AutoSize = true;
-            label21.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label21.Location = new Point(17, 29);
-            label21.Name = "label21";
-            label21.Size = new Size(114, 21);
-            label21.TabIndex = 16;
-            label21.Text = "Key1 (Original)";
-            // 
-            // DEV_UA_bt_Selectfile
-            // 
-            DEV_UA_bt_Selectfile.Location = new Point(498, 7);
-            DEV_UA_bt_Selectfile.Name = "DEV_UA_bt_Selectfile";
-            DEV_UA_bt_Selectfile.Size = new Size(75, 23);
-            DEV_UA_bt_Selectfile.TabIndex = 15;
-            DEV_UA_bt_Selectfile.Text = "Select File";
-            DEV_UA_bt_Selectfile.UseVisualStyleBackColor = true;
-            DEV_UA_bt_Selectfile.Click += DEV_UA_bt_Selectfile_Click_1;
-            // 
-            // label22
-            // 
-            label22.AutoSize = true;
-            label22.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label22.Location = new Point(0, 6);
-            label22.Name = "label22";
-            label22.Size = new Size(37, 21);
-            label22.TabIndex = 14;
-            label22.Text = "File:";
-            // 
-            // DEV_UA_get_file
-            // 
-            DEV_UA_get_file.Location = new Point(40, 6);
-            DEV_UA_get_file.Name = "DEV_UA_get_file";
-            DEV_UA_get_file.Size = new Size(457, 23);
-            DEV_UA_get_file.TabIndex = 13;
-            // 
-            // DEV_UA_bt_Patch
-            // 
-            DEV_UA_bt_Patch.Location = new Point(579, 7);
-            DEV_UA_bt_Patch.Name = "DEV_UA_bt_Patch";
-            DEV_UA_bt_Patch.Size = new Size(59, 23);
-            DEV_UA_bt_Patch.TabIndex = 12;
-            DEV_UA_bt_Patch.Text = "Patch";
-            DEV_UA_bt_Patch.UseVisualStyleBackColor = true;
-            DEV_UA_bt_Patch.Click += DEV_UA_bt_Patch_Click_1;
-            // 
             // Set_Version
             // 
             Set_Version.AutoSize = true;
@@ -1240,12 +857,6 @@
             linkWeb.TabStop = true;
             linkWeb.Text = "Web";
             linkWeb.LinkClicked += linkWeb_LinkClicked;
-            // 
-            // CekUpdateTT
-            // 
-            CekUpdateTT.Enabled = true;
-            CekUpdateTT.Interval = 5000;
-            CekUpdateTT.Tick += CekUpdateTT_Tick;
             // 
             // CheckGameRun
             // 
@@ -1297,20 +908,12 @@
             groupBox5.ResumeLayout(false);
             tabPage11.ResumeLayout(false);
             tabPage11.PerformLayout();
-            tabPage3.ResumeLayout(false);
-            tabPage3.PerformLayout();
             tabPage4.ResumeLayout(false);
             TabConfig.ResumeLayout(false);
             tabPage5.ResumeLayout(false);
             tabPage5.PerformLayout();
             tabPage9.ResumeLayout(false);
             tabPage9.PerformLayout();
-            tabPage8.ResumeLayout(false);
-            tabControl1.ResumeLayout(false);
-            tabPage6.ResumeLayout(false);
-            tabPage6.PerformLayout();
-            tabPage7.ResumeLayout(false);
-            tabPage7.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1325,7 +928,6 @@
         private TabPage tabPage1;
         private TabPage tabPage2;
         private Button Server_Start;
-        private TabPage tabPage3;
         private TabPage tabPage4;
         private GroupBox grProxy;
         private CheckBox CheckProxyEnable;
@@ -1338,8 +940,6 @@
         private TabPage tabPage5;
         private TextBox Set_Metadata_Folder;
         private Label label4;
-        private TabPage tabPage8;
-        private System.Windows.Forms.Timer CekUpdateTT;
         private GroupBox grExtra;
         private CheckBox Extra_Cheat;
         private TextBox Set_LA_GameFolder;
@@ -1359,21 +959,6 @@
         private System.Windows.Forms.Timer CheckGameRun;
         private System.Windows.Forms.Timer CheckProxyRun;
         private Label label8;
-        private TabControl tabControl1;
-        private TabPage tabPage6;
-        private Button DEV_MA_bt_Selectfile;
-        private Label label9;
-        private TextBox DEV_MA_get_file;
-        private Button DEV_MA_bt_Patch;
-        private TabPage tabPage7;
-        private Label label10;
-        private TextBox DEV_MA_Set_Key1_NoPatch;
-        private TextBox DEV_MA_Set_Key1_Patch;
-        private Label label11;
-        private TextBox DEV_MA_Set_Key2_Patch;
-        private TextBox DEV_MA_Set_Key2_NoPatch;
-        private Label label13;
-        private Label label12;
         private TabPage tabPage9;
         private CheckBox Config_Discord_Enable;
         private Button Server_Config_OpenFolder;
@@ -1398,24 +983,6 @@
         private Label label15;
         private TextBox textBox1;
         private Label label14;
-        private TextBox DEV_UA_Set_Key2_Patch;
-        private Label label20;
-        private TextBox DEV_UA_Set_Key1_NoPatch;
-        private Label label21;
-        private Button DEV_UA_bt_Selectfile;
-        private Label label22;
-        private TextBox DEV_UA_get_file;
-        private Button DEV_UA_bt_Patch;
-        private Button DEV_MA_bt_Decrypt;
-        private CheckBox Is_ServerList_Autocheck;
-        public ListView ServerList;
-        private ColumnHeader ServerList_GetName;
-        private ColumnHeader ServerList_GetHost;
-        private ColumnHeader ServerList_GetOnline;
-        private ColumnHeader ServerList_GetVersion;
-        private ColumnHeader ServerList_GetPing;
-        private Button btReloadServer;
-        private Label label3;
         private Button btStartOfficialServer;
         private ComboBox GetTypeGame;
         private GroupBox grProfile;

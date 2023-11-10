@@ -31,15 +31,6 @@ namespace YuukiPS_Launcher.Yuuki
             proxyServer.BeforeRequest += OnRequest;
             proxyServer.ServerCertificateValidationCallback += OnCertificateValidation;
 
-            try
-            {
-                //Tool.findAndKillProcessRuningOn("" + port + "");
-            }
-            catch (Exception)
-            {
-                // skip
-            }
-
             explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, true);
 
             // Fired when a CONNECT request is received
