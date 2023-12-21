@@ -50,6 +50,7 @@
             label8 = new Label();
             grExtra = new GroupBox();
             Extra_Cheat = new CheckBox();
+            Enable_RPC = new CheckBox();
             grProxy = new GroupBox();
             stIsRunProxy = new Label();
             CheckProxyEnable = new CheckBox();
@@ -334,6 +335,7 @@
             // grExtra
             // 
             grExtra.Controls.Add(Extra_Cheat);
+            grExtra.Controls.Add(Enable_RPC);
             grExtra.Location = new Point(431, 264);
             grExtra.Name = "grExtra";
             grExtra.Size = new Size(217, 65);
@@ -344,13 +346,24 @@
             // Extra_Cheat
             // 
             Extra_Cheat.AutoSize = true;
-            Extra_Cheat.Location = new Point(6, 22);
+            Extra_Cheat.Location = new Point(7, 22);
             Extra_Cheat.Name = "Extra_Cheat";
             Extra_Cheat.Size = new Size(57, 19);
             Extra_Cheat.TabIndex = 0;
             Extra_Cheat.Text = "Cheat";
             Extra_Cheat.UseVisualStyleBackColor = true;
             Extra_Cheat.CheckedChanged += Extra_Cheat_CheckedChanged;
+            // 
+            // Enable_RPC
+            // 
+            Enable_RPC.AutoSize = true;
+            Enable_RPC.Location = new Point(7, 41);
+            Enable_RPC.Name = "Enable_RPC";
+            Enable_RPC.Size = new Size(150, 19);
+            Enable_RPC.TabIndex = 1;
+            Enable_RPC.Text = "Rich Presence (Discord)";
+            Enable_RPC.UseVisualStyleBackColor = true;
+            Enable_RPC.CheckedChanged += Extra_Enable_RPC_CheckedChanged;
             // 
             // grProxy
             // 
@@ -942,6 +955,7 @@
         private Label label4;
         private GroupBox grExtra;
         private CheckBox Extra_Cheat;
+        private CheckBox Enable_RPC;
         private TextBox Set_LA_GameFolder;
         private Label label5;
         private Button btsave;
