@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using YuukiPS_Launcher.Extra;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Yuuki;
@@ -68,7 +69,14 @@ namespace YuukiPS_Launcher
             LoadProfile(configdata.profile_default);
 
             // Extra
-            discord.Ready();
+            if (Enable_RPC.Checked)
+            {
+                Console.WriteLine("Discord RPC enable");
+                discord.Ready();
+            } else
+            {
+                Console.WriteLine("Discord RPC disable");
+            }
 
             notbootyet = false;
         }
@@ -169,6 +177,7 @@ namespace YuukiPS_Launcher
             GetServerHost.Text = default_profile.server.url;
             // Extra
             Extra_Cheat.Checked = default_profile.game.extra.Akebi;
+            Enable_RPC.Checked = default_profile.game.extra.RPC;
 
             // Get Data Game
             if (!CheckVersionGame(default_profile.game.type))
@@ -198,6 +207,7 @@ namespace YuukiPS_Launcher
 
                 // Extra
                 tmp_profile.game.extra.Akebi = Extra_Cheat.Checked;
+                tmp_profile.game.extra.RPC = Enable_RPC.Checked;
 
                 // Nama Profile
                 tmp_profile.name = name_save;
@@ -312,7 +322,7 @@ namespace YuukiPS_Launcher
                 }
                 else
                 {
-                    if(get_version != null && get_version.nosupport != "")
+                    if (get_version != null && get_version.nosupport != "")
                     {
                         MessageBox.Show(get_version.nosupport, "Game version not supported");
                         Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
@@ -1766,6 +1776,19 @@ namespace YuukiPS_Launcher
         private void Extra_Cheat_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void Extra_Enable_RPC_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Enable_RPC.Checked)
+            {
+                Console.WriteLine("Enable RPC");
+                discord.Ready();
+            } else
+            {
+                Console.WriteLine("Disable RPC. This may take a few seconds");
+                discord.Stop();
+            }
         }
     }
 }

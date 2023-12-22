@@ -12,8 +12,8 @@
     
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <AssemblyVersion>2023.11.10.0714</AssemblyVersion>    
-    <FileVersion>2023.11.10.0714</FileVersion>
+    <AssemblyVersion>2023.12.21.1933</AssemblyVersion>    
+    <FileVersion>2023.11.10.1933</FileVersion>
     
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
