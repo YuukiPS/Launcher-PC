@@ -1957,6 +1957,7 @@ namespace YuukiPS_Launcher
 
                         txt_statusUpd.Text = "Status: Complete.";
                         Console.WriteLine("[Hdiff] Done replacing.");
+                        Directory.Delete(subdirectoryPath, true);
                     }
                     catch (Exception ex)
                     {
