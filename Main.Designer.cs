@@ -95,6 +95,15 @@
             label7 = new Label();
             tabPage9 = new TabPage();
             Config_Discord_Enable = new CheckBox();
+            tabPage3 = new TabPage();
+            label9 = new Label();
+            label3 = new Label();
+            txt_statusUpd = new Label();
+            btnstartUpdate = new Button();
+            groupBox1 = new GroupBox();
+            btchooseupdate = new Button();
+            tbx_update = new TextBox();
+            label1 = new Label();
             Set_Version = new Label();
             linkDiscord = new LinkLabel();
             linkGithub = new LinkLabel();
@@ -120,6 +129,8 @@
             TabConfig.SuspendLayout();
             tabPage5.SuspendLayout();
             tabPage9.SuspendLayout();
+            tabPage3.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // btStartNormal
@@ -165,6 +176,7 @@
             TabMain.Controls.Add(tabPage1);
             TabMain.Controls.Add(tabPage2);
             TabMain.Controls.Add(tabPage4);
+            TabMain.Controls.Add(tabPage3);
             TabMain.Dock = DockStyle.Top;
             TabMain.Location = new Point(0, 0);
             TabMain.Name = "TabMain";
@@ -825,6 +837,105 @@
             Config_Discord_Enable.Text = "Discord Rich Presence";
             Config_Discord_Enable.UseVisualStyleBackColor = true;
             // 
+            // tabPage3
+            // 
+            tabPage3.Controls.Add(label9);
+            tabPage3.Controls.Add(label3);
+            tabPage3.Controls.Add(txt_statusUpd);
+            tabPage3.Controls.Add(btnstartUpdate);
+            tabPage3.Controls.Add(groupBox1);
+            tabPage3.Location = new Point(4, 24);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Padding = new Padding(3);
+            tabPage3.Size = new Size(654, 383);
+            tabPage3.TabIndex = 4;
+            tabPage3.Text = "Updater";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            label9.Location = new Point(92, 336);
+            label9.Name = "label9";
+            label9.Size = new Size(465, 32);
+            label9.TabIndex = 24;
+            label9.Text = "Set again the game folder upon using this";
+            label9.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            label3.Location = new Point(56, 253);
+            label3.Name = "label3";
+            label3.Size = new Size(555, 64);
+            label3.TabIndex = 23;
+            label3.Text = "Note: Do NOT use this to update GI from a version\r\nlower than 3.5.0 (or 3.5.0) to 3.6.0+";
+            label3.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // txt_statusUpd
+            // 
+            txt_statusUpd.AutoSize = true;
+            txt_statusUpd.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            txt_statusUpd.Location = new Point(6, 80);
+            txt_statusUpd.Name = "txt_statusUpd";
+            txt_statusUpd.Size = new Size(176, 32);
+            txt_statusUpd.TabIndex = 22;
+            txt_statusUpd.Text = "Status: Waiting.";
+            // 
+            // btnstartUpdate
+            // 
+            btnstartUpdate.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            btnstartUpdate.Location = new Point(459, 16);
+            btnstartUpdate.Name = "btnstartUpdate";
+            btnstartUpdate.Size = new Size(158, 49);
+            btnstartUpdate.TabIndex = 21;
+            btnstartUpdate.Text = "Start";
+            btnstartUpdate.UseVisualStyleBackColor = true;
+            btnstartUpdate.Click += btnstartUpdate_Click;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(btchooseupdate);
+            groupBox1.Controls.Add(tbx_update);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            groupBox1.Location = new Point(8, 6);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(420, 59);
+            groupBox1.TabIndex = 20;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Update Config";
+            // 
+            // btchooseupdate
+            // 
+            btchooseupdate.Location = new Point(331, 16);
+            btchooseupdate.Name = "btchooseupdate";
+            btchooseupdate.Size = new Size(76, 30);
+            btchooseupdate.TabIndex = 9;
+            btchooseupdate.Text = "Choose";
+            btchooseupdate.UseVisualStyleBackColor = true;
+            btchooseupdate.Click += btchooseupdate_Click;
+            // 
+            // tbx_update
+            // 
+            tbx_update.Location = new Point(117, 17);
+            tbx_update.Name = "tbx_update";
+            tbx_update.ReadOnly = true;
+            tbx_update.Size = new Size(208, 29);
+            tbx_update.TabIndex = 1;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(9, 25);
+            label1.Name = "label1";
+            label1.Size = new Size(97, 21);
+            label1.TabIndex = 0;
+            label1.Text = "Update Path:";
+            // 
             // Set_Version
             // 
             Set_Version.AutoSize = true;
@@ -927,6 +1038,10 @@
             tabPage5.PerformLayout();
             tabPage9.ResumeLayout(false);
             tabPage9.PerformLayout();
+            tabPage3.ResumeLayout(false);
+            tabPage3.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1005,5 +1120,14 @@
         private GroupBox groupBox8;
         private GroupBox grConfigGameLite;
         private Button btStartYuukiServer;
+        private TabPage tabPage3;
+        private GroupBox groupBox1;
+        private Button btchooseupdate;
+        private TextBox tbx_update;
+        private Label label1;
+        private Button btnstartUpdate;
+        private Label txt_statusUpd;
+        private Label label3;
+        private Label label9;
     }
 }

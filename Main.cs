@@ -7,6 +7,9 @@ using YuukiPS_Launcher.Extra;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Yuuki;
+using ICSharpCode.SharpZipLib;
+using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace YuukiPS_Launcher
 {
@@ -73,7 +76,8 @@ namespace YuukiPS_Launcher
             {
                 Console.WriteLine("Discord RPC enable");
                 discord.Ready();
-            } else
+            }
+            else
             {
                 Console.WriteLine("Discord RPC disable");
             }
@@ -1784,10 +1788,187 @@ namespace YuukiPS_Launcher
             {
                 Console.WriteLine("Enable RPC");
                 discord.Ready();
-            } else
+            }
+            else
             {
                 Console.WriteLine("Disable RPC. This may take a few seconds");
                 discord.Stop();
+            }
+        }
+
+        private void btchooseupdate_Click(object sender, EventArgs e)
+        {
+            string gpath = Set_LA_GameFolder.Text;
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (!string.IsNullOrEmpty(gpath))
+            {
+                openFileDialog.InitialDirectory = gpath;
+            }
+            else
+            {
+                openFileDialog.InitialDirectory = @"C:\";
+            }
+
+            openFileDialog.Filter = "Update Files (*.zip)|*.zip";
+
+            openFileDialog.Title = "Select an update file (HDIFF)";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string selectedFileName = openFileDialog.FileName;
+
+                if (!string.IsNullOrEmpty(selectedFileName))
+                {
+                    tbx_update.Text = selectedFileName;
+                    string gamePath = Set_LA_GameFile.Text;
+                }
+                else
+                {
+                    MessageBox.Show("Select a valid file!");
+                }
+            }
+        }
+        private void ExtractZip(string zipFilePath, string extractionPath)
+        {
+            try
+            {
+                using (var fileStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
+                using (var zipInputStream = new ZipInputStream(fileStream))
+                {
+                    ZipEntry entry;
+                    while ((entry = zipInputStream.GetNextEntry()) != null)
+                    {
+                        if (!entry.IsDirectory)
+                        {
+                            string entryFileName = Path.Combine(extractionPath, entry.Name);
+                            string entryDirectory = Path.GetDirectoryName(entryFileName);
+
+                            if (!Directory.Exists(entryDirectory))
+                            {
+                                Directory.CreateDirectory(entryDirectory);
+                            }
+
+                            using (var entryStream = new FileStream(entryFileName, FileMode.Create, FileAccess.Write))
+                            {
+                                StreamUtils.Copy(zipInputStream, entryStream, new byte[4096]);
+                            }
+                        }
+                    }
+                }
+
+                Console.WriteLine("Successfully extracted zip");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error extracting update file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        static bool HasContent(string folderPath)
+        {
+            string[] files = Directory.GetFiles(folderPath);
+            if (files.Length > 0)
+            {
+                return true;
+            }
+
+
+            string[] subdirectories = Directory.GetDirectories(folderPath);
+            return subdirectories.Length > 0;
+        }
+
+        private void btnstartUpdate_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(tbx_update.Text))
+            {
+                Console.WriteLine("[Hdiff] Start!");
+                txt_statusUpd.Text = "Status: Extracting...";
+                string updPath = tbx_update.Text;
+                string tempPath = Path.Combine(Set_LA_GameFolder.Text, "hdiff_temp");
+
+                if (!Directory.Exists(tempPath))
+                {
+                    Directory.CreateDirectory(Path.Combine(Set_LA_GameFolder.Text, "hdiff_temp"));
+                }
+
+                if (!HasContent(tempPath))
+                {
+                    ExtractZip(updPath, tempPath);
+                }
+
+                txt_statusUpd.Text = "Status: Analyzing...";
+
+                string deleteFilesPath = Path.Combine(tempPath, "deletefiles.txt");
+
+                if (!Path.Exists(deleteFilesPath))
+                {
+                    MessageBox.Show("Error: corrupt or invalid update.");
+                    txt_statusUpd.Text = "Status: Error.";
+                    return;
+                }
+
+                try
+                {
+                    txt_statusUpd.Text = "Status: Step 1 | Deletion";
+
+                    string[] filesToDelete = File.ReadAllLines(deleteFilesPath);
+
+                    foreach (string filePath in filesToDelete)
+                    {
+                        string fullPathToDelete = Path.Combine(Set_LA_GameFolder.Text, filePath);
+
+                        if (File.Exists(fullPathToDelete))
+                        {
+                            File.Delete(fullPathToDelete);
+                            Console.WriteLine($"[Hdiff] Deleted: {fullPathToDelete}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[Hdiff] File not found: {fullPathToDelete}");
+                        }
+                    }
+
+                    Console.WriteLine("[Hdiff] File deletion process completed.");
+
+                    txt_statusUpd.Text = "Status: Step 2 | Replacement";
+                    try
+                    {
+                        string gamePath = Set_LA_GameFolder.Text;
+                        string subdirectoryPath = Path.Combine(gamePath, "hdiff_temp");
+                        Console.WriteLine(subdirectoryPath);
+
+                        string[] subdirectoryFiles = Directory.GetFiles(subdirectoryPath);
+
+                        string[] mainDirectoryFiles = Directory.GetFiles(gamePath);
+
+                        var commonFiles = subdirectoryFiles.Intersect(mainDirectoryFiles);
+
+                        foreach (var commonFile in commonFiles)
+                        {
+                            File.Delete(Path.Combine(gamePath, Path.GetFileName(commonFile)));
+                        }
+
+                        foreach (var file in subdirectoryFiles)
+                        {
+                            File.Copy(file, Path.Combine(gamePath, Path.GetFileName(file)), true);
+                        }
+
+                        txt_statusUpd.Text = "Status: Complete.";
+                        Console.WriteLine("[Hdiff] Done replacing.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[Hdiff] Error: {ex.Message}");
+                        return;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
     }
