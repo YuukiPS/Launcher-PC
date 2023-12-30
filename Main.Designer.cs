@@ -96,6 +96,7 @@
             tabPage9 = new TabPage();
             Config_Discord_Enable = new CheckBox();
             tabPage3 = new TabPage();
+            progressBar1 = new ProgressBar();
             label9 = new Label();
             label3 = new Label();
             txt_statusUpd = new Label();
@@ -839,6 +840,7 @@
             // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(progressBar1);
             tabPage3.Controls.Add(label9);
             tabPage3.Controls.Add(label3);
             tabPage3.Controls.Add(txt_statusUpd);
@@ -851,6 +853,14 @@
             tabPage3.TabIndex = 4;
             tabPage3.Text = "Updater";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(17, 199);
+            progressBar1.Maximum = 101;
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(600, 34);
+            progressBar1.TabIndex = 25;
             // 
             // label9
             // 
@@ -1129,5 +1139,6 @@
         private Label txt_statusUpd;
         private Label label3;
         private Label label9;
+        private ProgressBar progressBar1;
     }
 }

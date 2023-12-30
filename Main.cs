@@ -1830,13 +1830,16 @@ namespace YuukiPS_Launcher
                 }
             }
         }
-        private void ExtractZip(string zipFilePath, string extractionPath)
+        private void ExtractZip(string zipFilePath, string extractionPath, ProgressBar progressBar)
         {
             try
             {
                 using (var fileStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
                 using (var zipInputStream = new ZipInputStream(fileStream))
                 {
+                    long totalSize = fileStream.Length;
+                    long bytesRead = 0;
+
                     ZipEntry entry;
                     while ((entry = zipInputStream.GetNextEntry()) != null)
                     {
@@ -1852,7 +1855,17 @@ namespace YuukiPS_Launcher
 
                             using (var entryStream = new FileStream(entryFileName, FileMode.Create, FileAccess.Write))
                             {
-                                StreamUtils.Copy(zipInputStream, entryStream, new byte[4096]);
+                                byte[] buffer = new byte[4096];
+                                int count;
+                                while ((count = zipInputStream.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    entryStream.Write(buffer, 0, count);
+                                    bytesRead += count;
+
+                                    // this took so much to figure out (i dont know sh*t 'bout math)
+                                    int progress = (int)Math.Min(100, ((double)bytesRead / totalSize * 100));
+                                    progressBar.Invoke((MethodInvoker)delegate { progressBar.Value = progress; });
+                                }
                             }
                         }
                     }
@@ -1865,6 +1878,7 @@ namespace YuukiPS_Launcher
                 MessageBox.Show($"Error extracting update file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         static bool HasContent(string folderPath)
         {
@@ -1879,10 +1893,11 @@ namespace YuukiPS_Launcher
             return subdirectories.Length > 0;
         }
 
-        private void btnstartUpdate_Click(object sender, EventArgs e)
+        async private void btnstartUpdate_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(tbx_update.Text))
             {
+                btnstartUpdate.Enabled = false;
                 Console.WriteLine("[Hdiff] Start!");
                 txt_statusUpd.Text = "Status: Extracting...";
                 string updPath = tbx_update.Text;
@@ -1895,8 +1910,10 @@ namespace YuukiPS_Launcher
 
                 if (!HasContent(tempPath))
                 {
-                    ExtractZip(updPath, tempPath);
+                    // run asynchronously this function, to prevent the stupid freezing >:(
+                    await Task.Run(() => ExtractZip(updPath, tempPath, progressBar1));
                 }
+
 
                 txt_statusUpd.Text = "Status: Analyzing...";
 
@@ -1957,10 +1974,12 @@ namespace YuukiPS_Launcher
 
                         txt_statusUpd.Text = "Status: Complete.";
                         Console.WriteLine("[Hdiff] Done replacing.");
+                        progressBar1.Value = 0;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"[Hdiff] Error: {ex.Message}");
+                        progressBar1.Value = 0;
                         return;
                     }
 
