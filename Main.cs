@@ -10,11 +10,58 @@ using YuukiPS_Launcher.Yuuki;
 using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
+using YuukiPS_Launcher.Utils;
+using DiscordRPC.Logging;
+using System.Security.Policy;
 
 namespace YuukiPS_Launcher
 {
     public partial class Main : Form
     {
+        private string randomString()
+        {
+            Random random = new Random();
+            int rInt = random.Next(0, 4 + 1);
+            string result = "";
+
+            switch (rInt)
+            {
+                case 0:
+                    result = "Hey, I'm YuukiPS Launcher, and I'm a logaholic.";
+                    break;
+                case 1:
+                    result = "u-uhm how do i give myself all items? 🤓";
+                    break;
+                case 2:
+                    result = "9999: Git analysis?\nGit: Skill issue, sir.";
+                    break;
+                case 3:
+                    result = ":smiley:";
+                    break;
+                case 4:
+                    result = "i'm lazy";
+                    break;
+            }
+
+            return result;
+        }
+
+        private void RedirectStandardOutputToFile(string initialText)
+        {
+            string logsFolderPath = Path.Combine(Application.StartupPath, "logs");
+            Directory.CreateDirectory(logsFolderPath);
+
+            string logFileName = $"log_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            string logFilePath = Path.Combine(logsFolderPath, logFileName);
+
+            using (FileStream fileStream = new FileStream(logFilePath, FileMode.Create))
+            using (StreamWriter streamWriter = new StreamWriter(fileStream) { AutoFlush = true })
+            {
+                streamWriter.WriteLine(initialText);
+
+                Console.SetOut(streamWriter);
+            }
+        }
 
         // Main Function
         private Proxy? proxy;
@@ -50,15 +97,24 @@ namespace YuukiPS_Launcher
         //KeyGS key;
         Patch? get_version = null;
 
+        Logger logger = new Logger();
+
         public Main()
         {
             InitializeComponent();
+            Application.ApplicationExit += Application_ApplicationExit;
         }
 
+        private void Application_ApplicationExit(object sender, EventArgs e)
+        {
+            OperatingSystem os = Environment.OSVersion;
+            RedirectStandardOutputToFile($"-- {randomString()}\n\nPlatform: {os.Platform}\nPlatform Version: {os.Version}\nService pack: {os.ServicePack}\n\nGame: {GetTypeGame.Text}\nGame version: {VersionGame}\nGame running: {IsGameRun.ToString()}.\n");
+            Console.Out.Close();
+        }
 
         private void Main_Load(object sender, EventArgs e)
         {
-            Console.WriteLine("Loading....");
+            Logger.Info("Boot", "Loading....");
 
             // Before starting make sure proxy is turned off
             CheckProxy(true);
@@ -74,12 +130,12 @@ namespace YuukiPS_Launcher
             // Extra
             if (Enable_RPC.Checked)
             {
-                Console.WriteLine("Discord RPC enable");
+                Logger.Info("Boot", "Discord RPC enable");
                 discord.Ready();
             }
             else
             {
-                Console.WriteLine("Discord RPC disable");
+                Logger.Info("Boot", "Discord RPC disable");
             }
 
             notbootyet = false;
@@ -100,7 +156,7 @@ namespace YuukiPS_Launcher
         private void GetProfileServer_SelectedIndexChanged(object? sender, EventArgs e)
         {
             var get_select_profile = GetProfileServer.Text;
-            Console.WriteLine("GetProfileServer_SelectedIndexChanged " + get_select_profile);
+            Logger.Info("Profiles", "GetProfileServer_SelectedIndexChanged " + get_select_profile);
             LoadProfile(get_select_profile);
         }
 
@@ -113,7 +169,7 @@ namespace YuukiPS_Launcher
         {
             configdata = Json.Config.LoadConfig();
 
-            Console.WriteLine("load config by " + load_by);
+            Logger.Info("Config", "load config by " + load_by);
 
             // Unsubscribe from SelectedIndexChanged event
             GetProfileServer.SelectedIndexChanged -= GetProfileServer_SelectedIndexChanged;
@@ -131,7 +187,7 @@ namespace YuukiPS_Launcher
                 Profile profile = (Profile)GetProfileServer.Items[i];
                 if (profile.name == configdata.profile_default)
                 {
-                    Console.WriteLine("Set index " + i + " name profile " + configdata.profile_default);
+                    Logger.Info("Profiles", "Set index " + i + " name profile " + configdata.profile_default);
                     GetProfileServer.SelectedIndex = i;
                     break;
                 }
@@ -146,11 +202,11 @@ namespace YuukiPS_Launcher
 
             if (string.IsNullOrEmpty(load_profile))
             {
-                Console.WriteLine("No profile");
+                Logger.Info("Profiles", "No profile");
                 return;
             }
 
-            Console.WriteLine("Profile: " + load_profile);
+            Logger.Info("Profiles", "Profile: " + load_profile);
 
             try
             {
@@ -163,11 +219,11 @@ namespace YuukiPS_Launcher
                 {
                     // use default data
                 }
-                Console.WriteLine("Server: " + default_profile.server.url);
+                Logger.Info("Profiles", "Server: " + default_profile.server.url);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Profile error (" + e.Message + "), use default data");
+                Logger.Error("Profiles", "Profile error (" + e.Message + "), use default data");
             }
 
             // Data Set
@@ -221,18 +277,18 @@ namespace YuukiPS_Launcher
                     int indexToUpdate = configdata.profile.FindIndex(profile => profile.name == name_save);
                     if (indexToUpdate != -1)
                     {
-                        Console.WriteLine("Profile save: " + name_save);
+                        Logger.Info("Profiles", "Profile save: " + name_save);
                         configdata.profile[indexToUpdate] = tmp_profile;
                     }
                     else
                     {
-                        Console.WriteLine("Add new profile: " + name_save);
+                        Logger.Info("Profiles", "Add new profile: " + name_save);
                         configdata.profile.Add(tmp_profile);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error save config (" + ex.Message + "), so reload it");
+                    Logger.Info("Profiles", "Error save config (" + ex.Message + "), so reload it");
                     configdata = new Json.Config() { profile = new List<Profile>() { tmp_profile } };
                 }
 
@@ -241,7 +297,7 @@ namespace YuukiPS_Launcher
 
                 File.WriteAllText(Json.Config.ConfigPath, JsonConvert.SerializeObject(configdata));
 
-                Console.WriteLine("Done save config...");
+                Logger.Info("Config", "Done save config...");
 
                 LoadConfig("SaveProfile");
             }
@@ -316,7 +372,7 @@ namespace YuukiPS_Launcher
                 // if game is not running
                 if (progress != null)
                 {
-                    Console.WriteLine("progress tes");
+                    Logger.Info("Game", "progress tes");
                 }
 
                 // if server is official 
@@ -369,23 +425,23 @@ namespace YuukiPS_Launcher
                     }
                     else
                     {
-                        Console.WriteLine("Proxy is ignored, because you turned it off");
+                        Logger.Info("Proxy", "Proxy is ignored, because you turned it off");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Proxy is ignored, because use official server");
+                    Logger.Info("Proxy", "Proxy is ignored, because use official server");
                 }
             }
             else
             {
-                Console.WriteLine("Proxy is still running...");
+                Logger.Info("Proxy", " Proxy is still running...");
             }
 
             // For Cheat (tmp)
             if (isCheat)
             {
-                Console.WriteLine("Cheat enable");
+                Logger.Info("Cheat", "Cheat enabled");
                 try
                 {
                     var get_file_cheat = API.GetCheat(selectedGame, GameChannel, VersionGame, cst_gamefile);
@@ -396,7 +452,7 @@ namespace YuukiPS_Launcher
                     }
                     cst_gamefile = get_file_cheat.launcher;
                     WatchCheat = Path.GetFileNameWithoutExtension(cst_gamefile);
-                    Console.WriteLine($"RUN: Monitor {WatchCheat} at {cst_gamefile}");
+                    Logger.Info("Cheat", $"RUN: Monitor {WatchCheat} at {cst_gamefile}");
 
                 }
                 catch (Exception x)
@@ -425,7 +481,7 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                Console.WriteLine("Progress is still running...");
+                Logger.Info("Cheat", "Progress is still running...");
             }
         }
 
@@ -438,12 +494,12 @@ namespace YuukiPS_Launcher
             {
 
                 var Get_Launcher = GetLauncherPath(game_type);
-                Console.WriteLine("Folder Launcher: " + Get_Launcher);
+                Logger.Info("Launcher", "Folder Launcher: " + Get_Launcher);
 
                 if (string.IsNullOrEmpty(Get_Launcher))
                 {
                     // If there is no launcher
-                    Console.WriteLine("Please find game install folder!");
+                    Logger.Info("Game", "Please find game install folder!");
                     return false;
                 }
                 else
@@ -456,16 +512,16 @@ namespace YuukiPS_Launcher
             // Check one more time
             if (string.IsNullOrEmpty(cst_folder_game))
             {
-                Console.WriteLine("Please find game install folder!");
+                Logger.Info("Game", "Please find game install folder!");
                 return false;
             }
             if (!Directory.Exists(cst_folder_game))
             {
-                Console.WriteLine("Please find game install folder! (2)");
+                Logger.Info("Game", "Please find game install folder! (2)"); // TODO
                 return false;
             }
 
-            Console.WriteLine("Folder Game: " + cst_folder_game);
+            Logger.Info("Game", "Folder Game: " + cst_folder_game);
 
             string cn = Path.Combine(cst_folder_game, "YuanShen.exe");
             string os = Path.Combine(cst_folder_game, "GenshinImpact.exe");
@@ -504,7 +560,7 @@ namespace YuukiPS_Launcher
                 else
                 {
                     // jika game versi tidak di dukung atau tidak ada file
-                    Console.WriteLine("No game files found!!!");
+                    Logger.Error("Game", "No game files found!!!");
                     return false;
                 }
 
@@ -514,14 +570,14 @@ namespace YuukiPS_Launcher
                     settings_genshin = new Game.Genshin.Settings(GameChannel);
                     if (settings_genshin != null)
                     {
-                        Console.WriteLine("Game Text Language: " + settings_genshin.GetGameLanguage());
+                        Logger.Info("Game", "Game Text Language: " + settings_genshin.GetGameLanguage());
                         Console.WriteLine("Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
                         //Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error getting game settings: " + ex.ToString());
+                    Logger.Warning("Game", "Error getting game settings: " + ex.ToString());
                 }
 
             }
@@ -543,7 +599,7 @@ namespace YuukiPS_Launcher
             if (get_version == null)
             {
                 //0.0.0
-                Console.WriteLine("No Support Game with MD5: " + Game_LOC_Original_MD5 + " (Send this log to admin)");
+                Logger.Error("Game", "No Support Game with MD5: " + Game_LOC_Original_MD5 + " (Send this log to admin)");
                 return false;
             }
 
@@ -551,7 +607,7 @@ namespace YuukiPS_Launcher
 
             if (VersionGame == "0.0.0")
             {
-                Console.WriteLine("Version not supported: MD5 " + Game_LOC_Original_MD5);
+                Logger.Error("Game", "Version not supported: MD5 " + Game_LOC_Original_MD5);
 
                 Set_Metadata_Folder.Text = "";
                 Set_UA_Folder.Text = "";
@@ -618,12 +674,12 @@ namespace YuukiPS_Launcher
 
             Get_LA_MD5.Text = "MD5: " + md5_ori;
 
-            Console.WriteLine("Currently using version game " + VersionGame);
+            Logger.Info("Game", "Currently using version game " + VersionGame);
 
-            Console.WriteLine("Folder PathMetadata: " + PathMetadata);
-            Console.WriteLine("File Game: " + PathfileGame);
+            Logger.Info("Game", "Folder PathMetadata: " + PathMetadata);
+            Logger.Info("Game", "File Game: " + PathfileGame);
 
-            Console.WriteLine("MD5 Game Currently: " + Game_LOC_Original_MD5);
+            Logger.Info("Game", "MD5 Game Currently: " + Game_LOC_Original_MD5);
 
             GamePatchMetode = get_metode;
 
@@ -820,7 +876,7 @@ namespace YuukiPS_Launcher
                             {
                                 File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
                                 MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                Console.WriteLine("We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (33)");
+                                Logger.Info("Game", "We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (33)");
                             }
                             catch (Exception)
                             {
@@ -830,13 +886,13 @@ namespace YuukiPS_Launcher
                         }
                         else
                         {
-                            Console.WriteLine("Download UserAssembly, because PathfileUA_Original with md5 " + MD5_UA_LOC_Original + " does not match " + MD5_UA_API_Original + " (5)");
+                            Logger.Info("Game", "Download UserAssembly, because PathfileUA_Original with md5 " + MD5_UA_LOC_Original + " does not match " + MD5_UA_API_Original + " (5)");
                             download_ua = true;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Download UserAssembly, because file PathfileUA_Original was not found");
+                        Logger.Info("Game", "Download UserAssembly, because file PathfileUA_Original was not found");
                         download_ua = true;
                     }
                 }
@@ -855,7 +911,7 @@ namespace YuukiPS_Launcher
                                 {
                                     File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
                                     MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                    Console.WriteLine("We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (6)");
+                                    Logger.Info("Game", "We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (6)");
                                 }
                                 catch (Exception)
                                 {
@@ -866,19 +922,19 @@ namespace YuukiPS_Launcher
                             else
                             {
                                 // download if Original file unvaild
-                                Console.WriteLine("Download UserAssembly in 'Currently', because 'PathfileUA_Original' it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Original + " (7)");
+                                Logger.Info("Game", "Download UserAssembly in 'Currently', because 'PathfileUA_Original' it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Original + " (7)");
                                 download_ua = true;
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Download UserAssembly in 'Currently' because file PathfileUA_Original not found and it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Currently + " Currently file (8)");
+                            Logger.Info("Game", "Download UserAssembly in 'Currently' because file PathfileUA_Original not found and it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Currently + " Currently file (8)");
                             download_ua = true;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Skip download UserAssembly, it's up-to-date (4)");
+                        Logger.Info("Game", "Skip download UserAssembly, it's up-to-date (4)");
                     }
                 }
                 // if need download ua
@@ -898,7 +954,7 @@ namespace YuukiPS_Launcher
                         else
                         {
                             MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                            Console.WriteLine("Currently UserAssembly: " + MD5_UA_LOC_Currently);
+                            Logger.Info("Game", "Currently UserAssembly: " + MD5_UA_LOC_Currently);
                         }
                     }
                     catch (Exception exx)
@@ -908,7 +964,7 @@ namespace YuukiPS_Launcher
                 }
                 else
                 {
-                    Console.WriteLine("Currently UserAssembly: " + MD5_UA_LOC_Currently);
+                    Logger.Info("Game", "Currently UserAssembly: " + MD5_UA_LOC_Currently);
                 }
 
                 // here current file should match so if original file is not found use current file to copy to original file
@@ -918,7 +974,7 @@ namespace YuukiPS_Launcher
                     {
                         File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
                         MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-                        Console.WriteLine("We copy file in PathfileUA_Currently to PathfileUA_Original files (22)");
+                        Logger.Info("Game", "We copy file in PathfileUA_Currently to PathfileUA_Original files (22)");
                     }
                     catch (Exception)
                     {
@@ -946,7 +1002,7 @@ namespace YuukiPS_Launcher
                             {
                                 File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
                                 MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                                Console.WriteLine("We copy PathfileMetadata_Original to PathfileMetadata_Currently");
+                                Logger.Info("Game", "We copy PathfileMetadata_Original to PathfileMetadata_Currently");
                             }
                             catch (Exception)
                             {
@@ -958,14 +1014,14 @@ namespace YuukiPS_Launcher
                         {
                             // file not vaild so download
                             download_metadata = true;
-                            Console.WriteLine("Download Metadata in Currently,because file Original with md5 " + MD5_Metadata_API_Original + " doesn't match " + MD5_Metadata_LOC_Original + " (5)");
+                            Logger.Warning("Game", "Download Metadata in Currently,because file Original with md5 " + MD5_Metadata_API_Original + " doesn't match " + MD5_Metadata_LOC_Original + " (5)");
                         }
                     }
                     else
                     {
                         // file not found, so download
                         download_metadata = true;
-                        Console.WriteLine("Download Metadata, because file PathfileMetadata_Original was not found");
+                        Logger.Warning("Game", "Download Metadata, because file PathfileMetadata_Original was not found");
                     }
                 }
                 else
@@ -983,7 +1039,7 @@ namespace YuukiPS_Launcher
                                 {
                                     File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
                                     MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                                    Console.WriteLine("We copy file PathfileMetadata_Original to PathfileMetadata_Currently (6)");
+                                    Logger.Info("Game", "We copy file PathfileMetadata_Original to PathfileMetadata_Currently (6)");
                                 }
                                 catch (Exception)
                                 {
@@ -995,19 +1051,19 @@ namespace YuukiPS_Launcher
                             {
                                 // file not vaild so download
                                 download_metadata = true;
-                                Console.WriteLine("Download Metadata in Currently, because PathfileMetadata_Original file does not match " + MD5_Metadata_API_Original + " with " + MD5_Metadata_LOC_Original + " (7)");
+                                Logger.Warning("Game", "Download Metadata in Currently, because PathfileMetadata_Original file does not match " + MD5_Metadata_API_Original + " with " + MD5_Metadata_LOC_Original + " (7)");
                             }
                         }
                         else
                         {
                             // file not found, so download
                             download_metadata = true;
-                            Console.WriteLine("Download Metadata in Currently, because file PathfileMetadata_Original was not found (8)");
+                            Logger.Warning("Game", "Download Metadata in Currently, because file PathfileMetadata_Original was not found (8)");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Skip download Metadata, it's up-to-date (4)");
+                        Logger.Info("Game", "Skip download Metadata, it's up-to-date (4)");
                     }
                 }
                 // if need download
@@ -1027,7 +1083,7 @@ namespace YuukiPS_Launcher
                         else
                         {
                             MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                            Console.WriteLine("Currently Metadata: " + MD5_Metadata_LOC_Currently);
+                            Logger.Info("Game", "Currently Metadata: " + MD5_Metadata_LOC_Currently);
                         }
                     }
                     catch (Exception exx)
@@ -1037,7 +1093,7 @@ namespace YuukiPS_Launcher
                 }
                 else
                 {
-                    Console.WriteLine("Currently Metadata: " + MD5_Metadata_LOC_Currently);
+                    Logger.Info("Game", "Currently Metadata: " + MD5_Metadata_LOC_Currently);
                 }
                 // here current file should match so if original file is not found use current file to copy to original file
                 if (!File.Exists(PathfileMetadata_Original))
@@ -1046,7 +1102,7 @@ namespace YuukiPS_Launcher
                     {
                         File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
                         MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
-                        Console.WriteLine("We copy file in PathfileMetadata_Currently to PathfileMetadata_Original files (22)");
+                        Logger.Info("Game", "We copy file in PathfileMetadata_Currently to PathfileMetadata_Original files (22)");
                     }
                     catch (Exception)
                     {
@@ -1165,7 +1221,7 @@ namespace YuukiPS_Launcher
                                         File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
                                         MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
 
-                                        Console.WriteLine("Patch PathfileUA_Patched to PathfileUA_Currently done");
+                                        Logger.Info("Game", "Patch PathfileUA_Patched to PathfileUA_Currently done");
                                         download_patch = false;
                                     }
                                     catch (Exception x)
@@ -1213,7 +1269,7 @@ namespace YuukiPS_Launcher
                                 {
                                     File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
                                     MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                    Console.WriteLine("Patch UserAssembly...");
+                                    Logger.Info("Game", "Patch UserAssembly...");
                                 }
                                 catch (Exception ex)
                                 {
@@ -1228,13 +1284,13 @@ namespace YuukiPS_Launcher
                         else
                         {
                             // No Patch
-                            Console.WriteLine("Skip, because file is original (x2)");
+                            Logger.Info("Game", "Skip, because file is original (x2)");
                         }
                     }
 
-                    Console.WriteLine("MD5 UA Currently: " + MD5_UA_LOC_Currently);
-                    Console.WriteLine("MD5 UA Original: " + MD5_UA_LOC_Original);
-                    Console.WriteLine("MD5 UA Patched: " + MD5_UA_LOC_Patched);
+                    Logger.Info("Game", "MD5 UA Currently: " + MD5_UA_LOC_Currently);
+                    Logger.Info("Game", "MD5 UA Original: " + MD5_UA_LOC_Original);
+                    Logger.Info("Game", "MD5 UA Patched: " + MD5_UA_LOC_Patched);
                 }
                 else if (metode == "Metadata")
                 {
@@ -1242,7 +1298,7 @@ namespace YuukiPS_Launcher
                 }
                 else if (metode == "None")
                 {
-                    Console.WriteLine("Skip patch...");
+                    Logger.Info("Game", "Skip patch...");
                 }
                 else if (metode == "RSA")
                 {
@@ -1255,7 +1311,7 @@ namespace YuukiPS_Launcher
                     // TODO: ADD KEY SERVER
                     File.WriteAllText(fileRSA_Public, "<RSAKeyValue><Modulus>xbbx2m1feHyrQ7jP+8mtDF/pyYLrJWKWAdEv3wZrOtjOZzeLGPzsmkcgncgoRhX4dT+1itSMR9j9m0/OwsH2UoF6U32LxCOQWQD1AMgIZjAkJeJvFTrtn8fMQ1701CkbaLTVIjRMlTw8kNXvNA/A9UatoiDmi4TFG6mrxTKZpIcTInvPEpkK2A7Qsp1E4skFK8jmysy7uRhMaYHtPTsBvxP0zn3lhKB3W+HTqpneewXWHjCDfL7Nbby91jbz5EKPZXWLuhXIvR1Cu4tiruorwXJxmXaP1HQZonytECNU/UOzP6GNLdq0eFDE4b04Wjp396551G99YiFP2nqHVJ5OMQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
 
-                    Console.WriteLine("Find file: " + fileRSA);
+                    Logger.Info("Game", "Find file: " + fileRSA);
 
                     var dl_rsa = false;
                     var RSAMD5 = "";
@@ -1271,15 +1327,15 @@ namespace YuukiPS_Launcher
                                 // if not found backup rsa key, copy dll to bk
                                 if (!File.Exists(fileRSA_BK))
                                 {
-                                    Console.WriteLine("No found backup file rsa key so copy");
+                                    Logger.Warning("Game", "No found backup file rsa key so copy");
                                     File.Copy(fileRSA, fileRSA_BK, true);
                                 }
 
-                                Console.WriteLine("Skip download RSAKEY");
+                                Logger.Info("Game", "Skip download RSAKEY");
                             }
                             else
                             {
-                                Console.WriteLine("file not same " + RSAMD5 + " download rsa key " + MD5_API_Patched);
+                                Logger.Warning("Game", "file not same " + RSAMD5 + " download rsa key " + MD5_API_Patched);
                                 dl_rsa = true;
                             }
 
@@ -1290,7 +1346,7 @@ namespace YuukiPS_Launcher
                             {
                                 if (RSAMD5 == MD5_API_Patched)
                                 {
-                                    Console.WriteLine("found backup file rsa key so copy");
+                                    Logger.Info("Game", "found backup file rsa key so copy");
                                     try
                                     {
                                         File.Copy(fileRSA_BK, fileRSA, true);
@@ -1303,13 +1359,13 @@ namespace YuukiPS_Launcher
                                 }
                                 else
                                 {
-                                    Console.WriteLine("key rsa not same so just download it");
+                                    Logger.Error("Game", "key rsa not same so just download it");
                                     dl_rsa = true;
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("No found file so just download it");
+                                Logger.Error("Game", "No found file so just download it");
                                 dl_rsa = true;
                             }
                         }
@@ -1321,13 +1377,13 @@ namespace YuukiPS_Launcher
                         {
                             if (File.Exists(fileRSA))
                             {
-                                Console.WriteLine("Remove file rsa key");
+                                Logger.Info("Game", "Remove file rsa key");
                                 File.Delete(fileRSA);
                             }
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.Message);
+                            Logger.Error("Game", ex.Message);
                             return "error";
                         }
                     }
@@ -1345,7 +1401,7 @@ namespace YuukiPS_Launcher
                         }
                     }
 
-                    Console.WriteLine("RSA MD5: " + RSAMD5);
+                    Logger.Info("Game", "RSA MD5: " + RSAMD5);
                     //return "TODO: "+ DL_Patch;
                 }
                 else
@@ -1378,7 +1434,7 @@ namespace YuukiPS_Launcher
 
         public void CheckUpdate()
         {
-            Console.WriteLine("Cek update...");
+            Logger.Info("Game", "Check update...");
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             string ver = "";
             if (version != null)
@@ -1479,7 +1535,7 @@ namespace YuukiPS_Launcher
         // Check Launcher
         private static string GetLauncherPath(GameType version)
         {
-            Console.WriteLine("GetLauncherPath: " + version.GetStringValue());
+            Logger.Info("Launcher", "GetLauncherPath: " + version.GetStringValue());
 
             RegistryKey key = Registry.LocalMachine;
             if (key != null)
@@ -1579,7 +1635,7 @@ namespace YuukiPS_Launcher
                     var tes = PatchGame(false, true, GamePatchMetode, GameChannel);
                     if (!string.IsNullOrEmpty(tes))
                     {
-                        Console.WriteLine(tes);
+                        Logger.Info("Game", tes);
                     }
                     DoneCheck = true;
 
@@ -1617,7 +1673,7 @@ namespace YuukiPS_Launcher
             {
                 proxy.Stop();
                 proxy = null;
-                Console.WriteLine("Proxy Stop....");
+                Logger.Info("Proxy", "Proxy Stop....");
             }
         }
 
@@ -1646,16 +1702,16 @@ namespace YuukiPS_Launcher
                     if (!string.IsNullOrEmpty(WatchFile))
                     {
                         Tool.EndTask(WatchFile);
-                        Console.WriteLine("EndTask Game: " + WatchFile);
+                        Logger.Info("Game", "EndTask Game: " + WatchFile);
                     }
                     else
                     {
-                        Console.WriteLine("EndTask not supported");
+                        Logger.Info("Game", "EndTask not supported");
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Logger.Error("Game", e.Message);
                 }
             }
         }
@@ -1730,7 +1786,7 @@ namespace YuukiPS_Launcher
                 }
                 else
                 {
-                    Console.WriteLine("Does not support proxy check!");
+                    Logger.Error("Proxy", "Does not support proxy check!");
                 }
             }
             catch (Exception ex)
@@ -1751,7 +1807,7 @@ namespace YuukiPS_Launcher
 
         private void Server_Start_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Still PR :)");
+            Logger.Warning("Server", "Still PR :)");
         }
 
         private void Server_DL_JAVA_Click(object sender, EventArgs e)
@@ -1786,12 +1842,12 @@ namespace YuukiPS_Launcher
         {
             if (Enable_RPC.Checked)
             {
-                Console.WriteLine("Enable RPC");
+                Logger.Info("RPC", "Enable RPC");
                 discord.Ready();
             }
             else
             {
-                Console.WriteLine("Disable RPC. This may take a few seconds");
+                Logger.Info("RPC", "Disable RPC. This may take a few seconds");
                 discord.Stop();
             }
         }
@@ -1871,7 +1927,7 @@ namespace YuukiPS_Launcher
                     }
                 }
 
-                Console.WriteLine("Successfully extracted zip");
+                Logger.Info("Hdiff", "Successfully extracted zip");
             }
             catch (Exception ex)
             {
@@ -1898,7 +1954,7 @@ namespace YuukiPS_Launcher
             if (!string.IsNullOrEmpty(tbx_update.Text))
             {
                 btnstartUpdate.Enabled = false;
-                Console.WriteLine("[Hdiff] Start!");
+                Logger.Info("Hdiff", "Start!");
                 txt_statusUpd.Text = "Status: Extracting...";
                 string updPath = tbx_update.Text;
                 string tempPath = Path.Combine(Set_LA_GameFolder.Text, "hdiff_temp");
@@ -1939,15 +1995,15 @@ namespace YuukiPS_Launcher
                         if (File.Exists(fullPathToDelete))
                         {
                             File.Delete(fullPathToDelete);
-                            Console.WriteLine($"[Hdiff] Deleted: {fullPathToDelete}");
+                            Logger.Info("Hdiff", $"Deleted: {fullPathToDelete}");
                         }
                         else
                         {
-                            Console.WriteLine($"[Hdiff] File not found: {fullPathToDelete}");
+                            Logger.Info("Hdiff", $"File not found: {fullPathToDelete}");
                         }
                     }
 
-                    Console.WriteLine("[Hdiff] File deletion process completed.");
+                    Logger.Info("Hdiff", "File deletion process completed.");
 
                     txt_statusUpd.Text = "Status: Step 2 | Replacement";
                     try
@@ -1973,16 +2029,13 @@ namespace YuukiPS_Launcher
                         }
 
                         txt_statusUpd.Text = "Status: Complete.";
-                        Console.WriteLine("[Hdiff] Done replacing.");
-<<<<<<< HEAD
+                        Logger.Info("Hdiff", "Done replacing.");
                         progressBar1.Value = 0;
-=======
                         Directory.Delete(subdirectoryPath, true);
->>>>>>> 5890426935983e5deb48c2b823141e4b1675bb71
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[Hdiff] Error: {ex.Message}");
+                        Logger.Error("Hdiff", $"Error: {ex.Message}");
                         progressBar1.Value = 0;
                         return;
                     }
@@ -1991,6 +2044,7 @@ namespace YuukiPS_Launcher
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    Logger.Error("Hdiff", ex.Message);
                 }
             }
         }
