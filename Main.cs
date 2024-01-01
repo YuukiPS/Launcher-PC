@@ -2029,11 +2029,8 @@ namespace YuukiPS_Launcher
                         }
 
                         txt_statusUpd.Text = "Status: Complete.";
-<<<<<<< HEAD
                         Logger.Info("Hdiff", "Done replacing.");
-=======
                         Console.WriteLine("[Hdiff] Done replacing.");
->>>>>>> 87909a917952d0d0af69bdcec09fb132106c1c1b
                         progressBar1.Value = 0;
                         Directory.Delete(subdirectoryPath, true);
                     }
