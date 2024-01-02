@@ -5,6 +5,7 @@ using System.Net;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Json.Mod;
+using YuukiPS_Launcher.Utils;
 
 namespace YuukiPS_Launcher.Yuuki
 {
@@ -62,7 +63,7 @@ namespace YuukiPS_Launcher.Yuuki
         public static Patch? GetMD5Game(string md5, GameType type_game)
         {
             var url = "json/" + type_game.SEOUrl() + "/version/patch/" + md5.ToUpper() + ".json";
-            Console.WriteLine($"GetMD5Game1: {url}");
+            Logger.Info("Game", $"GetMD5Game1: {url}");
 
             var client = new RestClient(API_Yuuki);
             var request = new RestRequest(url);
@@ -83,7 +84,7 @@ namespace YuukiPS_Launcher.Yuuki
             }
             else
             {
-                Console.WriteLine($"Error get patch api: {response.StatusCode}");
+                Logger.Error("API", $"Error get patch api: {response.StatusCode}");
             }
             return null;
         }
