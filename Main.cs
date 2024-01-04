@@ -13,6 +13,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using YuukiPS_Launcher.Utils;
 using DiscordRPC.Logging;
 using System.Security.Policy;
+using Microsoft.VisualBasic.Logging;
 
 namespace YuukiPS_Launcher
 {
@@ -44,23 +45,6 @@ namespace YuukiPS_Launcher
             }
 
             return result;
-        }
-
-        private void RedirectStandardOutputToFile(string initialText)
-        {
-            string logsFolderPath = Path.Combine(Application.StartupPath, "logs");
-            Directory.CreateDirectory(logsFolderPath);
-
-            string logFileName = $"log_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
-            string logFilePath = Path.Combine(logsFolderPath, logFileName);
-
-            using (FileStream fileStream = new FileStream(logFilePath, FileMode.Create))
-            using (StreamWriter streamWriter = new StreamWriter(fileStream) { AutoFlush = true })
-            {
-                streamWriter.WriteLine(initialText);
-
-                Console.SetOut(streamWriter);
-            }
         }
 
         // Main Function
@@ -102,18 +86,20 @@ namespace YuukiPS_Launcher
         public Main()
         {
             InitializeComponent();
-            Application.ApplicationExit += Application_ApplicationExit;
-        }
-
-        private void Application_ApplicationExit(object sender, EventArgs e)
-        {
-            OperatingSystem os = Environment.OSVersion;
-            RedirectStandardOutputToFile($"-- {randomString()}\n\nPlatform: {os.Platform}\nPlatform Version: {os.Version}\nService pack: {os.ServicePack}\n\nGame: {GetTypeGame.Text}\nGame version: {VersionGame}\nGame running: {IsGameRun.ToString()}.\n");
-            Console.Out.Close();
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
+            OperatingSystem os = Environment.OSVersion;
+
+            string logFileName = $"log_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+            string logsFolderPath = Path.Combine(Application.StartupPath, "logs");
+            string logFilePath = Path.Combine(logsFolderPath, logFileName);
+
+            Directory.CreateDirectory(logsFolderPath);
+
+            logger.initLogging($"-- {randomString()}\n\nPlatform: {os.Platform}\nPlatform Version: {os.Version}\nService pack: {os.ServicePack}\n\n", logFilePath);
+
             Logger.Info("Boot", "Loading....");
 
             // Before starting make sure proxy is turned off
@@ -2030,7 +2016,6 @@ namespace YuukiPS_Launcher
 
                         txt_statusUpd.Text = "Status: Complete.";
                         Logger.Info("Hdiff", "Done replacing.");
-                        Console.WriteLine("[Hdiff] Done replacing.");
                         progressBar1.Value = 0;
                         Directory.Delete(subdirectoryPath, true);
                     }
