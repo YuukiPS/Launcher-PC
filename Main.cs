@@ -453,7 +453,9 @@ namespace YuukiPS_Launcher
                 progress = new Process();
                 progress.StartInfo = new ProcessStartInfo
                 {
-                    FileName = cst_gamefile
+                    FileName = cst_gamefile,
+                    //UseShellExecute = true,
+                    WorkingDirectory = Path.GetDirectoryName(cst_gamefile),
                 };
                 try
                 {

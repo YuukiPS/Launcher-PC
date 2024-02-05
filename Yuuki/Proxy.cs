@@ -1,8 +1,11 @@
 ﻿using System.Net;
 using System.Net.Security;
+using System.Security.Policy;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
+using Titanium.Web.Proxy.Http;
 using Titanium.Web.Proxy.Models;
+using YuukiPS_Launcher.Utils;
 
 namespace YuukiPS_Launcher.Yuuki
 {
@@ -24,12 +27,22 @@ namespace YuukiPS_Launcher.Yuuki
         {
             proxyServer = new ProxyServer();
 
-            // Install Certificate
-            proxyServer.CertificateManager.EnsureRootCertificate();
+            // locally trust root certificate used by this proxy
+            try
+            {
+                // proxyServer.CertificateManager.TrustRootCertificate(true);
+                proxyServer.CertificateManager.EnsureRootCertificate();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Proxy", "Error Start Proxy: " + ex.Message);
+            }            
 
             // Get Request Data
             proxyServer.BeforeRequest += OnRequest;
+            proxyServer.BeforeResponse += OnResponse;
             proxyServer.ServerCertificateValidationCallback += OnCertificateValidation;
+            proxyServer.ClientCertificateSelectionCallback += OnCertificateSelection;
 
             explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, port, true);
 
@@ -48,18 +61,18 @@ namespace YuukiPS_Launcher.Yuuki
                 // https://stackoverflow.com/a/69051680/3095372
                 if (ex.InnerException != null)
                 {
-                    Console.WriteLine("Error Start Proxy: {0}", ex.InnerException.Message);
+                    Logger.Error("Proxy", "Error Start Proxy: "+ex.InnerException.Message);
                 }
                 else
                 {
-                    Console.WriteLine("Error Start Proxy: {0}", ex.Message);
+                    Logger.Error("Proxy", "Error Start Proxy: "+ex.Message);
                 }
                 return false;
             }
 
             foreach (var endPoint in proxyServer.ProxyEndPoints)
             {
-                Console.WriteLine("Listening on '{0}' endpoint at Ip {1} and port: {2} ", endPoint.GetType().Name, endPoint.IpAddress, endPoint.Port);
+                Logger.Info("Proxy", $"Listening on {endPoint.GetType().Name} endpoint at Ip {endPoint.IpAddress} and port: {endPoint.Port} ");
             }
 
             // Only explicit proxies can be set as system proxy!
@@ -69,11 +82,32 @@ namespace YuukiPS_Launcher.Yuuki
             return true;
 
         }
+        private Task OnCertificateSelection(object sender, CertificateSelectionEventArgs e)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task OnCertificateValidation(object sender, CertificateValidationEventArgs e)
+        {
+            // set IsValid to true/false based on Certificate Errors
+            if (e.SslPolicyErrors == SslPolicyErrors.None)
+            {
+                e.IsValid = true;
+            }
+            return Task.CompletedTask;
+        }
+        private async Task OnResponse(object sender, SessionEventArgs e)
+        {
+            string url = e.HttpClient.Request.Url;
+            var bodyString = await e.GetResponseBodyAsString();
+            Logger.Info("Proxy", $"Response: {url}\nBody: {bodyString}");
+        }
 
         public void Stop()
         {
             try
             {
+                // Unsubscribe & Quit
                 if (explicitEndPoint != null)
                 {
                     explicitEndPoint.BeforeTunnelConnectRequest -= OnBeforeTunnelConnectRequest;
@@ -81,25 +115,28 @@ namespace YuukiPS_Launcher.Yuuki
                 if (proxyServer != null)
                 {
                     proxyServer.BeforeRequest -= OnRequest;
+                    proxyServer.BeforeResponse -= OnResponse;
+
                     proxyServer.ServerCertificateValidationCallback -= OnCertificateValidation;
+                    proxyServer.ClientCertificateSelectionCallback -= OnCertificateSelection;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error Stop Proxy: ", ex);
+                Logger.Error("Proxy", $"Error Stop Proxy: "+ex);
             }
             finally
             {
                 if (proxyServer != null && proxyServer.ProxyRunning)
                 {
-                    Console.WriteLine("Proxy Stop");
+                    Logger.Warning("Proxy", $"Proxy Stop");
                     proxyServer.Stop();
                     //UninstallCertificate();
                     proxyServer.Dispose();
                 }
                 else
                 {
-                    Console.WriteLine("Proxy tries to stop but the proxy is not running.");
+                    Logger.Warning("Proxy", $"Proxy tries to stop but the proxy is not running.");
                 }
             }
         }
@@ -129,28 +166,53 @@ namespace YuukiPS_Launcher.Yuuki
             await Task.CompletedTask;
         }
 
-        private Task OnRequest(object sender, SessionEventArgs e)
+        private async Task OnRequest(object sender, SessionEventArgs e)
         {
-            // Change Host
             string hostname = e.HttpClient.Request.RequestUri.Host;
+            string url = e.HttpClient.Request.Url;
+            // var header = e.HttpClient.Request.Headers;
+
+            // Stop send log
+            if (url.Contains("sdk/dataUpload") || url.Contains("crash/dataUpload") || url.Contains("8888/log"))
+            {
+                Logger.Warning("Proxy", $"Request Block: {url}");
+                e.Ok("HoyoGay");
+                return;
+            }
+
+            var method = e.HttpClient.Request.Method.ToUpper();
+            if ((method == "POST" || method == "PUT" || method == "PATCH"))
+            {
+                // Get/Set request body bytes
+                //byte[] bodyBytes = await e.GetRequestBody();
+                //e.SetRequestBody(bodyBytes);
+
+                // Get/Set request body as string
+                string bodyString = await e.GetRequestBodyAsString();
+                e.SetRequestBodyString(bodyString);
+
+                // store request, so that you can find it from response handler 
+                e.UserData = e.HttpClient.Request;
+
+                Logger.Info("Proxy", $"Request: {url}\nBody: {bodyString}");
+            }
+            else
+            {
+                Logger.Info("Proxy", $"Request: {url} | Method: {method}");
+            }
+
+            // Set url private server
             if (HostPrivate(hostname))
             {
-                var url = e.HttpClient.Request.Url;
-
                 UriBuilder uriBuilder = new UriBuilder(url)
                 {
                     Scheme = our_server.Scheme,
                     Host = our_server.Host,
                     Port = our_server.Port
                 };
-                var newUrl = uriBuilder.Uri;
-
-                Tool.Logger($"Request: {newUrl}", ConsoleColor.Green);
-
-                // Set
+                var newUrl = uriBuilder.Uri;                
                 e.HttpClient.Request.Url = newUrl.ToString();
             }
-            return Task.CompletedTask;
         }
 
         private bool HostPrivate(string hostname)
@@ -169,16 +231,7 @@ namespace YuukiPS_Launcher.Yuuki
             return false;
         }
 
-        // Allows overriding default certificate validation logic
-        private Task OnCertificateValidation(object sender, CertificateValidationEventArgs e)
-        {
-            // set IsValid to true/false based on Certificate Errors
-            if (e.SslPolicyErrors == SslPolicyErrors.None)
-            {
-                e.IsValid = true;
-            }
-            return Task.CompletedTask;
-        }
+        
 
     }
 }
