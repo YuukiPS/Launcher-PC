@@ -22,7 +22,7 @@ namespace YuukiPS_Launcher
         private string randomString()
         {
             Random random = new Random();
-            int rInt = random.Next(0, 4 + 1);
+            int rInt = random.Next(0, 5 + 1);
             string result = "";
 
             switch (rInt)
@@ -41,6 +41,9 @@ namespace YuukiPS_Launcher
                     break;
                 case 4:
                     result = "i'm lazy";
+                    break;
+                case 5:
+                    result = "Git: makeitmeme.com/join/ATCBQ\n9999: Oh no iplogger☎️☎️☎️☎️";
                     break;
             }
 
