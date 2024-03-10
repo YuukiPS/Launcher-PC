@@ -20,6 +20,8 @@ namespace YuukiPS_Launcher.Utils
             strMsg = startMsg;
 
             File.WriteAllText(logPath, strMsg);
+
+            Info("Logger", "Initializated logger");
         }
 
         public static void Info(string type, string msg)
@@ -66,7 +68,7 @@ namespace YuukiPS_Launcher.Utils
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(msg + "\n");
 
-            File.WriteAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:ERROR] " + msg + "\n");
+            File.AppendAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:ERROR] " + msg + "\n");
         }
         public static void Warning(string type, string msg)
         {
@@ -88,7 +90,7 @@ namespace YuukiPS_Launcher.Utils
             Console.Write("] ");
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(msg + "\n");
-            File.WriteAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:WARNING] " + msg + "\n");
+            File.AppendAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:WARNING] " + msg + "\n");
         }
     }
 }

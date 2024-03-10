@@ -49,6 +49,8 @@
             btsave = new Button();
             label8 = new Label();
             grExtra = new GroupBox();
+            wipeLoginCacheInfo = new Button();
+            Enable_WipeLoginCache = new CheckBox();
             Extra_Cheat = new CheckBox();
             Enable_RPC = new CheckBox();
             grProxy = new GroupBox();
@@ -347,14 +349,37 @@
             // 
             // grExtra
             // 
+            grExtra.Controls.Add(wipeLoginCacheInfo);
+            grExtra.Controls.Add(Enable_WipeLoginCache);
             grExtra.Controls.Add(Extra_Cheat);
             grExtra.Controls.Add(Enable_RPC);
             grExtra.Location = new Point(431, 264);
             grExtra.Name = "grExtra";
-            grExtra.Size = new Size(217, 65);
+            grExtra.Size = new Size(217, 84);
             grExtra.TabIndex = 12;
             grExtra.TabStop = false;
             grExtra.Text = "Extra";
+            // 
+            // wipeLoginCacheInfo
+            // 
+            wipeLoginCacheInfo.Location = new Point(119, 57);
+            wipeLoginCacheInfo.Name = "wipeLoginCacheInfo";
+            wipeLoginCacheInfo.Size = new Size(24, 23);
+            wipeLoginCacheInfo.TabIndex = 20;
+            wipeLoginCacheInfo.Text = "?";
+            wipeLoginCacheInfo.UseVisualStyleBackColor = true;
+            wipeLoginCacheInfo.Click += wipeLoginCacheInfo_Click;
+            // 
+            // Enable_WipeLoginCache
+            // 
+            Enable_WipeLoginCache.AutoSize = true;
+            Enable_WipeLoginCache.Location = new Point(7, 59);
+            Enable_WipeLoginCache.Name = "Enable_WipeLoginCache";
+            Enable_WipeLoginCache.Size = new Size(117, 19);
+            Enable_WipeLoginCache.TabIndex = 2;
+            Enable_WipeLoginCache.Text = "Wipe login cache";
+            Enable_WipeLoginCache.UseVisualStyleBackColor = true;
+            Enable_WipeLoginCache.CheckedChanged += Enable_WipeLoginCache_CheckedChanged;
             // 
             // Extra_Cheat
             // 
@@ -1140,5 +1165,7 @@
         private Label label3;
         private Label label9;
         private ProgressBar progressBar1;
+        private Button wipeLoginCacheInfo;
+        private CheckBox Enable_WipeLoginCache;
     }
 }
