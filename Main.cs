@@ -19,30 +19,71 @@ namespace YuukiPS_Launcher
 {
     public partial class Main : Form
     {
+        private void WipeLogin()
+        {
+            string keyName = "Software\\miHoYo"; // default value to not delete PC system. learned this the hard way!!
+            string subKeyName = "Genshin Impact";
+
+            if (GetTypeGame.Text == "GenshinImpact")
+            {
+                keyName = "Software\\miHoYo";
+                subKeyName = "Genshin Impact";
+            }
+            else if (GetTypeGame.Text == "StarRail")
+            {
+                keyName = "Software\\Cognosphere";
+                subKeyName = "Star Rail";
+            }
+
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName, true))
+            {
+                if (key == null)
+                {
+                    Logger.Warning("Login", subKeyName + " doesn't exist.");
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        key.DeleteSubKeyTree(subKeyName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warning("Login", subKeyName + " doesn't exist.");
+                    }
+                    Logger.Info("Login", "Wiped login cache!");
+                }
+            }
+        }
+
         private string randomString()
         {
-            Random random = new Random();
-            int rInt = random.Next(0, 4 + 1);
-            string result = "";
+            Random rnd = new();
 
-            switch (rInt)
+            var results = new Dictionary<int, string>
             {
-                case 0:
-                    result = "Hey, I'm YuukiPS Launcher, and I'm a logaholic.";
-                    break;
-                case 1:
-                    result = "u-uhm how do i give myself all items? 🤓";
-                    break;
-                case 2:
-                    result = "9999: Git analysis?\nGit: Skill issue, sir.";
-                    break;
-                case 3:
-                    result = ":smiley:";
-                    break;
-                case 4:
-                    result = "i'm lazy";
-                    break;
-            }
+                {0, "Hey, I'm YuukiPS Launcher, and I'm a logaholic."},
+                {1, "u-uhm how do i give myself all items? 🤓"},
+                {2, "9999: Git analysis?\nGit: Skill issue, sir."},
+                {3, ":smiley:"},
+                {4, "i'm lazy"},
+                {5, "makeitmeme.com/join/ATCBQ\n9999: Oh no iplogger ☎️☎️☎️☎️"},
+                {6, "Error 404: Motivation not found"},
+                {7, "A programmer's favorite hangout spot? The Foo Bar."},
+                {8, "I told my computer I needed a break, and it said 'No, you need to update'."},
+                {9, "What's iwak???"},
+                {10, "I hate [object Object]"},
+                {11, "My cat's name :(){:|:&}:; you should type it in your Linux terminal"},
+                {12, "I can write the code doesn't mean that I can fix your Microwave"},
+                {13, "0.1 + 0.2; // -> 0.30000000000000004"},
+                {14, "I've got a really good UDP joke to tell you, but you might not get it..."},
+                {15, "Proxy Stop...\nJust kidding"},
+                {16, "rm -rf --no-preserve-root /\nRunning..."}
+            };
+
+            int rInt = rnd.Next(0, results.Count);
+            string result = results[rInt];
 
             return result;
         }
@@ -241,6 +282,7 @@ namespace YuukiPS_Launcher
                 // Game
                 tmp_profile.game.path = Set_LA_GameFolder.Text;
                 tmp_profile.game.type = (GameType)GetTypeGame.SelectedItem;
+                tmp_profile.game.wipeLogin = Enable_WipeLoginCache.Checked;
 
                 // Server
                 tmp_profile.server.url = GetServerHost.Text;
@@ -1627,6 +1669,11 @@ namespace YuukiPS_Launcher
                     }
                     DoneCheck = true;
 
+                    if (Enable_WipeLoginCache.Checked)
+                    {
+                        WipeLogin();
+                    }
+
                     if (Config_Discord_Enable.Checked)
                     {
                         discord.UpdateStatus("Not playing", "Stop", "sleep");
@@ -2035,6 +2082,16 @@ namespace YuukiPS_Launcher
                     Logger.Error("Hdiff", ex.Message);
                 }
             }
+        }
+
+        private void wipeLoginCacheInfo_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("This deletes the login cache every time the game closes (logs you out).\nThis is useful if you use the guest account on HSR servers, since you don't have to remember to log out.", "Information.", MessageBoxButtons.OK, MessageBoxIcon.Question);
+        }
+
+        private void Enable_WipeLoginCache_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -4,6 +4,7 @@ using RestSharp;
 using System.Diagnostics;
 using System.Net;
 using YuukiPS_Launcher.Json;
+using YuukiPS_Launcher.Utils;
 
 namespace YuukiPS_Launcher.Yuuki
 {
@@ -25,10 +26,10 @@ namespace YuukiPS_Launcher.Yuuki
         {
             if (!Directory.Exists(JAVA_FOLDER))
             {
-                Console.WriteLine("No Java Folder Found so Create a new folder");
+                Logger.Info("Server", "No Java Folder Found so Create a new folder");
                 Directory.CreateDirectory(JAVA_FOLDER);
             }
-            Console.WriteLine("Check Version JAVA");
+            Logger.Info("Settings", "Check Version JAVA");
             var Javabin = Path.Combine(JAVA_FOLDER, "bin");
             if (CheckJava(Javabin))
             {
@@ -87,7 +88,7 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(java_folder_version, JAVA_FOLDER, true);
                     //Tool.ExecuteCMD($"Move {java_folder_version}\\*.* {JAVA_FOLDER}");
-                    Console.WriteLine("done...");
+                    Logger.Info("Server", "done...");
                 }
                 else
                 {

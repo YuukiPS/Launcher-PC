@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Text;
+using YuukiPS_Launcher.Utils;
 
 namespace YuukiPS_Launcher.Game.Genshin
 {
@@ -72,7 +73,7 @@ namespace YuukiPS_Launcher.Game.Genshin
 
             if (keys is null || result is null || result.Length is 0)
             {
-                Console.WriteLine($"Fallback value will be used.");
+                Logger.Info("Settings", $"Fallback value will be used.");
                 return "en";
             }
 
@@ -85,7 +86,7 @@ namespace YuukiPS_Launcher.Game.Genshin
             byte[]? value = GetDataGeneral();
             if (value is null || value.Length is 0)
             {
-                Console.WriteLine($"Fallback value will be used (2 / ja-jp).");
+                Logger.Info("Settings", $"Fallback value will be used (2 / ja-jp).");
                 return 2;
             }
             ReadOnlySpan<char> regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
@@ -97,7 +98,7 @@ namespace YuukiPS_Launcher.Game.Genshin
             byte[]? value = GetDataGeneral();
             if (value is null || value.Length is 0)
             {
-                Console.WriteLine($"Fallback value will be used (0 / USA).");
+                Logger.Info("Settings", $"Fallback value will be used (0 / USA).");
                 return 0;
             }
             string regValue = new string(Encoding.UTF8.GetString(value).AsSpan().Trim('\0'));
@@ -112,7 +113,9 @@ namespace YuukiPS_Launcher.Game.Genshin
             os_cht = 3,
             // YuukiPS
             sg1 = 4,
-            eu1 = 5
+            eu1 = 5,
+            // make the warn thing to shut the hell up
+            dev_docker = 6
         }
 
         public class GeneralDataProp
