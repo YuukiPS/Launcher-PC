@@ -8,6 +8,7 @@ using YuukiPS_Launcher.Yuuki;
 using ICSharpCode.SharpZipLib.Zip;
 using YuukiPS_Launcher.Utils;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace YuukiPS_Launcher
 {
@@ -451,8 +452,7 @@ namespace YuukiPS_Launcher
                             {
                                 // skip
                             }
-                            proxy.Stop();
-                            proxy = null;
+                            StopProxy();
                             return;
                         }
                         else
@@ -461,8 +461,8 @@ namespace YuukiPS_Launcher
                             {
                                 if (!API.isYuuki(set_proxy_port))
                                 {
-                                    proxy.Stop();
-                                    proxy = null;
+                                    StopProxy();
+                                    InstallCert();
                                     MessageBox.Show("Try closing this program then opening it again, if there is still an error, please report it to admin with a screenshot console", "Not yet connected to YuukiPS server");
                                     return;
                                 }
@@ -530,6 +530,36 @@ namespace YuukiPS_Launcher
             else
             {
                 Logger.Info("Cheat", "Progress is still running...");
+            }
+        }
+
+        public void InstallCert()
+        {
+            bool installationSucceeded = false;
+            while (!installationSucceeded)
+            {
+                try
+                {
+                    // Load the certificate from the file
+                    X509Certificate2 certificate = new X509Certificate2("rootCert.pfx");
+
+                    // Open the Root certificate store for the current user
+                    X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+                    store.Open(OpenFlags.ReadWrite);
+
+                    // Add the certificate to the store
+                    store.Add(certificate);
+
+                    // Close the store
+                    store.Close();
+
+                    Console.WriteLine("Certificate installed successfully.");
+                    installationSucceeded = true; // Set flag to true to exit the loop
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
             }
         }
 
@@ -1722,11 +1752,14 @@ namespace YuukiPS_Launcher
 
         public void StopProxy()
         {
-            if (proxy != null)
+            try
             {
                 proxy.Stop();
                 proxy = null;
                 Logger.Info("Proxy", "Proxy Stop....");
+            }
+            catch (Exception ex) { 
+                // skip
             }
         }
 
