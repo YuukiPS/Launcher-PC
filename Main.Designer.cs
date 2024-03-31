@@ -39,6 +39,7 @@
             Set_LA_Select = new Button();
             Set_LA_GameFolder = new TextBox();
             label5 = new Label();
+            stIsRunProxy = new Label();
             groupBox8 = new GroupBox();
             btStartYuukiServer = new Button();
             GetTypeGame = new ComboBox();
@@ -49,10 +50,10 @@
             btsave = new Button();
             label8 = new Label();
             grExtra = new GroupBox();
+            Enable_SendLog = new CheckBox();
             Extra_Cheat = new CheckBox();
             Enable_RPC = new CheckBox();
             grProxy = new GroupBox();
-            stIsRunProxy = new Label();
             CheckProxyEnable = new CheckBox();
             groupBox3 = new GroupBox();
             Get_LA_Version = new Label();
@@ -93,8 +94,6 @@
             label4 = new Label();
             Set_LA_GameFile = new TextBox();
             label7 = new Label();
-            tabPage9 = new TabPage();
-            Config_Discord_Enable = new CheckBox();
             tabPage3 = new TabPage();
             progressBar1 = new ProgressBar();
             label9 = new Label();
@@ -129,7 +128,6 @@
             tabPage4.SuspendLayout();
             TabConfig.SuspendLayout();
             tabPage5.SuspendLayout();
-            tabPage9.SuspendLayout();
             tabPage3.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -157,7 +155,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(0, 35);
+            label2.Location = new Point(111, 14);
             label2.Name = "label2";
             label2.Size = new Size(41, 21);
             label2.TabIndex = 4;
@@ -166,7 +164,7 @@
             // GetProxyPort
             // 
             GetProxyPort.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            GetProxyPort.Location = new Point(37, 35);
+            GetProxyPort.Location = new Point(158, 12);
             GetProxyPort.Name = "GetProxyPort";
             GetProxyPort.Size = new Size(51, 25);
             GetProxyPort.TabIndex = 5;
@@ -188,6 +186,7 @@
             // tabPage1
             // 
             tabPage1.Controls.Add(grConfigGameLite);
+            tabPage1.Controls.Add(stIsRunProxy);
             tabPage1.Controls.Add(groupBox8);
             tabPage1.Controls.Add(grProfile);
             tabPage1.Controls.Add(grExtra);
@@ -241,6 +240,16 @@
             label5.Size = new Size(102, 21);
             label5.TabIndex = 0;
             label5.Text = "Game Folder:";
+            // 
+            // stIsRunProxy
+            // 
+            stIsRunProxy.AutoSize = true;
+            stIsRunProxy.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            stIsRunProxy.Location = new Point(3, 359);
+            stIsRunProxy.Name = "stIsRunProxy";
+            stIsRunProxy.Size = new Size(87, 21);
+            stIsRunProxy.TabIndex = 8;
+            stIsRunProxy.Text = "Status: OFF";
             // 
             // groupBox8
             // 
@@ -347,14 +356,27 @@
             // 
             // grExtra
             // 
+            grExtra.Controls.Add(Enable_SendLog);
             grExtra.Controls.Add(Extra_Cheat);
             grExtra.Controls.Add(Enable_RPC);
-            grExtra.Location = new Point(431, 264);
+            grExtra.Location = new Point(432, 248);
             grExtra.Name = "grExtra";
-            grExtra.Size = new Size(217, 65);
+            grExtra.Size = new Size(217, 88);
             grExtra.TabIndex = 12;
             grExtra.TabStop = false;
             grExtra.Text = "Extra";
+            // 
+            // Enable_SendLog
+            // 
+            Enable_SendLog.AutoSize = true;
+            Enable_SendLog.Checked = true;
+            Enable_SendLog.CheckState = CheckState.Checked;
+            Enable_SendLog.Location = new Point(7, 63);
+            Enable_SendLog.Name = "Enable_SendLog";
+            Enable_SendLog.Size = new Size(80, 19);
+            Enable_SendLog.TabIndex = 2;
+            Enable_SendLog.Text = "Send Logs";
+            Enable_SendLog.UseVisualStyleBackColor = true;
             // 
             // Extra_Cheat
             // 
@@ -381,25 +403,14 @@
             // grProxy
             // 
             grProxy.Controls.Add(GetProxyPort);
-            grProxy.Controls.Add(stIsRunProxy);
             grProxy.Controls.Add(CheckProxyEnable);
             grProxy.Controls.Add(label2);
             grProxy.Location = new Point(431, 191);
             grProxy.Name = "grProxy";
-            grProxy.Size = new Size(215, 67);
+            grProxy.Size = new Size(215, 51);
             grProxy.TabIndex = 11;
             grProxy.TabStop = false;
             grProxy.Text = "Proxy";
-            // 
-            // stIsRunProxy
-            // 
-            stIsRunProxy.AutoSize = true;
-            stIsRunProxy.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            stIsRunProxy.Location = new Point(92, 14);
-            stIsRunProxy.Name = "stIsRunProxy";
-            stIsRunProxy.Size = new Size(87, 21);
-            stIsRunProxy.TabIndex = 8;
-            stIsRunProxy.Text = "Status: OFF";
             // 
             // CheckProxyEnable
             // 
@@ -738,7 +749,6 @@
             // TabConfig
             // 
             TabConfig.Controls.Add(tabPage5);
-            TabConfig.Controls.Add(tabPage9);
             TabConfig.Dock = DockStyle.Fill;
             TabConfig.Location = new Point(0, 0);
             TabConfig.Name = "TabConfig";
@@ -815,28 +825,6 @@
             label7.Size = new Size(86, 21);
             label7.TabIndex = 10;
             label7.Text = "Game files:";
-            // 
-            // tabPage9
-            // 
-            tabPage9.Controls.Add(Config_Discord_Enable);
-            tabPage9.Location = new Point(4, 24);
-            tabPage9.Name = "tabPage9";
-            tabPage9.Size = new Size(646, 355);
-            tabPage9.TabIndex = 1;
-            tabPage9.Text = "Discord";
-            tabPage9.UseVisualStyleBackColor = true;
-            // 
-            // Config_Discord_Enable
-            // 
-            Config_Discord_Enable.AutoSize = true;
-            Config_Discord_Enable.Checked = true;
-            Config_Discord_Enable.CheckState = CheckState.Checked;
-            Config_Discord_Enable.Location = new Point(14, 13);
-            Config_Discord_Enable.Name = "Config_Discord_Enable";
-            Config_Discord_Enable.Size = new Size(142, 19);
-            Config_Discord_Enable.TabIndex = 0;
-            Config_Discord_Enable.Text = "Discord Rich Presence";
-            Config_Discord_Enable.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
@@ -1022,6 +1010,7 @@
             Load += Main_Load;
             TabMain.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
             grConfigGameLite.ResumeLayout(false);
             grConfigGameLite.PerformLayout();
             groupBox8.ResumeLayout(false);
@@ -1046,8 +1035,6 @@
             TabConfig.ResumeLayout(false);
             tabPage5.ResumeLayout(false);
             tabPage5.PerformLayout();
-            tabPage9.ResumeLayout(false);
-            tabPage9.PerformLayout();
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
             groupBox1.ResumeLayout(false);
@@ -1098,8 +1085,6 @@
         private System.Windows.Forms.Timer CheckGameRun;
         private System.Windows.Forms.Timer CheckProxyRun;
         private Label label8;
-        private TabPage tabPage9;
-        private CheckBox Config_Discord_Enable;
         private Button Server_Config_OpenFolder;
         private ComboBox comboBox1;
         private GroupBox groupBox4;
@@ -1140,5 +1125,6 @@
         private Label label3;
         private Label label9;
         private ProgressBar progressBar1;
+        private CheckBox Enable_SendLog;
     }
 }

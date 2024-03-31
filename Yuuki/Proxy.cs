@@ -16,11 +16,13 @@ namespace YuukiPS_Launcher.Yuuki
 
         private int port;
         private Uri our_server;
+        private bool sendLog;
 
-        public Proxy(int port, string host)
+        public Proxy(int port, string host, bool sendLog)
         {
             this.port = port;
             this.our_server = new Uri(host);
+            this.sendLog = sendLog;
         }
 
         public bool Start()
@@ -170,14 +172,24 @@ namespace YuukiPS_Launcher.Yuuki
         {
             string hostname = e.HttpClient.Request.RequestUri.Host;
             string url = e.HttpClient.Request.Url;
-            // var header = e.HttpClient.Request.Headers;
 
             // Stop send log
-            if (url.Contains("sdk/dataUpload") || url.Contains("crash/dataUpload") || url.Contains("8888/log"))
+            if (
+                url.Contains("/apm/dataUpload") || // SR
+                url.Contains("/crash/dataUpload") || // GI
+                url.Contains("/sdk/dataUpload") || // GI Any
+                url.Contains("/h5/dataUpload") || // Hoyolab
+                url.Contains("/h5/upload") || // Hoyolab 2
+                url.Contains("/common/h5log/log") || // Hoyolab 3
+                url.Contains("8888/log") // GI
+            )
             {
-                Logger.Warning("Proxy", $"Request Block: {url}");
-                e.Ok("HoyoGay");
-                return;
+                if (!sendLog)
+                {
+                    Logger.Info("Proxy", $"Request Block: {url}");
+                    e.Ok("{ code: 0 }");
+                    return;
+                }
             }
 
             var method = e.HttpClient.Request.Method.ToUpper();

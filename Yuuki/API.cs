@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Authenticators;
 using System.Diagnostics;
 using System.Net;
+using System.Security.Policy;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Json.Mod;
@@ -63,7 +65,6 @@ namespace YuukiPS_Launcher.Yuuki
         public static Patch? GetMD5Game(string md5, GameType type_game)
         {
             var url = "json/" + type_game.SEOUrl() + "/version/patch/" + md5.ToUpper() + ".json";
-            Logger.Info("Game", $"GetMD5Game1: {url}");
 
             var client = new RestClient(API_Yuuki);
             var request = new RestRequest(url);
@@ -71,22 +72,52 @@ namespace YuukiPS_Launcher.Yuuki
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                var isContent = response.Content;
                 try
                 {
-                    var patch = JsonConvert.DeserializeObject<Patch>(response.Content);
+                    var patch = JsonConvert.DeserializeObject<Patch>(isContent);
                     return patch;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
-                    Console.WriteLine(response.Content);
+                    Logger.Error("API", $"Error getting patch data: {ex.Message} > {url}");
+                    Logger.Error("API", isContent);
                 }
             }
             else
             {
-                Logger.Error("API", $"Error get patch api: {response.StatusCode}");
+                Logger.Error("API", $"Error download patch data: {response.StatusCode} > {url}");
             }
             return null;
+        }
+
+        public static bool isYuuki(int port)
+        {
+            IWebProxy proxy = new WebProxy($"http://localhost:{port}");
+            var options = new RestClientOptions("https://globaldp-prod-os01.starrails.com")
+            {
+                Proxy = proxy
+            };
+            var client = new RestClient(options);
+            var request = new RestRequest("api");
+            var response = client.Execute(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var isContent = response.Content;
+                if(isContent == "API YuukiPS v2")
+                {
+                    return true;
+                }
+                else
+                {
+                    Logger.Error("API", $"NO YUUKI :( > {isContent}");
+                }
+            }
+            else
+            {
+                Logger.Error("API", $"Error check yuuki: {response.StatusCode}");
+            }
+            return false;
         }
 
         public static KeyGS? GSKEY()

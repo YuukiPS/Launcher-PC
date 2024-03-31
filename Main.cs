@@ -1,19 +1,13 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using YuukiPS_Launcher.Extra;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Yuuki;
-using ICSharpCode.SharpZipLib;
-using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using YuukiPS_Launcher.Utils;
-using DiscordRPC.Logging;
-using System.Security.Policy;
-using Microsoft.VisualBasic.Logging;
+using System.Net;
 
 namespace YuukiPS_Launcher
 {
@@ -324,6 +318,8 @@ namespace YuukiPS_Launcher
             // Setup
             bool isCheat = Extra_Cheat.Checked;
             bool isProxyNeed = CheckProxyEnable.Checked;
+            bool isSendLog = Enable_SendLog.Checked;
+
             GameType selectedGame = (GameType)GetTypeGame.SelectedItem;
 
             // Get Host
@@ -401,12 +397,31 @@ namespace YuukiPS_Launcher
                 {
                     if (isProxyNeed)
                     {
-                        proxy = new Proxy(set_proxy_port, set_server_host);
+                        proxy = new Proxy(set_proxy_port, set_server_host, isSendLog);
                         if (!proxy.Start())
                         {
-                            MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range", "Failed Start...");
+                            MessageBox.Show("Maybe port is already use or Windows Firewall does not allow using port " + set_proxy_port + " or Windows Update sometimes takes that range, or try again it might magically work again.", "Proxy port cannot be used");
+                            try {
+                                Process.Start(new ProcessStartInfo("cmd", $"/c net stop winnat") { CreateNoWindow = true, UseShellExecute = false });
+                            } catch {
+                                // skip
+                            }
+                            proxy.Stop();
                             proxy = null;
                             return;
+                        }
+                        else
+                        {
+                            if (set_server_host.Contains("yuuki.me"))
+                            {
+                                if (!API.isYuuki(set_proxy_port))
+                                {
+                                    proxy.Stop();
+                                    proxy = null;
+                                    MessageBox.Show("Try closing this program then opening it again, if there is still an error, please report it to admin with a screenshot console", "Not yet connected to YuukiPS server");
+                                    return;
+                                }
+                            }
                         }
                     }
                     else
@@ -1627,7 +1642,7 @@ namespace YuukiPS_Launcher
                     }
                     DoneCheck = true;
 
-                    if (Config_Discord_Enable.Checked)
+                    if (Enable_RPC.Checked)
                     {
                         discord.UpdateStatus("Not playing", "Stop", "sleep");
                     }
@@ -1641,7 +1656,7 @@ namespace YuukiPS_Launcher
                 DoneCheck = false;
                 IsAcess(false);
 
-                if (Config_Discord_Enable.Checked)
+                if (Enable_RPC.Checked)
                 {
                     discord.UpdateStatus($"Server: {HostName} Version: {VersionGame}", "In Game", "on", 1);
                 }
@@ -1748,11 +1763,12 @@ namespace YuukiPS_Launcher
                         // Metode 2
                         if (proxy != null)
                         {
-                            stIsRunProxy.Text = "Status: ON (Internal)";
+                            object? id = registry.GetValue("ProxyServer");
+                            stIsRunProxy.Text = "Status: ON (Internal): "+id;
                         }
                         else
                         {
-                            stIsRunProxy.Text = "Status: ON (External)";
+                            stIsRunProxy.Text = "Status: ON (External)";                            
                             // If external is on and proxy app is enabled, make sure external proxy is off
                             if (CheckProxyEnable.Checked)
                             {
@@ -1764,7 +1780,6 @@ namespace YuukiPS_Launcher
                         {
                             registry.SetValue("ProxyEnable", 0);
                         }
-
                     }
                     else
                     {
