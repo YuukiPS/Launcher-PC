@@ -26,6 +26,7 @@ namespace YuukiPS_Launcher.Json
         {
             public string path = ""; // if blank set auto
             public GameType type = GameType.GenshinImpact;
+            public bool wipeLogin = false;
 
             public Extra extra { get; set; } = new();
 

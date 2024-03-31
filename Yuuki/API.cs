@@ -57,7 +57,7 @@ namespace YuukiPS_Launcher.Yuuki
             }
             else
             {
-                Console.WriteLine("Error GET API: " + response.StatusCode);
+                Logger.Error("API", "Error GET API: " + response.StatusCode);
             }
             return null;
         }

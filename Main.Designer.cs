@@ -50,6 +50,7 @@
             btsave = new Button();
             label8 = new Label();
             grExtra = new GroupBox();
+            Enable_WipeLoginCache = new CheckBox();
             Enable_SendLog = new CheckBox();
             Extra_Cheat = new CheckBox();
             Enable_RPC = new CheckBox();
@@ -356,22 +357,34 @@
             // 
             // grExtra
             // 
+            grExtra.Controls.Add(Enable_WipeLoginCache);
             grExtra.Controls.Add(Enable_SendLog);
             grExtra.Controls.Add(Extra_Cheat);
             grExtra.Controls.Add(Enable_RPC);
             grExtra.Location = new Point(432, 248);
             grExtra.Name = "grExtra";
-            grExtra.Size = new Size(217, 88);
+            grExtra.Size = new Size(217, 101);
             grExtra.TabIndex = 12;
             grExtra.TabStop = false;
             grExtra.Text = "Extra";
+            // 
+            // Enable_WipeLoginCache
+            // 
+            Enable_WipeLoginCache.AutoSize = true;
+            Enable_WipeLoginCache.Location = new Point(7, 80);
+            Enable_WipeLoginCache.Name = "Enable_WipeLoginCache";
+            Enable_WipeLoginCache.Size = new Size(91, 19);
+            Enable_WipeLoginCache.TabIndex = 20;
+            Enable_WipeLoginCache.Text = "WIPE LOGIN";
+            Enable_WipeLoginCache.UseVisualStyleBackColor = true;
+            Enable_WipeLoginCache.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // Enable_SendLog
             // 
             Enable_SendLog.AutoSize = true;
             Enable_SendLog.Checked = true;
             Enable_SendLog.CheckState = CheckState.Checked;
-            Enable_SendLog.Location = new Point(7, 63);
+            Enable_SendLog.Location = new Point(7, 61);
             Enable_SendLog.Name = "Enable_SendLog";
             Enable_SendLog.Size = new Size(80, 19);
             Enable_SendLog.TabIndex = 2;
@@ -1126,5 +1139,6 @@
         private Label label9;
         private ProgressBar progressBar1;
         private CheckBox Enable_SendLog;
+        private CheckBox Enable_WipeLoginCache;
     }
 }
