@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using RestSharp.Authenticators;
 using System.Diagnostics;
 using System.Net;
-using System.Security.Policy;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Json.Mod;
@@ -14,57 +12,13 @@ namespace YuukiPS_Launcher.Yuuki
     public class API
     {
         public static string API_DL_CF = "https://file2.yuuki.me/";
-        public static string API_DL_OW = "https://drive.yuuki.me/";
         public static string API_Yuuki = "https://ps.yuuki.me/";
         public static string WEB_LINK = "https://ps.yuuki.me";
-
         public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/YuukiPS/Launcher-PC/";
-        public static string API_GITHUB_RSA = "https://api.github.com/repos/34736384/RSAPatch/";
-
-        public static Client? GS_DL(string dl = "os")
-        {
-            var client = new RestClient(API_Yuuki);
-            var request = new RestRequest("api/genshin/download/latest/" + dl);
-
-            var response = client.Execute(request);
-            var getme = response.StatusCode == HttpStatusCode.OK ? response.Content : response.StatusCode.ToString();
-            return JsonConvert.DeserializeObject<Client>(getme!);
-        }
-
-        public static VersionGenshin? GetMD5VersionGS(string md5)
-        {
-            var client = new RestClient(API_Yuuki);
-            var request = new RestRequest("api/genshin/version?md5=" + md5.ToUpper());
-
-            var response = client.Execute(request);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                try
-                {
-                    if (response.Content != null)
-                    {
-                        var tes = JsonConvert.DeserializeObject<VersionGenshin>(response.Content);
-                        if (tes != null)
-                        {
-                            return tes;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
-            else
-            {
-                Logger.Error("API", "Error GET API: " + response.StatusCode);
-            }
-            return null;
-        }
 
         public static Patch? GetMD5Game(string md5, GameType type_game)
         {
-            var url = "json/" + type_game.SEOUrl() + "/version/patch/" + md5.ToUpper() + ".json";
+            var url = "json/" + type_game.SEOUrl() + "/version/patch/v2/" + md5.ToUpper() + ".json";
 
             var client = new RestClient(API_Yuuki);
             var request = new RestRequest(url);
@@ -118,100 +72,6 @@ namespace YuukiPS_Launcher.Yuuki
                 Logger.Error("API", $"Error check yuuki: {response.StatusCode}");
             }
             return false;
-        }
-
-        public static KeyGS? GSKEY()
-        {
-            var client = new RestClient(API_Yuuki);
-            var request = new RestRequest("api/genshin/key/latest");
-
-            var response = client.Execute(request);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                try
-                {
-                    if (response.Content != null)
-                    {
-                        var tes = JsonConvert.DeserializeObject<KeyGS>(response.Content);
-                        if (tes != null)
-                        {
-                            return tes;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Error GET KEY: " + response.StatusCode);
-            }
-            return null;
-        }
-
-        public static ServerList? ServerList()
-        {
-            var client = new RestClient(API_Yuuki);
-            var request = new RestRequest("api/launcher/server");
-            var response = client.Execute(request);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                if (response.Content != null)
-                {
-                    try
-                    {
-                        var tes = JsonConvert.DeserializeObject<ServerList>(response.Content);
-                        if (tes != null)
-                        {
-                            return tes;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-
-                }
-            }
-            return null;
-        }
-
-        public static VersionServer? GetServerStatus(string url)
-        {
-            var s = new RestClientOptions(url)
-            {
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-            };
-            var client = new RestClient(s);
-            var request = new RestRequest();
-
-            var response = client.Execute(request);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                if (response.Content != null)
-                {
-                    try
-                    {
-                        var tes = JsonConvert.DeserializeObject<VersionServer>(response.Content);
-                        if (tes != null)
-                        {
-                            return tes;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-            }
-            else
-            {
-                Debug.Print("Error Host " + url + ": " + response.StatusCode);
-            }
-            return null;
         }
 
         public static Update? GetUpdate()

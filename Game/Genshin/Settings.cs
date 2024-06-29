@@ -110,12 +110,7 @@ namespace YuukiPS_Launcher.Game.Genshin
             os_usa = 0,
             os_euro = 1,
             os_asia = 2,
-            os_cht = 3,
-            // YuukiPS
-            sg1 = 4,
-            eu1 = 5,
-            // make the warn thing to shut the hell up
-            dev_docker = 6
+            os_cht = 3
         }
 
         public class GeneralDataProp
@@ -124,6 +119,7 @@ namespace YuukiPS_Launcher.Game.Genshin
             public string userLocalDataVersionId { get; set; } = "0.0.1";
             public int deviceLanguageType { get; set; } = 1;
             public int deviceVoiceLanguageType { get; set; } = 2;
+            [JsonConverter(typeof(ServerRegionIDConverter))]
             public ServerRegionID? selectedServerName { get; set; }
             public int localLevelIndex { get; set; } = 0;
             public string deviceID { get; set; } = "";

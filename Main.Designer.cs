@@ -60,7 +60,6 @@
             Get_LA_Version = new Label();
             Get_LA_MD5 = new Label();
             Get_LA_CH = new Label();
-            Get_LA_Metode = new Label();
             Get_LA_REL = new Label();
             tabPage2 = new TabPage();
             tabControl2 = new TabControl();
@@ -86,25 +85,6 @@
             label15 = new Label();
             textBox1 = new TextBox();
             label14 = new Label();
-            tabPage4 = new TabPage();
-            TabConfig = new TabControl();
-            tabPage5 = new TabPage();
-            Set_UA_Folder = new TextBox();
-            Set_Metadata_Folder = new TextBox();
-            label6 = new Label();
-            label4 = new Label();
-            Set_LA_GameFile = new TextBox();
-            label7 = new Label();
-            tabPage3 = new TabPage();
-            progressBar1 = new ProgressBar();
-            label9 = new Label();
-            label3 = new Label();
-            txt_statusUpd = new Label();
-            btnstartUpdate = new Button();
-            groupBox1 = new GroupBox();
-            btchooseupdate = new Button();
-            tbx_update = new TextBox();
-            label1 = new Label();
             Set_Version = new Label();
             linkDiscord = new LinkLabel();
             linkGithub = new LinkLabel();
@@ -126,11 +106,6 @@
             groupBox6.SuspendLayout();
             groupBox5.SuspendLayout();
             tabPage11.SuspendLayout();
-            tabPage4.SuspendLayout();
-            TabConfig.SuspendLayout();
-            tabPage5.SuspendLayout();
-            tabPage3.SuspendLayout();
-            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // btStartNormal
@@ -175,8 +150,6 @@
             // 
             TabMain.Controls.Add(tabPage1);
             TabMain.Controls.Add(tabPage2);
-            TabMain.Controls.Add(tabPage4);
-            TabMain.Controls.Add(tabPage3);
             TabMain.Dock = DockStyle.Top;
             TabMain.Location = new Point(0, 0);
             TabMain.Name = "TabMain";
@@ -361,7 +334,7 @@
             grExtra.Controls.Add(Enable_SendLog);
             grExtra.Controls.Add(Extra_Cheat);
             grExtra.Controls.Add(Enable_RPC);
-            grExtra.Location = new Point(432, 248);
+            grExtra.Location = new Point(431, 183);
             grExtra.Name = "grExtra";
             grExtra.Size = new Size(217, 101);
             grExtra.TabIndex = 12;
@@ -418,9 +391,9 @@
             grProxy.Controls.Add(GetProxyPort);
             grProxy.Controls.Add(CheckProxyEnable);
             grProxy.Controls.Add(label2);
-            grProxy.Location = new Point(431, 191);
+            grProxy.Location = new Point(431, 127);
             grProxy.Name = "grProxy";
-            grProxy.Size = new Size(215, 51);
+            grProxy.Size = new Size(217, 51);
             grProxy.TabIndex = 11;
             grProxy.TabStop = false;
             grProxy.Text = "Proxy";
@@ -442,11 +415,10 @@
             groupBox3.Controls.Add(Get_LA_Version);
             groupBox3.Controls.Add(Get_LA_MD5);
             groupBox3.Controls.Add(Get_LA_CH);
-            groupBox3.Controls.Add(Get_LA_Metode);
             groupBox3.Controls.Add(Get_LA_REL);
             groupBox3.Location = new Point(431, 8);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(217, 177);
+            groupBox3.Size = new Size(217, 114);
             groupBox3.TabIndex = 8;
             groupBox3.TabStop = false;
             groupBox3.Text = "Game";
@@ -465,7 +437,7 @@
             // 
             Get_LA_MD5.AutoSize = true;
             Get_LA_MD5.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Get_LA_MD5.Location = new Point(7, 145);
+            Get_LA_MD5.Location = new Point(6, 82);
             Get_LA_MD5.Name = "Get_LA_MD5";
             Get_LA_MD5.Size = new Size(118, 21);
             Get_LA_MD5.TabIndex = 7;
@@ -475,27 +447,17 @@
             // 
             Get_LA_CH.AutoSize = true;
             Get_LA_CH.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Get_LA_CH.Location = new Point(6, 50);
+            Get_LA_CH.Location = new Point(6, 40);
             Get_LA_CH.Name = "Get_LA_CH";
             Get_LA_CH.Size = new Size(141, 21);
             Get_LA_CH.TabIndex = 4;
             Get_LA_CH.Text = "Channel: Unknown";
             // 
-            // Get_LA_Metode
-            // 
-            Get_LA_Metode.AutoSize = true;
-            Get_LA_Metode.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Get_LA_Metode.Location = new Point(6, 114);
-            Get_LA_Metode.Name = "Get_LA_Metode";
-            Get_LA_Metode.Size = new Size(141, 21);
-            Get_LA_Metode.TabIndex = 6;
-            Get_LA_Metode.Text = "Metode:  Unknown";
-            // 
             // Get_LA_REL
             // 
             Get_LA_REL.AutoSize = true;
             Get_LA_REL.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            Get_LA_REL.Location = new Point(6, 83);
+            Get_LA_REL.Location = new Point(6, 61);
             Get_LA_REL.Name = "Get_LA_REL";
             Get_LA_REL.Size = new Size(137, 21);
             Get_LA_REL.TabIndex = 5;
@@ -749,204 +711,6 @@
             label14.TabIndex = 0;
             label14.Text = "Grasscutter Folder:";
             // 
-            // tabPage4
-            // 
-            tabPage4.Controls.Add(TabConfig);
-            tabPage4.Location = new Point(4, 24);
-            tabPage4.Name = "tabPage4";
-            tabPage4.Size = new Size(654, 383);
-            tabPage4.TabIndex = 3;
-            tabPage4.Text = "Config";
-            tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // TabConfig
-            // 
-            TabConfig.Controls.Add(tabPage5);
-            TabConfig.Dock = DockStyle.Fill;
-            TabConfig.Location = new Point(0, 0);
-            TabConfig.Name = "TabConfig";
-            TabConfig.SelectedIndex = 0;
-            TabConfig.Size = new Size(654, 383);
-            TabConfig.TabIndex = 0;
-            // 
-            // tabPage5
-            // 
-            tabPage5.Controls.Add(Set_UA_Folder);
-            tabPage5.Controls.Add(Set_Metadata_Folder);
-            tabPage5.Controls.Add(label6);
-            tabPage5.Controls.Add(label4);
-            tabPage5.Controls.Add(Set_LA_GameFile);
-            tabPage5.Controls.Add(label7);
-            tabPage5.Location = new Point(4, 24);
-            tabPage5.Name = "tabPage5";
-            tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(646, 355);
-            tabPage5.TabIndex = 0;
-            tabPage5.Text = "Launcher";
-            tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // Set_UA_Folder
-            // 
-            Set_UA_Folder.Location = new Point(195, 89);
-            Set_UA_Folder.Name = "Set_UA_Folder";
-            Set_UA_Folder.ReadOnly = true;
-            Set_UA_Folder.Size = new Size(219, 23);
-            Set_UA_Folder.TabIndex = 1;
-            // 
-            // Set_Metadata_Folder
-            // 
-            Set_Metadata_Folder.Location = new Point(10, 89);
-            Set_Metadata_Folder.Name = "Set_Metadata_Folder";
-            Set_Metadata_Folder.ReadOnly = true;
-            Set_Metadata_Folder.Size = new Size(179, 23);
-            Set_Metadata_Folder.TabIndex = 4;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label6.Location = new Point(195, 62);
-            label6.Name = "label6";
-            label6.Size = new Size(160, 21);
-            label6.TabIndex = 0;
-            label6.Text = "UserAssembly Folder:";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label4.Location = new Point(10, 62);
-            label4.Name = "label4";
-            label4.Size = new Size(126, 21);
-            label4.TabIndex = 3;
-            label4.Text = "Metadata Folder:";
-            // 
-            // Set_LA_GameFile
-            // 
-            Set_LA_GameFile.Location = new Point(10, 36);
-            Set_LA_GameFile.Name = "Set_LA_GameFile";
-            Set_LA_GameFile.ReadOnly = true;
-            Set_LA_GameFile.Size = new Size(405, 23);
-            Set_LA_GameFile.TabIndex = 11;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label7.Location = new Point(6, 12);
-            label7.Name = "label7";
-            label7.Size = new Size(86, 21);
-            label7.TabIndex = 10;
-            label7.Text = "Game files:";
-            // 
-            // tabPage3
-            // 
-            tabPage3.Controls.Add(progressBar1);
-            tabPage3.Controls.Add(label9);
-            tabPage3.Controls.Add(label3);
-            tabPage3.Controls.Add(txt_statusUpd);
-            tabPage3.Controls.Add(btnstartUpdate);
-            tabPage3.Controls.Add(groupBox1);
-            tabPage3.Location = new Point(4, 24);
-            tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(654, 383);
-            tabPage3.TabIndex = 4;
-            tabPage3.Text = "Updater";
-            tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // progressBar1
-            // 
-            progressBar1.Location = new Point(17, 199);
-            progressBar1.Maximum = 101;
-            progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(600, 34);
-            progressBar1.TabIndex = 25;
-            // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
-            label9.Location = new Point(92, 336);
-            label9.Name = "label9";
-            label9.Size = new Size(465, 32);
-            label9.TabIndex = 24;
-            label9.Text = "Set again the game folder upon using this";
-            label9.TextAlign = ContentAlignment.TopCenter;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(56, 253);
-            label3.Name = "label3";
-            label3.Size = new Size(555, 64);
-            label3.TabIndex = 23;
-            label3.Text = "Note: Do NOT use this to update GI from a version\r\nlower than 3.5.0 (or 3.5.0) to 3.6.0+";
-            label3.TextAlign = ContentAlignment.TopCenter;
-            // 
-            // txt_statusUpd
-            // 
-            txt_statusUpd.AutoSize = true;
-            txt_statusUpd.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
-            txt_statusUpd.Location = new Point(6, 80);
-            txt_statusUpd.Name = "txt_statusUpd";
-            txt_statusUpd.Size = new Size(176, 32);
-            txt_statusUpd.TabIndex = 22;
-            txt_statusUpd.Text = "Status: Waiting.";
-            // 
-            // btnstartUpdate
-            // 
-            btnstartUpdate.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
-            btnstartUpdate.Location = new Point(459, 16);
-            btnstartUpdate.Name = "btnstartUpdate";
-            btnstartUpdate.Size = new Size(158, 49);
-            btnstartUpdate.TabIndex = 21;
-            btnstartUpdate.Text = "Start";
-            btnstartUpdate.UseVisualStyleBackColor = true;
-            btnstartUpdate.Click += btnstartUpdate_Click;
-            // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(btchooseupdate);
-            groupBox1.Controls.Add(tbx_update);
-            groupBox1.Controls.Add(label1);
-            groupBox1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            groupBox1.Location = new Point(8, 6);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(420, 59);
-            groupBox1.TabIndex = 20;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Update Config";
-            // 
-            // btchooseupdate
-            // 
-            btchooseupdate.Location = new Point(331, 16);
-            btchooseupdate.Name = "btchooseupdate";
-            btchooseupdate.Size = new Size(76, 30);
-            btchooseupdate.TabIndex = 9;
-            btchooseupdate.Text = "Choose";
-            btchooseupdate.UseVisualStyleBackColor = true;
-            btchooseupdate.Click += btchooseupdate_Click;
-            // 
-            // tbx_update
-            // 
-            tbx_update.Location = new Point(117, 17);
-            tbx_update.Name = "tbx_update";
-            tbx_update.ReadOnly = true;
-            tbx_update.Size = new Size(208, 29);
-            tbx_update.TabIndex = 1;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(9, 25);
-            label1.Name = "label1";
-            label1.Size = new Size(97, 21);
-            label1.TabIndex = 0;
-            label1.Text = "Update Path:";
-            // 
             // Set_Version
             // 
             Set_Version.AutoSize = true;
@@ -1044,14 +808,6 @@
             groupBox5.ResumeLayout(false);
             tabPage11.ResumeLayout(false);
             tabPage11.PerformLayout();
-            tabPage4.ResumeLayout(false);
-            TabConfig.ResumeLayout(false);
-            tabPage5.ResumeLayout(false);
-            tabPage5.PerformLayout();
-            tabPage3.ResumeLayout(false);
-            tabPage3.PerformLayout();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1066,7 +822,6 @@
         private TabPage tabPage1;
         private TabPage tabPage2;
         private Button Server_Start;
-        private TabPage tabPage4;
         private GroupBox grProxy;
         private CheckBox CheckProxyEnable;
         private Label Set_Version;
@@ -1074,10 +829,6 @@
         private LinkLabel linkDiscord;
         private LinkLabel linkGithub;
         private LinkLabel linkWeb;
-        private TabControl TabConfig;
-        private TabPage tabPage5;
-        private TextBox Set_Metadata_Folder;
-        private Label label4;
         private GroupBox grExtra;
         private CheckBox Extra_Cheat;
         private CheckBox Enable_RPC;
@@ -1086,15 +837,10 @@
         private Button btsave;
         private GroupBox groupBox3;
         private Label Get_LA_MD5;
-        private Label Get_LA_Metode;
         private Label Get_LA_REL;
         private Label Get_LA_CH;
         private Label Get_LA_Version;
         private Button Set_LA_Select;
-        private TextBox Set_UA_Folder;
-        private Label label6;
-        private TextBox Set_LA_GameFile;
-        private Label label7;
         private System.Windows.Forms.Timer CheckGameRun;
         private System.Windows.Forms.Timer CheckProxyRun;
         private Label label8;
@@ -1128,16 +874,6 @@
         private GroupBox groupBox8;
         private GroupBox grConfigGameLite;
         private Button btStartYuukiServer;
-        private TabPage tabPage3;
-        private GroupBox groupBox1;
-        private Button btchooseupdate;
-        private TextBox tbx_update;
-        private Label label1;
-        private Button btnstartUpdate;
-        private Label txt_statusUpd;
-        private Label label3;
-        private Label label9;
-        private ProgressBar progressBar1;
         private CheckBox Enable_SendLog;
         private CheckBox Enable_WipeLoginCache;
     }

@@ -1,5 +1,6 @@
 ﻿using Downloader;
 using System.ComponentModel;
+using YuukiPS_Launcher.Utils;
 using YuukiPS_Launcher.Yuuki;
 
 namespace YuukiPS_Launcher
@@ -32,6 +33,11 @@ namespace YuukiPS_Launcher
                 return;
             }
 
+            if (File.Exists(set_folder))
+            {
+                Logger.Info("Download", $"File old found {set_folder} remove for redownload?");
+                File.Delete(set_folder);
+            }
 
             btDownload.Enabled = false;
 

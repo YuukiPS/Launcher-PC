@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.Management;
 using System.Security.Cryptography;
 
@@ -114,6 +115,44 @@ namespace YuukiPS_Launcher.Yuuki
             Console.ForegroundColor = c;
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " :" + message);
             Console.ResetColor();
+        }
+
+        public static void WipeLogin(GameType game)
+        {
+            string keyName = "Software\\miHoYo"; // default value to not delete PC system. learned this the hard way!!
+            string subKeyName = "Genshin Impact";
+
+            if (game == GameType.GenshinImpact)
+            {
+                keyName = "Software\\miHoYo";
+                subKeyName = "Genshin Impact";
+            }
+            else if (game == GameType.StarRail)
+            {
+                keyName = "Software\\Cognosphere";
+                subKeyName = "Star Rail";
+            }
+
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName, true))
+            {
+                if (key == null)
+                {
+                    //Logger.Warning("Login", subKeyName + " doesn't exist.");
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        key.DeleteSubKeyTree(subKeyName);
+                    }
+                    catch (Exception ex)
+                    {
+                        //Logger.Warning("Login", subKeyName + " doesn't exist.");
+                    }
+                    //Logger.Info("Login", "Wiped login cache!");
+                }
+            }
         }
 
     }

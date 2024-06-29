@@ -5,108 +5,32 @@ using System.Reflection;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Yuuki;
-using ICSharpCode.SharpZipLib.Zip;
 using YuukiPS_Launcher.Utils;
-using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace YuukiPS_Launcher
 {
     public partial class Main : Form
-    {
-        private void WipeLogin()
-        {
-            string keyName = "Software\\miHoYo"; // default value to not delete PC system. learned this the hard way!!
-            string subKeyName = "Genshin Impact";
-
-            if (GetTypeGame.Text == "GenshinImpact")
-            {
-                keyName = "Software\\miHoYo";
-                subKeyName = "Genshin Impact";
-            }
-            else if (GetTypeGame.Text == "StarRail")
-            {
-                keyName = "Software\\Cognosphere";
-                subKeyName = "Star Rail";
-            }
-
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName, true))
-            {
-                if (key == null)
-                {
-                    Logger.Warning("Login", subKeyName + " doesn't exist.");
-                    return;
-                }
-                else
-                {
-                    try
-                    {
-                        key.DeleteSubKeyTree(subKeyName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Warning("Login", subKeyName + " doesn't exist.");
-                    }
-                    Logger.Info("Login", "Wiped login cache!");
-                }
-            }
-        }
-
-        private string randomString()
-        {
-            Random rnd = new();
-
-            var results = new Dictionary<int, string>
-            {
-                {0, "Hey, I'm YuukiPS Launcher, and I'm a logaholic."},
-                {1, "u-uhm how do i give myself all items? 🤓"},
-                {2, "9999: Git analysis?\nGit: Skill issue, sir."},
-                {3, ":smiley:"},
-                {4, "i'm lazy"},
-                {5, "makeitmeme.com/join/ATCBQ\n9999: Oh no iplogger ☎️☎️☎️☎️"},
-                {6, "Error 404: Motivation not found"},
-                {7, "A programmer's favorite hangout spot? The Foo Bar."},
-                {8, "I told my computer I needed a break, and it said 'No, you need to update'."},
-                {9, "What's iwak???"},
-                {10, "I hate [object Object]"},
-                {11, "My cat's name :(){:|:&}:; you should type it in your Linux terminal"},
-                {12, "I can write the code doesn't mean that I can fix your Microwave"},
-                {13, "0.1 + 0.2; // -> 0.30000000000000004"},
-                {14, "I've got a really good UDP joke to tell you, but you might not get it..."},
-                {15, "Proxy Stop...\nJust kidding"},
-                {16, "rm -rf --no-preserve-root /\nRunning..."}
-            };
-
-            int rInt = rnd.Next(0, results.Count);
-            string result = results[rInt];
-
-            return result;
-        }
-
+    {  
         // Main Function
         private Proxy? proxy;
         private Process? progress;
-
-        // Server List
-        Thread? thServerList = null;
-        List<DataServer> ListServer = new List<DataServer> { new DataServer() };
-
 
         Json.Config configdata = new Json.Config();
         Profile default_profile = new Profile();
 
         // Stats default
-        public bool notbootyet = true;
         public string WatchFile = "";
         public string WatchCheat = "melon123";
         public string HostName = "YuukiPS"; // host name
         public bool IsGameRun = false;
         public bool DoneCheck = true;
+
         // Config basic game
         public string VersionGame = "";
         public int GameChannel = 0;
-        public string GamePatchMetode = "";
-        //public int GameType = 1; // 1=GS,2=SR
+        public string PathfileGame = "";
 
         // Extra
         Extra.Discord discord = new Extra.Discord();
@@ -114,8 +38,8 @@ namespace YuukiPS_Launcher
         // Game
         public Game.Genshin.Settings? settings_genshin = null;
 
-        //KeyGS key;
-        Patch? get_version = null;
+        // Patch
+        Patch? get_patch = null;
 
         Logger logger = new Logger();
 
@@ -134,7 +58,7 @@ namespace YuukiPS_Launcher
 
             Directory.CreateDirectory(logsFolderPath);
 
-            logger.initLogging($"-- {randomString()}\n\nPlatform: {os.Platform}\nPlatform Version: {os.Version}\nService pack: {os.ServicePack}\n\n", logFilePath);
+            logger.initLogging($"Platform: {os.Platform}\nPlatform Version: {os.Version}\nService pack: {os.ServicePack}\n\n", logFilePath);
 
             Logger.Info("Boot", "Loading....");
 
@@ -159,8 +83,6 @@ namespace YuukiPS_Launcher
             {
                 Logger.Info("Boot", "Discord RPC disable");
             }
-
-            notbootyet = false;
         }
 
         private void btload_Click(object? sender, EventArgs e)
@@ -377,7 +299,7 @@ namespace YuukiPS_Launcher
             int set_proxy_port = int.Parse(GetProxyPort.Text);
 
             // Get Game
-            var cst_gamefile = Set_LA_GameFile.Text;
+            var cst_gamefile = PathfileGame;
             if (String.IsNullOrEmpty(cst_gamefile))
             {
                 MessageBox.Show("No game file config found");
@@ -407,27 +329,19 @@ namespace YuukiPS_Launcher
                 }
                 else
                 {
-                    if (get_version != null && get_version.nosupport != "")
+                    if (get_patch != null && get_patch.nosupport != "")
                     {
-                        MessageBox.Show(get_version.nosupport, "Game version not supported");
+                        MessageBox.Show(get_patch.nosupport, "Game version not supported");
                         Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
                         return;
                     }
                 }
 
                 // run patch
-                var tes = PatchGame(patch, true, GamePatchMetode, GameChannel);
-                if (!string.IsNullOrEmpty(tes))
+                var startPatch = PatchGame(patch);
+                if (!string.IsNullOrEmpty(startPatch))
                 {
-                    if (tes.Contains("corrupted"))
-                    {
-                        MessageBox.Show("Looks like you're using an unsupported version, try updating or downgrade game data to latest version", "Game version not supported");
-                        Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
-                    }
-                    else
-                    {
-                        MessageBox.Show(tes, "Error Patch");
-                    }
+                    MessageBox.Show(startPatch, "Error Patch");
                     return;
                 }
             }
@@ -610,10 +524,6 @@ namespace YuukiPS_Launcher
             }
 
             // Path
-            string PathfileGame;
-            string PathMetadata;
-            string PathUA;
-
             if (game_type == GameType.GenshinImpact)
             {
                 // Pilih Channel
@@ -623,8 +533,6 @@ namespace YuukiPS_Launcher
                     WatchFile = "YuanShen";
                     GameChannel = 2;
                     PathfileGame = cn;
-                    PathMetadata = Path.Combine(cst_folder_game, "YuanShen_Data", "Managed", "Metadata");
-                    PathUA = Path.Combine(cst_folder_game, "YuanShen_Data", "Native");
                 }
                 else if (File.Exists(os))
                 {
@@ -632,8 +540,6 @@ namespace YuukiPS_Launcher
                     WatchFile = "GenshinImpact";
                     GameChannel = 1;
                     PathfileGame = os;
-                    PathMetadata = Path.Combine(cst_folder_game, "GenshinImpact_Data", "Managed", "Metadata");
-                    PathUA = Path.Combine(cst_folder_game, "GenshinImpact_Data", "Native");
                 }
                 else
                 {
@@ -649,8 +555,8 @@ namespace YuukiPS_Launcher
                     if (settings_genshin != null)
                     {
                         Logger.Info("Game", "Game Text Language: " + settings_genshin.GetGameLanguage());
-                        Console.WriteLine("Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
-                        //Console.WriteLine("JSON: " + settings_genshin.GetDataGeneralString());
+                        Logger.Info("Game", "Game Voice Language: " + settings_genshin.GetVoiceLanguageID());
+                        Logger.Info("Game", "Game Server: " + settings_genshin.GetRegServerNameID());
                     }
                 }
                 catch (Exception ex)
@@ -665,828 +571,128 @@ namespace YuukiPS_Launcher
                 WatchFile = "StarRail";
                 GameChannel = 1;
                 PathfileGame = os;
-                PathMetadata = Path.Combine(cst_folder_game, "StarRail_Data", "il2cpp_data", "Metadata");
-                PathUA = Path.Combine(cst_folder_game); // maybe GameAssembly?
             }
 
             // Check MD5 Game
             string Game_LOC_Original_MD5 = Tool.CalculateMD5(PathfileGame);
 
             // Check MD5 in Server API
-            get_version = API.GetMD5Game(Game_LOC_Original_MD5, game_type);
-            if (get_version == null)
+            get_patch = API.GetMD5Game(Game_LOC_Original_MD5, game_type);
+            if (get_patch == null)
             {
                 //0.0.0
                 Logger.Error("Game", "No Support Game with MD5: " + Game_LOC_Original_MD5 + " (Send this log to admin)");
                 return false;
             }
 
-            VersionGame = get_version.version;
+            VersionGame = get_patch.version;
 
             if (VersionGame == "0.0.0")
             {
                 Logger.Error("Game", "Version not supported: MD5 " + Game_LOC_Original_MD5);
 
-                Set_Metadata_Folder.Text = "";
-                Set_UA_Folder.Text = "";
-                Set_LA_GameFile.Text = "";
-
                 Get_LA_Version.Text = "Version: Unknown";
                 Get_LA_CH.Text = "Channel: Unknown";
                 Get_LA_REL.Text = "Release: Unknown";
-                Get_LA_Metode.Text = "Metode: Unknown";
                 Get_LA_MD5.Text = "MD5: Unknown";
 
                 return false;
             }
 
-            var get_channel = get_version.channel;
-            var get_metode = "None"; // no need patch
-            if (get_version.patched != null)
-            {
-                get_metode = get_version.patched.metode;
-            }
-
-            // Set Folder Patch
-            Set_Metadata_Folder.Text = PathMetadata;
-            Set_UA_Folder.Text = PathUA;
-            Set_LA_GameFile.Text = PathfileGame;
+            var get_channel = get_patch.channel;
 
             // IF ALL OK
             Set_LA_GameFolder.Text = cst_folder_game;
 
             // Set Version
-            Get_LA_Version.Text = "Version: " + get_version.version;
+            Get_LA_Version.Text = "Version: " + get_patch.version;
             Get_LA_CH.Text = "Channel: " + get_channel;
-            Get_LA_REL.Text = "Release: " + get_version.release;
-            Get_LA_Metode.Text = "Metode: " + get_metode;
-
-            var md5_ori = "?";
-
-            // Pilih Metode
-            if (get_version.original != null)
-            {
-                if (get_metode == "Metadata")
-                {
-                    if (get_channel == "CN")
-                    {
-                        md5_ori = get_version.original.md5_check.cn.metadata;
-                    }
-                    if (get_channel == "OS")
-                    {
-                        md5_ori = get_version.original.md5_check.os.metadata;
-                    }
-                }
-                else if (get_metode == "UserAssembly")
-                {
-                    if (get_channel == "CN")
-                    {
-                        md5_ori = get_version.original.md5_check.cn.userassembly;
-                    }
-                    if (get_channel == "OS")
-                    {
-                        md5_ori = get_version.original.md5_check.os.userassembly;
-                    }
-                }
-            }
-
-            Get_LA_MD5.Text = "MD5: " + md5_ori;
+            Get_LA_REL.Text = "Release: " + get_patch.release;            
 
             Logger.Info("Game", "Currently using version game " + VersionGame);
-
-            Logger.Info("Game", "Folder PathMetadata: " + PathMetadata);
             Logger.Info("Game", "File Game: " + PathfileGame);
-
             Logger.Info("Game", "MD5 Game Currently: " + Game_LOC_Original_MD5);
 
-            GamePatchMetode = get_metode;
+            Get_LA_MD5.Text = "MD5: " + Game_LOC_Original_MD5;
 
             return true;
         }
 
-        public string PatchGame(bool patchit = true, bool online = true, string metode = "", int ch = 1)
+        public string PatchGame(bool patchit = true)
         {
-            // Check Folder Game
-            var cst_folder_game = Set_LA_GameFolder.Text;
-            if (String.IsNullOrEmpty(cst_folder_game))
+            // check folder game (root)
+            var root_folder = Set_LA_GameFolder.Text;
+            if (String.IsNullOrEmpty(root_folder))
             {
                 return "No game folder found (1)";
             }
-            if (!Directory.Exists(cst_folder_game))
+            if (!Directory.Exists(root_folder))
             {
                 return "No game folder found (2)";
             }
 
-            if (get_version == null)
+            // check version
+            if (get_patch == null)
             {
                 return "Can't find version, try clicking 'Get Key' in config tab";
-            }
-
-            // Check version
+            }            
             if (VersionGame == "0.0.0")
             {
                 return "This Game Version is not compatible with this method patch";
             }
 
-            /*
-            if (get_version.patched == null)
+            if (patchit)
             {
-                return "Can't find config patch cloud";
+                // for patch
+                if (get_patch.patched != null && get_patch.patched.Any())
+                {
+                    foreach (var data in get_patch.patched)
+                    {
+                        var iss = PatchCopy(root_folder, data.file, data.location, data.md5, "patch", get_patch.version);
+                        if (!String.IsNullOrEmpty(iss))
+                        {
+                            return iss;
+                        }
+                    }
+                }
+                else
+                {
+                    Logger.Info("Patch", "no need for any patch");
+                }
             }
-
-            if (get_version.original == null)
+            else
             {
-                return "Can't find config original cloud";
-            }
-            */
-
-            // API STUFF
-            var use_metode = "";
-            if (get_version.patched != null)
-            {
-                use_metode = get_version.patched.metode;
-            }
-
-            var use_channel = get_version.channel;
-
-            // LOCALHOST            
-            string MD5_UA_API_Original = "";
-            string MD5_UA_API_Patched = "";
-            string MD5_Metadata_API_Original = "";
-            string MD5_Metadata_API_Patched = "";
-            string MD5_API_Patched = "";
-
-            var DL_Patch = "";
-            if (get_version.patched != null)
-            {
-                DL_Patch = get_version.patched.resources + "Patch/";
-            }
-
-            var DL_Original = "";
-            if (get_version.original != null)
-            {
-                DL_Original = get_version.original.resources;
-            }
-
-            var Original_file_MA = "";
-            var Original_file_UA = "";
-
-            var key_to_patch = "";
-            var key_to_find = "";
-
-            if (!String.IsNullOrEmpty(use_metode))
-            {
-                // Select Metode (via API Cloud)
-                if (use_channel == "OS")
+                // for unpatch
+                if (get_patch.patched != null && get_patch.patched.Any())
                 {
-                    MD5_UA_API_Original = get_version.original?.md5_check.os.userassembly.ToUpper() ?? string.Empty;
-                    MD5_UA_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
-
-                    MD5_Metadata_API_Original = get_version.original?.md5_check.os.metadata ?? string.Empty;
-                    MD5_Metadata_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
-
-                    key_to_patch = get_version.patched?.key_patch;
-                    key_to_find = get_version.original?.key_find.os;
-
-                    Original_file_MA = DL_Original + "GenshinImpact_Data/Managed/Metadata/global-metadata.dat";
-                    Original_file_UA = DL_Original + "GenshinImpact_Data/Native/UserAssembly.dll";
-                    MD5_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
-
-                }
-                else if (use_channel == "CN")
-                {
-                    MD5_UA_API_Original = get_version.original?.md5_check.cn.userassembly.ToUpper() ?? string.Empty;
-                    MD5_UA_API_Patched = get_version.patched?.md5_vaild.cn.ToUpper() ?? string.Empty;
-
-                    MD5_Metadata_API_Original = get_version.original?.md5_check.cn.metadata ?? string.Empty;
-                    MD5_Metadata_API_Patched = get_version.patched?.md5_vaild.cn.ToUpper() ?? string.Empty;
-
-                    key_to_patch = get_version.patched?.key_patch;
-                    key_to_find = get_version.original?.key_find.cn;
-
-                    Original_file_MA = DL_Original + "YuanShen_Data/Managed/Metadata/global-metadata.dat";
-                    Original_file_UA = DL_Original + "YuanShen_Data/Native/UserAssembly.dll";
-                    MD5_API_Patched = get_version.patched?.md5_vaild.os.ToUpper() ?? string.Empty;
-                }
-                else
-                {
-                    return "This Game Version is not compatible with Any Method Patch";
-                }
-
-                // >> Make sure MD5 API is not empty <<
-
-                if (metode != "RSA")
-                {
-                    if (String.IsNullOrEmpty(MD5_UA_API_Patched))
+                    foreach (var data in get_patch.patched)
                     {
-                        return "Game version is not supported (3)";
-                    }
-                    if (String.IsNullOrEmpty(MD5_Metadata_API_Patched))
-                    {
-                        return "Game version is not supported (1)";
-                    }
-                }
-
-                if (String.IsNullOrEmpty(MD5_UA_API_Original))
-                {
-                    return "Game version is not supported (4)";
-                }
-                if (String.IsNullOrEmpty(MD5_Metadata_API_Original))
-                {
-                    return "Game version is not supported (2)";
-                }
-
-                // >> All <<
-
-                // Check Folder UA
-                var cst_folder_UA = Set_UA_Folder.Text;
-                var cst_folder_Game = Set_LA_GameFolder.Text;
-
-                if (String.IsNullOrEmpty(cst_folder_UA))
-                {
-                    return "No UserAssembly folder found (1)";
-                }
-                if (!Directory.Exists(cst_folder_UA))
-                {
-                    return "No UserAssembly folder found (2)";
-                }
-                // Check file UserAssembly
-                string PathfileUA_Currently = Path.Combine(cst_folder_UA, "UserAssembly.dll");
-                string PathfileUA_Patched = Path.Combine(cst_folder_UA, "UserAssembly-patched.dll");
-                string PathfileUA_Original = Path.Combine(cst_folder_UA, "UserAssembly-original.dll");
-                // Check MD5 local (First time)
-                string MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                string MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
-                string MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-
-                // Check folder Metadata
-                var cst_folder_metadata = Set_Metadata_Folder.Text;
-                if (String.IsNullOrEmpty(cst_folder_metadata))
-                {
-                    return "No MetaData folder found (1)";
-                }
-                if (!Directory.Exists(cst_folder_metadata))
-                {
-                    return "No MetaData folder found (2)";
-                }
-                // Check file MetaData
-                string PathfileMetadata_Currently = Path.Combine(cst_folder_metadata, "global-metadata.dat");
-                string PathfileMetadata_Patched = Path.Combine(cst_folder_metadata, "global-metadata-patched.dat");
-                string PathfileMetadata_Original = Path.Combine(cst_folder_metadata, "global-metadata-original.dat");
-                // Get MD5 local Metadata (First time)
-                string MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                string MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
-                string MD5_Metadata_LOC_Patched = Tool.CalculateMD5(PathfileMetadata_Patched);
-
-                // Two-method verification even when using offline mode
-
-                // >> If UserAssembly is broken <<
-                var download_ua = false;
-                if (!File.Exists(PathfileUA_Currently))
-                {
-                    // Check if found file original
-                    if (File.Exists(PathfileUA_Original))
-                    {
-                        // Check if API Original same with Original LOC
-                        if (MD5_UA_API_Original == MD5_UA_LOC_Original)
+                        var iss = PatchCopy(root_folder, data.file, data.location, data.md5, "unpatch", get_patch.version);
+                        if (!String.IsNullOrEmpty(iss))
                         {
-                            try
-                            {
-                                File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                Logger.Info("Game", "We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (33)");
-                            }
-                            catch (Exception)
-                            {
-                                // skip
-                                return "Error copy (1)";
-                            }
+                            return iss;
                         }
-                        else
-                        {
-                            Logger.Info("Game", "Download UserAssembly, because PathfileUA_Original with md5 " + MD5_UA_LOC_Original + " does not match " + MD5_UA_API_Original + " (5)");
-                            download_ua = true;
-                        }
-                    }
-                    else
-                    {
-                        Logger.Info("Game", "Download UserAssembly, because file PathfileUA_Original was not found");
-                        download_ua = true;
                     }
                 }
                 else
                 {
-                    // If file is found and original file doesn't match currently (Make sure current data is really original before patch)
-                    if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
-                    {
-                        // Check if found file original
-                        if (File.Exists(PathfileUA_Original))
-                        {
-                            // Check if API Original same with Original LOC
-                            if (MD5_UA_API_Original == MD5_UA_LOC_Original)
-                            {
-                                try
-                                {
-                                    File.Copy(PathfileUA_Original, PathfileUA_Currently, true);
-                                    MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                    Logger.Info("Game", "We copy PathfileUA_Original to PathfileUA_Currently (UserAssembly) (6)");
-                                }
-                                catch (Exception)
-                                {
-                                    // skip
-                                    return "Error copy (2)";
-                                }
-                            }
-                            else
-                            {
-                                // download if Original file unvaild
-                                Logger.Info("Game", "Download UserAssembly in 'Currently', because 'PathfileUA_Original' it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Original + " (7)");
-                                download_ua = true;
-                            }
-                        }
-                        else
-                        {
-                            Logger.Info("Game", "Download UserAssembly in 'Currently' because file PathfileUA_Original not found and it doesn't match " + MD5_UA_API_Original + " with " + MD5_UA_LOC_Currently + " Currently file (8)");
-                            download_ua = true;
-                        }
-                    }
-                    else
-                    {
-                        Logger.Info("Game", "Skip download UserAssembly, it's up-to-date (4)");
-                    }
+                    Logger.Info("Patch", "no files deleted");
                 }
-                // if need download ua
-                if (download_ua)
+                if (get_patch.original != null && get_patch.original.Any())
                 {
-                    try
+                    foreach (var data in get_patch.original)
                     {
-                        if (!patchit)
+                        var iss = PatchCopy(root_folder, data.file, data.location, data.md5, "original", get_patch.version);
+                        if (!String.IsNullOrEmpty(iss))
                         {
-                            return "Unable to download files " + Original_file_UA + " in a closed game state, please try again or download manual and put it in " + PathfileUA_Currently;
+                            return iss;
                         }
-                        var CEKDL1 = new Download(Original_file_UA, PathfileUA_Currently);
-                        if (CEKDL1.ShowDialog() != DialogResult.OK)
-                        {
-                            return "Get Original UserAssembly failed";
-                        }
-                        else
-                        {
-                            MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                            Logger.Info("Game", "Currently UserAssembly: " + MD5_UA_LOC_Currently);
-                        }
-                    }
-                    catch (Exception exx)
-                    {
-                        return "Error Get Original UserAssembly: " + exx.ToString();
                     }
                 }
                 else
                 {
-                    Logger.Info("Game", "Currently UserAssembly: " + MD5_UA_LOC_Currently);
+                    Logger.Info("Patch", "no files restored to original");
                 }
-
-                // here current file should match so if original file is not found use current file to copy to original file
-                if (!File.Exists(PathfileUA_Original))
-                {
-                    try
-                    {
-                        File.Copy(PathfileUA_Currently, PathfileUA_Original, true);
-                        MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-                        Logger.Info("Game", "We copy file in PathfileUA_Currently to PathfileUA_Original files (22)");
-                    }
-                    catch (Exception)
-                    {
-                        // skip
-                        return "Error copy PathfileUA_Currently to PathfileUA_Original (1)";
-                    }
-                }
-                else
-                {
-                    // if file found (skip)               
-                }
-
-
-                // >> If Metadata is broken <<
-                var download_metadata = false;
-                if (!File.Exists(PathfileMetadata_Currently))
-                {
-                    // Check if found file original
-                    if (File.Exists(PathfileMetadata_Original))
-                    {
-                        // Check if API Original same with Original LOC
-                        if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
-                        {
-                            try
-                            {
-                                File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                                Logger.Info("Game", "We copy PathfileMetadata_Original to PathfileMetadata_Currently");
-                            }
-                            catch (Exception)
-                            {
-                                // skip
-                                return "Error copy PathfileMetadata_Original to PathfileMetadata_Currently (111)";
-                            }
-                        }
-                        else
-                        {
-                            // file not vaild so download
-                            download_metadata = true;
-                            Logger.Warning("Game", "Download Metadata in Currently,because file Original with md5 " + MD5_Metadata_API_Original + " doesn't match " + MD5_Metadata_LOC_Original + " (5)");
-                        }
-                    }
-                    else
-                    {
-                        // file not found, so download
-                        download_metadata = true;
-                        Logger.Warning("Game", "Download Metadata, because file PathfileMetadata_Original was not found");
-                    }
-                }
-                else
-                {
-                    // If file is found and original file doesn't match currently (Make sure current data is really original before patch)
-                    if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
-                    {
-                        // Check if found file original
-                        if (File.Exists(PathfileMetadata_Original))
-                        {
-                            // Check if API Original same with Original LOC
-                            if (MD5_Metadata_API_Original == MD5_Metadata_LOC_Original)
-                            {
-                                try
-                                {
-                                    File.Copy(PathfileMetadata_Original, PathfileMetadata_Currently, true);
-                                    MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                                    Logger.Info("Game", "We copy file PathfileMetadata_Original to PathfileMetadata_Currently (6)");
-                                }
-                                catch (Exception)
-                                {
-                                    // skip
-                                    return "Error copy PathfileMetadata_Original to PathfileMetadata_Currently (111)";
-                                }
-                            }
-                            else
-                            {
-                                // file not vaild so download
-                                download_metadata = true;
-                                Logger.Warning("Game", "Download Metadata in Currently, because PathfileMetadata_Original file does not match " + MD5_Metadata_API_Original + " with " + MD5_Metadata_LOC_Original + " (7)");
-                            }
-                        }
-                        else
-                        {
-                            // file not found, so download
-                            download_metadata = true;
-                            Logger.Warning("Game", "Download Metadata in Currently, because file PathfileMetadata_Original was not found (8)");
-                        }
-                    }
-                    else
-                    {
-                        Logger.Info("Game", "Skip download Metadata, it's up-to-date (4)");
-                    }
-                }
-                // if need download
-                if (download_metadata)
-                {
-                    try
-                    {
-                        if (!patchit)
-                        {
-                            return "Unable to download files " + Original_file_MA + " in a closed game state, please try again or download manual and put it in " + PathfileMetadata_Currently;
-                        }
-                        var CEKDL2 = new Download(Original_file_MA, PathfileMetadata_Currently);
-                        if (CEKDL2.ShowDialog() != DialogResult.OK)
-                        {
-                            return "Get Original Metadata failed";
-                        }
-                        else
-                        {
-                            MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                            Logger.Info("Game", "Currently Metadata: " + MD5_Metadata_LOC_Currently);
-                        }
-                    }
-                    catch (Exception exx)
-                    {
-                        return "Error Get Original Metadata: " + exx.ToString();
-                    }
-                }
-                else
-                {
-                    Logger.Info("Game", "Currently Metadata: " + MD5_Metadata_LOC_Currently);
-                }
-                // here current file should match so if original file is not found use current file to copy to original file
-                if (!File.Exists(PathfileMetadata_Original))
-                {
-                    try
-                    {
-                        File.Copy(PathfileMetadata_Currently, PathfileMetadata_Original, true);
-                        MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
-                        Logger.Info("Game", "We copy file in PathfileMetadata_Currently to PathfileMetadata_Original files (22)");
-                    }
-                    catch (Exception)
-                    {
-                        return "Error copy PathfileMetadata_Currently to PathfileMetadata_Original (1)";
-                    }
-                }
-                else
-                {
-                    // if file found (skip)
-                }
-
-                // >>> Final Tes <<<
-
-                //UA
-                MD5_UA_LOC_Original = Tool.CalculateMD5(PathfileUA_Original);
-                MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                if (MD5_UA_API_Original != MD5_UA_LOC_Original && MD5_UA_API_Original != MD5_UA_LOC_Currently)
-                {
-                    try
-                    {
-                        File.Delete(PathfileUA_Original);
-                    }
-                    catch (Exception)
-                    {
-                        // skip
-                    }
-                    return MD5_UA_LOC_Original + " and " + MD5_UA_LOC_Currently + " value should be " + MD5_UA_API_Original + ", This might happen because file is corrupted, try again or manual update. (g1)";
-                }
-                // Metadata
-                MD5_Metadata_LOC_Original = Tool.CalculateMD5(PathfileMetadata_Original);
-                MD5_Metadata_LOC_Currently = Tool.CalculateMD5(PathfileMetadata_Currently);
-                if (MD5_Metadata_API_Original != MD5_Metadata_LOC_Original && MD5_Metadata_API_Original != MD5_Metadata_LOC_Currently)
-                {
-                    try
-                    {
-                        File.Delete(PathfileMetadata_Original);
-                    }
-                    catch (Exception)
-                    {
-                        // skip
-                    }
-                    return MD5_Metadata_LOC_Original + " and " + MD5_Metadata_LOC_Currently + " value should be " + MD5_Metadata_API_Original + ", This might happen because file is corrupted, try again or manual update. (g1)";
-                }
-
-                // It should be here that all files already verified, unless you want to check other vaild files again.
-
-                if (use_metode == "UserAssembly")
-                {
-                    // >> UA <<
-
-                    // debug
-                    //online = false;                
-
-                    if (online)
-                    {
-                        // If original backup file is not found.
-                        if (!File.Exists(PathfileUA_Original))
-                        {
-                            return "Why does this pass (1)";
-                        }
-
-                        // If current UA file doesn't exist use UserAssembly-Original.dll
-                        if (!File.Exists(PathfileUA_Currently))
-                        {
-                            return "Why does this pass (2)";
-                        }
-
-                        if (MD5_UA_API_Original != MD5_UA_LOC_Currently)
-                        {
-                            return "Why does this pass (3)";
-                        }
-                        else
-                        {
-                            if (patchit)
-                            {
-                                // if current file is original and need patch
-
-                                var download_patch = false;
-                                if (!File.Exists(PathfileUA_Patched))
-                                {
-                                    download_patch = true;
-                                }
-                                else
-                                {
-                                    // If UA_API_Patches_MD5 (patch file from api) matches UA_LOC_Patched_MD5 (current patch file)
-                                    if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
-                                    {
-                                        download_patch = true;
-                                    }
-                                }
-
-                                // If download_patch true, download it
-                                if (download_patch)
-                                {
-                                    var DL2 = new Download(DL_Patch + "UserAssembly-patched.dll", PathfileUA_Patched);
-                                    if (DL2.ShowDialog() != DialogResult.OK)
-                                    {
-                                        return "No Found Patch file....";
-                                    }
-                                    else
-                                    {
-                                        MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
-                                    }
-                                }
-
-                                if (MD5_UA_API_Patched != MD5_UA_LOC_Patched)
-                                {
-                                    // Failed because file doesn't match from md5 api
-                                    return "(UA) Your version Game is not supported, or it needs latest update or file is corrupted.";
-                                }
-                                else
-                                {
-                                    // Patch file                           
-                                    try
-                                    {
-                                        File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
-                                        MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-
-                                        Logger.Info("Game", "Patch PathfileUA_Patched to PathfileUA_Currently done");
-                                        download_patch = false;
-                                    }
-                                    catch (Exception x)
-                                    {
-                                        return "Failed Patch: " + x.ToString();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // No Patch
-                                Console.WriteLine("Skip, because file is original (x1)");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Offline Mode UserAssembly
-                        if (patchit)
-                        {
-                            // Use PathfileUA_Currently to backup PathfileUA_Original file, but since without md5 api we can't check is original or not.
-                            if (!File.Exists(PathfileUA_Original))
-                            {
-                                return "Why does this pass (1-1)";
-                            }
-
-                            // Check PathfileMetadata_Currently if no found
-                            if (!File.Exists(PathfileUA_Currently))
-                            {
-                                return "Why does this pass (1-2)";
-                            }
-
-                            // keep patch
-                            var ManualUA = Game.Genshin.Patch.UserAssembly.Do(PathfileUA_Currently, PathfileUA_Patched, key_to_find!, key_to_patch!);
-                            if (!String.IsNullOrEmpty(ManualUA))
-                            {
-                                return "Error Patch UserAssembly: " + ManualUA;
-                            }
-
-                            // If patch is successful
-                            if (File.Exists(PathfileUA_Patched))
-                            {
-                                MD5_UA_LOC_Patched = Tool.CalculateMD5(PathfileUA_Patched);
-                                try
-                                {
-                                    File.Copy(PathfileUA_Patched, PathfileUA_Currently, true);
-                                    MD5_UA_LOC_Currently = Tool.CalculateMD5(PathfileUA_Currently);
-                                    Logger.Info("Game", "Patch UserAssembly...");
-                                }
-                                catch (Exception ex)
-                                {
-                                    return "Failed copy PathfileUA_Patched to PathfileUA_Currently: " + ex.ToString();
-                                }
-                            }
-                            else
-                            {
-                                return "Why does this pass (1-3)";
-                            }
-                        }
-                        else
-                        {
-                            // No Patch
-                            Logger.Info("Game", "Skip, because file is original (x2)");
-                        }
-                    }
-
-                    Logger.Info("Game", "MD5 UA Currently: " + MD5_UA_LOC_Currently);
-                    Logger.Info("Game", "MD5 UA Original: " + MD5_UA_LOC_Original);
-                    Logger.Info("Game", "MD5 UA Patched: " + MD5_UA_LOC_Patched);
-                }
-                else if (metode == "Metadata")
-                {
-                    return "I'm tired Checking Metadata";
-                }
-                else if (metode == "None")
-                {
-                    Logger.Info("Game", "Skip patch...");
-                }
-                else if (metode == "RSA")
-                {
-
-                    var fileRSA = cst_folder_Game + "/version.dll";
-                    var fileRSA_BK = cst_folder_Game + "/version.bk";
-
-                    var fileRSA_Public = cst_folder_Game + "/PublicKey.txt";
-
-                    // TODO: ADD KEY SERVER
-                    File.WriteAllText(fileRSA_Public, "<RSAKeyValue><Modulus>xbbx2m1feHyrQ7jP+8mtDF/pyYLrJWKWAdEv3wZrOtjOZzeLGPzsmkcgncgoRhX4dT+1itSMR9j9m0/OwsH2UoF6U32LxCOQWQD1AMgIZjAkJeJvFTrtn8fMQ1701CkbaLTVIjRMlTw8kNXvNA/A9UatoiDmi4TFG6mrxTKZpIcTInvPEpkK2A7Qsp1E4skFK8jmysy7uRhMaYHtPTsBvxP0zn3lhKB3W+HTqpneewXWHjCDfL7Nbby91jbz5EKPZXWLuhXIvR1Cu4tiruorwXJxmXaP1HQZonytECNU/UOzP6GNLdq0eFDE4b04Wjp396551G99YiFP2nqHVJ5OMQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
-
-                    Logger.Info("Game", "Find file: " + fileRSA);
-
-                    var dl_rsa = false;
-                    var RSAMD5 = "";
-
-                    if (patchit)
-                    {
-                        if (File.Exists(fileRSA))
-                        {
-                            // check if source true
-                            RSAMD5 = Tool.CalculateMD5(fileRSA);
-                            if (RSAMD5 == MD5_API_Patched)
-                            {
-                                // if not found backup rsa key, copy dll to bk
-                                if (!File.Exists(fileRSA_BK))
-                                {
-                                    Logger.Warning("Game", "No found backup file rsa key so copy");
-                                    File.Copy(fileRSA, fileRSA_BK, true);
-                                }
-
-                                Logger.Info("Game", "Skip download RSAKEY");
-                            }
-                            else
-                            {
-                                Logger.Warning("Game", "file not same " + RSAMD5 + " download rsa key " + MD5_API_Patched);
-                                dl_rsa = true;
-                            }
-
-                        }
-                        else
-                        {
-                            if (File.Exists(fileRSA_BK))
-                            {
-                                if (RSAMD5 == MD5_API_Patched)
-                                {
-                                    Logger.Info("Game", "found backup file rsa key so copy");
-                                    try
-                                    {
-                                        File.Copy(fileRSA_BK, fileRSA, true);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine(ex.Message);
-                                        return "error1";
-                                    }
-                                }
-                                else
-                                {
-                                    Logger.Error("Game", "key rsa not same so just download it");
-                                    dl_rsa = true;
-                                }
-                            }
-                            else
-                            {
-                                Logger.Error("Game", "No found file so just download it");
-                                dl_rsa = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // remove file
-                        try
-                        {
-                            if (File.Exists(fileRSA))
-                            {
-                                Logger.Info("Game", "Remove file rsa key");
-                                File.Delete(fileRSA);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error("Game", ex.Message);
-                            return "error";
-                        }
-                    }
-
-                    if (dl_rsa)
-                    {
-                        var DL2 = new Download(DL_Patch + "RSAPatch.dll", fileRSA);
-                        if (DL2.ShowDialog() != DialogResult.OK)
-                        {
-                            return "No Found Patch file....";
-                        }
-                        else
-                        {
-                            RSAMD5 = Tool.CalculateMD5(fileRSA);
-                        }
-                    }
-
-                    Logger.Info("Game", "RSA MD5: " + RSAMD5);
-                    //return "TODO: "+ DL_Patch;
-                }
-                else
-                {
-                    return "No other method found: " + metode;
-                }
-
             }
 
             return "";
@@ -1508,6 +714,87 @@ namespace YuukiPS_Launcher
             {
                 MessageBox.Show("No game folder found");
             }
+        }
+
+        public string PatchCopy(string root_folder, string url_file, string file_name, string file_md5, string iscopy, string version)
+        {
+            string fileSave = Path.Combine(root_folder, file_name);
+
+            if (iscopy == "unpatch")
+            {
+                try
+                {
+                    File.Delete(fileSave);
+                    Logger.Info("Patch", $"File remove {fileSave}");
+                    return "";
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Patch", $"File remove error {fileSave} > {e.Message}");
+                    return e.Message;
+                }
+            }
+
+            if (File.Exists(fileSave))
+            {
+                var md5_file_raw = Tool.CalculateMD5(fileSave);
+                if(md5_file_raw == file_md5)
+                {
+                    Logger.Info("Patch", $"File {fileSave} this already exists and md5 is accurate so no action is needed for {iscopy}");
+                    return "";
+                }
+            }                
+
+            var backupPatch = Path.Combine(Config.Modfolder, "i", version, iscopy, file_name);
+            if (File.Exists(backupPatch))
+            {
+                var md5_file_raw = Tool.CalculateMD5(backupPatch);
+                if(md5_file_raw == file_md5)
+                {
+                    Logger.Info("Patch", $"Found backup {iscopy} > {backupPatch} > {fileSave}");
+
+                    string saveDir = Path.GetDirectoryName(fileSave);
+                    if (!Directory.Exists(saveDir))
+                    {
+                        Directory.CreateDirectory(saveDir);
+                    }
+                    File.Copy(backupPatch, fileSave, overwrite: true);
+                    return "";
+                }
+                else
+                {
+                    // skip ?
+                }
+            }    
+
+            Logger.Info("Patch", $"Start download {url_file} and save to {fileSave} for {iscopy}");
+
+            var CEKDL1 = new Download(url_file, fileSave);
+            if (CEKDL1.ShowDialog() != DialogResult.OK)
+            {
+                return $"Error download ${iscopy} file: {url_file} to {fileSave}";
+            }
+            else
+            {
+                var md5_file = Tool.CalculateMD5(fileSave);                
+                if (md5_file == file_md5)
+                {
+                    string backupDir = Path.GetDirectoryName(backupPatch);
+                    if (!Directory.Exists(backupDir))
+                    {
+                        Directory.CreateDirectory(backupDir);
+                    }
+                    Logger.Info("Game", $"MD5 Patch File {url_file}: " + md5_file);
+                    File.Copy(fileSave, backupPatch, overwrite: true);
+                }
+                else
+                {
+                    return $"Error patch file {url_file}, md5 file mismatch {md5_file}";
+                }
+            }
+
+            // OK
+            return "";
         }
 
         public void CheckUpdate()
@@ -1709,17 +996,18 @@ namespace YuukiPS_Launcher
                 if (!DoneCheck)
                 {
                     Console.WriteLine("Game detected stopped");
-                    StopGame(); // this shouldn't be necessary but just let it be
-                    var tes = PatchGame(false, true, GamePatchMetode, GameChannel);
-                    if (!string.IsNullOrEmpty(tes))
-                    {
-                        Logger.Info("Game", tes);
-                    }
                     DoneCheck = true;
+                    StopGame(); // this shouldn't be necessary but just let it be
+                    
+                    var unpatch = PatchGame(false);
+                    if (!string.IsNullOrEmpty(unpatch))
+                    {
+                        Logger.Info("Game", unpatch);
+                    }
 
                     if (Enable_WipeLoginCache.Checked)
                     {
-                        WipeLogin();
+                        Tool.WipeLogin(default_profile.game.type);
                     }
 
                     if (Enable_RPC.Checked)
@@ -1935,203 +1223,6 @@ namespace YuukiPS_Launcher
             {
                 Logger.Info("RPC", "Disable RPC. This may take a few seconds");
                 discord.Stop();
-            }
-        }
-
-        private void btchooseupdate_Click(object sender, EventArgs e)
-        {
-            string gpath = Set_LA_GameFolder.Text;
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-
-            if (!string.IsNullOrEmpty(gpath))
-            {
-                openFileDialog.InitialDirectory = gpath;
-            }
-            else
-            {
-                openFileDialog.InitialDirectory = @"C:\";
-            }
-
-            openFileDialog.Filter = "Update Files (*.zip)|*.zip";
-
-            openFileDialog.Title = "Select an update file (HDIFF)";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string selectedFileName = openFileDialog.FileName;
-
-                if (!string.IsNullOrEmpty(selectedFileName))
-                {
-                    tbx_update.Text = selectedFileName;
-                    string gamePath = Set_LA_GameFile.Text;
-                }
-                else
-                {
-                    MessageBox.Show("Select a valid file!");
-                }
-            }
-        }
-        private void ExtractZip(string zipFilePath, string extractionPath, ProgressBar progressBar)
-        {
-            try
-            {
-                using (var fileStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
-                using (var zipInputStream = new ZipInputStream(fileStream))
-                {
-                    long totalSize = fileStream.Length;
-                    long bytesRead = 0;
-
-                    ZipEntry entry;
-                    while ((entry = zipInputStream.GetNextEntry()) != null)
-                    {
-                        if (!entry.IsDirectory)
-                        {
-                            string entryFileName = Path.Combine(extractionPath, entry.Name);
-                            string entryDirectory = Path.GetDirectoryName(entryFileName);
-
-                            if (!Directory.Exists(entryDirectory))
-                            {
-                                Directory.CreateDirectory(entryDirectory);
-                            }
-
-                            using (var entryStream = new FileStream(entryFileName, FileMode.Create, FileAccess.Write))
-                            {
-                                byte[] buffer = new byte[4096];
-                                int count;
-                                while ((count = zipInputStream.Read(buffer, 0, buffer.Length)) > 0)
-                                {
-                                    entryStream.Write(buffer, 0, count);
-                                    bytesRead += count;
-
-                                    // this took so much to figure out (i dont know sh*t 'bout math)
-                                    int progress = (int)Math.Min(100, ((double)bytesRead / totalSize * 100));
-                                    progressBar.Invoke((MethodInvoker)delegate { progressBar.Value = progress; });
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Logger.Info("Hdiff", "Successfully extracted zip");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error extracting update file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-        static bool HasContent(string folderPath)
-        {
-            string[] files = Directory.GetFiles(folderPath);
-            if (files.Length > 0)
-            {
-                return true;
-            }
-
-
-            string[] subdirectories = Directory.GetDirectories(folderPath);
-            return subdirectories.Length > 0;
-        }
-
-        async private void btnstartUpdate_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(tbx_update.Text))
-            {
-                btnstartUpdate.Enabled = false;
-                Logger.Info("Hdiff", "Start!");
-                txt_statusUpd.Text = "Status: Extracting...";
-                string updPath = tbx_update.Text;
-                string tempPath = Path.Combine(Set_LA_GameFolder.Text, "hdiff_temp");
-
-                if (!Directory.Exists(tempPath))
-                {
-                    Directory.CreateDirectory(Path.Combine(Set_LA_GameFolder.Text, "hdiff_temp"));
-                }
-
-                if (!HasContent(tempPath))
-                {
-                    // run asynchronously this function, to prevent the stupid freezing >:(
-                    await Task.Run(() => ExtractZip(updPath, tempPath, progressBar1));
-                }
-
-
-                txt_statusUpd.Text = "Status: Analyzing...";
-
-                string deleteFilesPath = Path.Combine(tempPath, "deletefiles.txt");
-
-                if (!Path.Exists(deleteFilesPath))
-                {
-                    MessageBox.Show("Error: corrupt or invalid update.");
-                    txt_statusUpd.Text = "Status: Error.";
-                    return;
-                }
-
-                try
-                {
-                    txt_statusUpd.Text = "Status: Step 1 | Deletion";
-
-                    string[] filesToDelete = File.ReadAllLines(deleteFilesPath);
-
-                    foreach (string filePath in filesToDelete)
-                    {
-                        string fullPathToDelete = Path.Combine(Set_LA_GameFolder.Text, filePath);
-
-                        if (File.Exists(fullPathToDelete))
-                        {
-                            File.Delete(fullPathToDelete);
-                            Logger.Info("Hdiff", $"Deleted: {fullPathToDelete}");
-                        }
-                        else
-                        {
-                            Logger.Info("Hdiff", $"File not found: {fullPathToDelete}");
-                        }
-                    }
-
-                    Logger.Info("Hdiff", "File deletion process completed.");
-
-                    txt_statusUpd.Text = "Status: Step 2 | Replacement";
-                    try
-                    {
-                        string gamePath = Set_LA_GameFolder.Text;
-                        string subdirectoryPath = Path.Combine(gamePath, "hdiff_temp");
-                        Console.WriteLine(subdirectoryPath);
-
-                        string[] subdirectoryFiles = Directory.GetFiles(subdirectoryPath);
-
-                        string[] mainDirectoryFiles = Directory.GetFiles(gamePath);
-
-                        var commonFiles = subdirectoryFiles.Intersect(mainDirectoryFiles);
-
-                        foreach (var commonFile in commonFiles)
-                        {
-                            File.Delete(Path.Combine(gamePath, Path.GetFileName(commonFile)));
-                        }
-
-                        foreach (var file in subdirectoryFiles)
-                        {
-                            File.Copy(file, Path.Combine(gamePath, Path.GetFileName(file)), true);
-                        }
-
-                        txt_statusUpd.Text = "Status: Complete.";
-                        Logger.Info("Hdiff", "Done replacing.");
-                        progressBar1.Value = 0;
-                        Directory.Delete(subdirectoryPath, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Hdiff", $"Error: {ex.Message}");
-                        progressBar1.Value = 0;
-                        return;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    Logger.Error("Hdiff", ex.Message);
-                }
             }
         }
 
