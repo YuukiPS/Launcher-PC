@@ -407,7 +407,8 @@ namespace YuukiPS_Launcher
                     var get_file_cheat = API.GetCheat(selectedGame, GameChannel, VersionGame, cst_gamefile);
                     if (get_file_cheat == null)
                     {
-                        MessageBox.Show("No update for this version so far or check console");
+                        MessageBox.Show("No cheats found for this version, please turn off the cheat feature to run the game.");
+                        Extra_Cheat.Checked = false;
                         return;
                     }
                     cst_gamefile = get_file_cheat.launcher;
@@ -429,6 +430,7 @@ namespace YuukiPS_Launcher
                 {
                     FileName = cst_gamefile,
                     //UseShellExecute = true,
+                    Arguments = "-server=" + set_server_host, // TODO: custom mod
                     WorkingDirectory = Path.GetDirectoryName(cst_gamefile),
                 };
                 try
@@ -443,7 +445,7 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                Logger.Info("Cheat", "Progress is still running...");
+                Logger.Info("Game", "Progress is still running...");
             }
         }
 
@@ -580,7 +582,6 @@ namespace YuukiPS_Launcher
             get_patch = API.GetMD5Game(Game_LOC_Original_MD5, game_type);
             if (get_patch == null)
             {
-                //0.0.0
                 Logger.Error("Game", "No Support Game with MD5: " + Game_LOC_Original_MD5 + " (Send this log to admin)");
                 return false;
             }
@@ -702,12 +703,10 @@ namespace YuukiPS_Launcher
         {
             var Folder_Game_Now = SelectGamePath();
             if (!string.IsNullOrEmpty(Folder_Game_Now))
-            {
-                Set_LA_GameFolder.Text = Folder_Game_Now;
-                if (!CheckVersionGame(default_profile.game.type))
+            {                
+                if (CheckVersionGame(default_profile.game.type))
                 {
-                    MessageBox.Show("You have set folder manually but we can't detect this game version yet, maybe because it's not supported yet so please download it on our official website with the currently supported version.");
-                    Process.Start(new ProcessStartInfo(API.WEB_LINK + "/game/" + default_profile.game.type.SEOUrl()) { UseShellExecute = true });
+                    Set_LA_GameFolder.Text = Folder_Game_Now;
                 }
             }
             else
@@ -1197,21 +1196,6 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void Server_DL_DB_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Server_DL_GC_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Extra_Cheat_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void Extra_Enable_RPC_CheckedChanged(object sender, EventArgs e)
         {
             if (Enable_RPC.Checked)
@@ -1229,16 +1213,6 @@ namespace YuukiPS_Launcher
         private void wipeLoginCacheInfo_Click(object sender, EventArgs e)
         {
             MessageBox.Show("This deletes the login cache every time the game closes (logs you out).\nThis is useful if you use the guest account on HSR servers, since you don't have to remember to log out.", "Information.", MessageBoxButtons.OK, MessageBoxIcon.Question);
-        }
-
-        private void Enable_WipeLoginCache_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

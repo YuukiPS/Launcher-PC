@@ -350,7 +350,6 @@
             Enable_WipeLoginCache.TabIndex = 20;
             Enable_WipeLoginCache.Text = "WIPE LOGIN";
             Enable_WipeLoginCache.UseVisualStyleBackColor = true;
-            Enable_WipeLoginCache.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // Enable_SendLog
             // 
@@ -373,7 +372,6 @@
             Extra_Cheat.TabIndex = 0;
             Extra_Cheat.Text = "Cheat";
             Extra_Cheat.UseVisualStyleBackColor = true;
-            Extra_Cheat.CheckedChanged += Extra_Cheat_CheckedChanged;
             // 
             // Enable_RPC
             // 
@@ -520,7 +518,6 @@
             Server_DL_DB.TabIndex = 1;
             Server_DL_DB.Text = "MongoDB";
             Server_DL_DB.UseVisualStyleBackColor = true;
-            Server_DL_DB.Click += Server_DL_DB_Click;
             // 
             // Server_DL_JAVA
             // 
@@ -593,7 +590,6 @@
             Server_DL_GC.TabIndex = 3;
             Server_DL_GC.Text = "Download";
             Server_DL_GC.UseVisualStyleBackColor = true;
-            Server_DL_GC.Click += Server_DL_GC_Click;
             // 
             // comboBox1
             // 
