@@ -703,10 +703,12 @@ namespace YuukiPS_Launcher
         {
             var Folder_Game_Now = SelectGamePath();
             if (!string.IsNullOrEmpty(Folder_Game_Now))
-            {                
+            {
+                Set_LA_GameFolder.Text = Folder_Game_Now;
                 if (CheckVersionGame(default_profile.game.type))
                 {
-                    Set_LA_GameFolder.Text = Folder_Game_Now;
+                    MessageBox.Show("This game version may not be supported please check your console");
+                    Process.Start(new ProcessStartInfo(API.WEB_LINK + "/game/" + default_profile.game.type.SEOUrl()) { UseShellExecute = true });
                 }
             }
             else
