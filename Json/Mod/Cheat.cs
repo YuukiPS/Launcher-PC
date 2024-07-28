@@ -12,6 +12,7 @@ namespace YuukiPS_Launcher.Json.Mod
         public required string Support { get; set; }
         [JsonPropertyName("channel")]
         public required List<int> Channel { get; set; }
+        [JsonPropertyName("config")]
         public required Config Config { get; set; }
         [JsonPropertyName("comment")]
         public required string Comment { get; set; }

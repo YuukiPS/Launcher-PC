@@ -835,15 +835,17 @@ namespace YuukiPS_Launcher
             {
                 Logger.Info("Game", "Checking for launcher updates...");
                 var version = Assembly.GetExecutingAssembly().GetName().Version;
+                var versionLauncher = "";
                 if (version == null)
                 {
-                    SetVersion.Text = "Version: Unknown";
+                    Text = "YuukiPS Launcher " + "(Version: Unknown)";
                     return;
                 }
 
-                string ver = version.ToString();
-                SetVersion.Text = "Version: " + ver;
 
+                string ver = version.ToString();
+                versionLauncher = "Version: " + ver;
+                Text = "YuukiPS Launcher " + versionLauncher;
                 var getDataUpdate = API.GetUpdate();
                 if (getDataUpdate == null) return;
 
@@ -859,7 +861,7 @@ namespace YuukiPS_Launcher
 
                 if (result > 0)
                 {
-                    SetVersion.Text = $"Version: {ver} (New Update: {nameVersion})";
+                    versionLauncher = $"Version: {ver} (New Update: {nameVersion})";
                     var tes = MessageBox.Show(getDataUpdate.Body, $"New Update: {getDataUpdate.Name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (tes == DialogResult.Yes)
                     {
@@ -868,12 +870,14 @@ namespace YuukiPS_Launcher
                 }
                 else if (result < 0)
                 {
-                    SetVersion.Text = $"Version: {ver} (latest nightly) (Official: {nameVersion})";
+                    versionLauncher = $"Version: {ver} (latest nightly) (Official: {nameVersion})";
                 }
                 else
                 {
-                    SetVersion.Text = $"Version: {ver} (latest public)";
+                    versionLauncher = $"Version: {ver} (latest public)";
                 }
+
+                Text = "YuukiPS Launcher " + versionLauncher;
             }
             catch (Exception ex)
             {

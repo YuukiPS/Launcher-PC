@@ -16,7 +16,7 @@ namespace YuukiPS_Launcher.Json
         public string profile_default = "Default";
         public List<Profile> Profile { get; set; } = new List<Profile>();
 
-        public static Config LoadConfig(string load_file = "")
+        public static Config LoadConfig(string loadFile = "")
         {
             // Create missing folder
             Directory.CreateDirectory(DataConfig);
@@ -24,20 +24,20 @@ namespace YuukiPS_Launcher.Json
 
             Config config = new();
 
-            if (string.IsNullOrEmpty(load_file))
+            if (string.IsNullOrEmpty(loadFile))
             {
-                load_file = ConfigPath;
+                loadFile = ConfigPath;
             }
 
-            if (File.Exists(load_file))
+            if (File.Exists(loadFile))
             {
-                string data = File.ReadAllText(load_file);
+                string data = File.ReadAllText(loadFile);
                 try
                 {
-                    var tmp_configdata = JsonConvert.DeserializeObject<Config>(data);
-                    if (tmp_configdata != null)
+                    var tmpConfigData = JsonConvert.DeserializeObject<Config>(data);
+                    if (tmpConfigData != null)
                     {
-                        config = tmp_configdata;
+                        config = tmpConfigData;
                     }
                 }
                 catch (Exception ex)

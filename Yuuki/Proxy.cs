@@ -14,14 +14,14 @@ namespace YuukiPS_Launcher.Yuuki
         public ProxyServer? proxyServer = null;
         private ExplicitProxyEndPoint? explicitEndPoint = null;
 
-        private int port;
-        private Uri our_server;
-        private bool sendLog;
+        private readonly int port;
+        private readonly Uri our_server;
+        private readonly bool sendLog;
 
         public Proxy(int port, string host, bool sendLog)
         {
             this.port = port;
-            this.our_server = new Uri(host);
+            our_server = new Uri(host);
             this.sendLog = sendLog;
         }
 
