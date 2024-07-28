@@ -1,11 +1,10 @@
 ﻿using System.Text;
-using YuukiPS_Launcher.patch;
 
 namespace YuukiPS_Launcher.Game.Genshin.Patch
 {
     public static class Metadata
     {
-        public static byte[] bytes = { 0x0D, 0x0A, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+        public static readonly byte[] bytes = { 0x0D, 0x0A, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
 
         public static string Do(string original_file, string patch_file, string key1nopatch, string key1patch, string key2nopatch, string key2patch)
         {
@@ -14,7 +13,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                 return "Metadata file not found";
             }
             byte[] filebytes = File.ReadAllBytes(original_file);
-            byte[] data = decrypt(filebytes);
+            byte[] data = Decrypt(filebytes);
 
             Array.Resize<byte>(ref data, data.Length - 16384);
 
@@ -32,7 +31,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
             if (count != 0)
             {
                 Array.Resize<byte>(ref data, data.Length + 16384);
-                filebytes = encrypt(data);
+                filebytes = Encrypt(data);
 
                 str = "";
                 FileStream stream = File.Create(patch_file);
@@ -54,7 +53,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                 return "Metadata file not found";
             }
             byte[] filebytes = File.ReadAllBytes(original_file);
-            byte[] data = decrypt(filebytes);
+            byte[] data = Decrypt(filebytes);
             Array.Resize<byte>(ref data, data.Length - 16384);
             FileStream stream = File.Create(patch_file);
             stream.Write(data, 0, data.Length);
@@ -75,7 +74,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
 
         }
 
-        unsafe static public byte[] decrypt(byte[] bytes)
+        unsafe static public byte[] Decrypt(byte[] bytes)
         {
             fixed (byte* d1 = bytes)
             {
@@ -84,7 +83,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                 return bytes;
             }
         }
-        unsafe static public byte[] encrypt(byte[] bytes)
+        unsafe static public byte[] Encrypt(byte[] bytes)
         {
             fixed (byte* d1 = bytes)
             {

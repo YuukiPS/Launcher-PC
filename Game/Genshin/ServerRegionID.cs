@@ -3,23 +3,27 @@ using Newtonsoft.Json.Converters;
 using System;
 using static YuukiPS_Launcher.Game.Genshin.Settings;
 
-public class ServerRegionIDConverter : StringEnumConverter
+namespace YuukiPS_Launcher.Game.Genshin
 {
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    public class ServerRegionIDConverter : StringEnumConverter
     {
-        if (reader.TokenType == JsonToken.String)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
-            string enumText = reader.Value.ToString();
-            foreach (ServerRegionID enumValue in Enum.GetValues(typeof(ServerRegionID)))
+            if (reader.TokenType == JsonToken.String)
             {
-                if (enumValue.ToString().Equals(enumText, StringComparison.OrdinalIgnoreCase))
+                string? enumText = reader.Value?.ToString();
+                foreach (ServerRegionID enumValue in Enum.GetValues(typeof(ServerRegionID)))
                 {
-                    return enumValue;
+                    if (enumValue.ToString().Equals(enumText, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return enumValue;
+                    }
                 }
+                // Handle unknown value here
+                return ServerRegionID.os_usa; // Default value
             }
-            // Handle unknown value here
-            return ServerRegionID.os_usa; // Default value
+            return base.ReadJson(reader, objectType, existingValue, serializer);
         }
-        return base.ReadJson(reader, objectType, existingValue, serializer);
     }
 }
+

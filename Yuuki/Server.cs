@@ -10,17 +10,17 @@ namespace YuukiPS_Launcher.Yuuki
 {
     public class Server
     {
-        private static string API_GITHUB_DockerGS = "https://api.github.com/repos/YuukiPS/DockerGS/";
-        private static string API_GITHUB_Grasscutter = "https://api.github.com/repos/Grasscutters/Grasscutter/";
-        private static string API_DL_Grasscutter_Resources = "https://gitlab.com/yukiz/GrasscutterResources/";
+        //private static string API_GITHUB_DockerGS = "https://api.github.com/repos/YuukiPS/DockerGS/";
+        //private static string API_GITHUB_Grasscutter = "https://api.github.com/repos/Grasscutters/Grasscutter/";
+        //private static string API_DL_Grasscutter_Resources = "https://gitlab.com/yukiz/GrasscutterResources/";
 
         public static string Serverfolder = Path.Combine(Config.CurrentlyPath, "server");
 
-        private static string JAVA_RQS = "17";
-        private static string API_GITHUB_JAVA = "https://api.github.com/repos/adoptium/temurin" + JAVA_RQS + "-binaries/";
-        private static string JAVA_LOCK = "17.0.4.1_1";
-        private static string JAVA_FOLDER = Path.Combine(Serverfolder, "java");
-        private static string GetJavaZip = Path.Combine(JAVA_FOLDER, "java.zip");
+        private static readonly string JAVA_RQS = "17";
+        private static readonly string API_GITHUB_JAVA = "https://api.github.com/repos/adoptium/temurin" + JAVA_RQS + "-binaries/";
+        private static readonly string JAVA_LOCK = "17.0.4.1_1";
+        private static readonly string JAVA_FOLDER = Path.Combine(Serverfolder, "java");
+        private static readonly string GetJavaZip = Path.Combine(JAVA_FOLDER, "java.zip");
 
         public static string DLJava()
         {
@@ -153,14 +153,14 @@ namespace YuukiPS_Launcher.Yuuki
                             foreach (var GetVersion in GetData)
                             {
                                 // Get List Asset
-                                var aseet = GetVersion.assets;
+                                var aseet = GetVersion.Assets;
                                 if (aseet != null)
                                 {
                                     foreach (var file in aseet)
                                     {
-                                        if (file.name == "OpenJDK17U-jdk_" + os + "_hotspot_" + ver_set + ".zip")
+                                        if (file.Name == "OpenJDK17U-jdk_" + os + "_hotspot_" + ver_set + ".zip")
                                         {
-                                            return file.browser_download_url;
+                                            return file.BrowserDownloadUrl;
                                         }
                                     }
                                 }

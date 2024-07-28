@@ -8,10 +8,10 @@ namespace YuukiPS_Launcher.Game.Genshin
     public class Settings
     {
         // Source Code: https://github.com/neon-nyan/CollapseLauncher
-        private static string OsPathKey = @"Software\miHoYo\Genshin Impact";
-        private static string CnPathKey = @"Software\miHoYo\原神";
+        private static readonly string OsPathKey = @"Software\miHoYo\Genshin Impact";
+        private static readonly string CnPathKey = @"Software\miHoYo\原神";
 
-        private int ch = 1;
+        private readonly int ch = 1;
 
         public Settings(int ch)
         {

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace YuukiPS_Launcher.patch
+namespace YuukiPS_Launcher.Game.Genshin.Patch
 {
     public static class Methods
     {

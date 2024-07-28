@@ -14,7 +14,7 @@ namespace YuukiPS_Launcher.Utils
         public static string logPath = "";
         public static string strMsg = "";
 
-        public void initLogging(string startMsg, string lPath)
+        public static void InitLogging(string startMsg, string lPath)
         {
             logPath = lPath;
             strMsg = startMsg;
@@ -44,7 +44,7 @@ namespace YuukiPS_Launcher.Utils
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(msg + "\n");
 
-            File.AppendAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:INFO] "+msg+"\n");
+            File.AppendAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:INFO] " + msg + "\n");
         }
 
         public static void Error(string type, string msg)

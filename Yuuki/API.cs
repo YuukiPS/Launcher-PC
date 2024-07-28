@@ -2,6 +2,7 @@
 using RestSharp;
 using System.Diagnostics;
 using System.Net;
+using System.Text.Json;
 using YuukiPS_Launcher.Json;
 using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Json.Mod;
@@ -14,7 +15,7 @@ namespace YuukiPS_Launcher.Yuuki
         public static string API_DL_CF = "https://file2.yuuki.me/";
         public static string API_Yuuki = "https://ps.yuuki.me/";
         public static string WEB_LINK = "https://ps.yuuki.me";
-        public static string API_GITHUB_YuukiPS = "https://api.github.com/repos/YuukiPS/Launcher-PC/";
+        public static string API_GITHUB_YuukiPS { get; } = "https://api.github.com/repos/YuukiPS/Launcher-PC/";
 
         public static Patch? GetMD5Game(string md5, GameType type_game)
         {
@@ -29,18 +30,21 @@ namespace YuukiPS_Launcher.Yuuki
                 var isContent = response.Content;
                 try
                 {
-                    var patch = JsonConvert.DeserializeObject<Patch>(isContent);
-                    return patch;
+                    if (isContent != null)
+                    {
+                        var patch = JsonConvert.DeserializeObject<Patch>(isContent);
+                        return patch;
+                    }
                 }
                 catch (Exception ex)
                 {
                     Logger.Error("API", $"Error getting patch data: {ex.Message} > {url}");
-                    Logger.Error("API", isContent);
+                    Logger.Error("API", isContent ?? "No error content");
                 }
             }
             else
             {
-                Logger.Error("API", $"Error download patch data: {response.StatusCode} > {url}");
+                Logger.Error("API", $"Failed to download patch data. Status code: {response.StatusCode}. URL: {url}.");
             }
             return null;
         }
@@ -58,7 +62,7 @@ namespace YuukiPS_Launcher.Yuuki
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var isContent = response.Content;
-                if(isContent == "API YuukiPS v2")
+                if (isContent == "API YuukiPS v2")
                 {
                     return true;
                 }
@@ -85,15 +89,19 @@ namespace YuukiPS_Launcher.Yuuki
                 {
                     try
                     {
-                        var tes = JsonConvert.DeserializeObject<List<Update>>(response.Content);
-                        if (tes != null)
+                        var options = new JsonSerializerOptions
                         {
-                            return tes[0];
+                            PropertyNameCaseInsensitive = true
+                        };
+                        var updates = System.Text.Json.JsonSerializer.Deserialize<List<Update>>(response.Content, options);
+                        if (updates != null && updates.Count > 0)
+                        {
+                            return updates[0];
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Error GetUpdate1: ", ex);
+                        Console.WriteLine("Error GetUpdate1: " + e);
                     }
 
                 }
@@ -121,13 +129,13 @@ namespace YuukiPS_Launcher.Yuuki
                         var getData = JsonConvert.DeserializeObject<List<Cheat>>(response.Content);
                         if (getData != null)
                         {
-                            var filteredGame = getData.Where(c => c.game == (int)game_type).ToList();
+                            var filteredGame = getData.Where(c => c.Game == (int)game_type).ToList();
                             foreach (var game_cheat in filteredGame)
                             {
-                                if (game_cheat.archives != null)
+                                if (game_cheat.Archives != null)
                                 {
                                     // Filter archives based on version
-                                    var filteredArchives = game_cheat.archives.Where(a => a.support.Contains(ver_set) && a.channel.Contains(ch)).ToList();
+                                    var filteredArchives = game_cheat.Archives.Where(a => a.Support.Contains(ver_set) && a.Channel.Contains(ch)).ToList();
                                     // Process the filtered archives
                                     foreach (var archive in filteredArchives)
                                     {
@@ -137,9 +145,9 @@ namespace YuukiPS_Launcher.Yuuki
                                         var Update_Cheat = false;
                                         var run_Cheat = false;
 
-                                        var set_Cheat = Path.Combine(Json.Config.Modfolder, "Cheat", $"{(GameType)game_cheat.game}", $"{game_cheat.nama}", $"{archive.support}");
+                                        var set_Cheat = Path.Combine(Json.Config.Modfolder, "Cheat", $"{(GameType)game_cheat.Game}", $"{game_cheat.Nama}", $"{archive.Support}");
                                         Directory.CreateDirectory(set_Cheat);
-                                        string get_Cheat = Path.Combine(set_Cheat, archive.config.launcher);
+                                        string get_Cheat = Path.Combine(set_Cheat, archive.Config.Launcher);
                                         string get_Cheat_zip = Path.Combine(set_Cheat, "update.zip");
                                         string get_Cheat_md5 = Path.Combine(set_Cheat, "md5.txt");
 
@@ -154,7 +162,7 @@ namespace YuukiPS_Launcher.Yuuki
                                         {
                                             // found md5
                                             string readText = File.ReadAllText(get_Cheat_md5);
-                                            if (!readText.Contains(archive.md5))
+                                            if (!readText.Contains(archive.Md5))
                                             {
                                                 Console.WriteLine("md5 is not the same maybe because it's new, time to download");
                                                 Update_Cheat = true;
@@ -178,12 +186,12 @@ namespace YuukiPS_Launcher.Yuuki
                                         {
                                             Console.WriteLine("Update Cheat...");
 
-                                            if (string.IsNullOrEmpty(archive.url))
+                                            if (string.IsNullOrEmpty(archive.Url))
                                             {
                                                 MessageBox.Show("No download links found");
                                             }
-                                            MessageBox.Show(archive.comment, "Info Update: " + game_cheat.nama); // get better
-                                            var DL2 = new Download(archive.url, get_Cheat_zip);
+                                            MessageBox.Show(archive.Comment, "Info Update: " + game_cheat.Nama); // get better
+                                            var DL2 = new Download(archive.Url, get_Cheat_zip);
                                             if (DL2.ShowDialog() != DialogResult.OK)
                                             {
                                                 MessageBox.Show("Download Cheat failed");
@@ -218,7 +226,7 @@ namespace YuukiPS_Launcher.Yuuki
                                                     Process.Start(new ProcessStartInfo(file_update_Cheat))?.WaitForExit();
 
                                                     // Update MD5
-                                                    File.WriteAllText(get_Cheat_md5, archive.md5);
+                                                    File.WriteAllText(get_Cheat_md5, archive.Md5);
 
                                                     run_Cheat = true;
 
@@ -241,10 +249,10 @@ namespace YuukiPS_Launcher.Yuuki
                                             // Update folder
                                             if (!string.IsNullOrEmpty(path_game))
                                             {
-                                                var file_config = @$"{set_Cheat}\{archive.config.save}";
+                                                var file_config = @$"{set_Cheat}\{archive.Config.Save}";
                                                 try
                                                 {
-                                                    if (archive.config.format == 1)
+                                                    if (archive.Config.Format == 1)
                                                     {
                                                         var w = new StreamWriter(file_config);
                                                         w.WriteLine("[Inject]");
@@ -262,9 +270,9 @@ namespace YuukiPS_Launcher.Yuuki
                                             }
 
                                             // set path
-                                            archive.config.launcher = get_Cheat;
+                                            archive.Config.Launcher = get_Cheat;
 
-                                            return archive.config;
+                                            return archive.Config;
                                         }
 
                                         break;
@@ -291,7 +299,7 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 Console.WriteLine("Error Get Cheat 1: " + response.StatusCode);
             }
-            return null;
+            return null!;
         }
     }
 }

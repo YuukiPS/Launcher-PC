@@ -1,27 +1,28 @@
 ﻿using Newtonsoft.Json;
+using YuukiPS_Launcher.Utils;
 
 namespace YuukiPS_Launcher.Json
 {
     public class Config
     {
         // Folder
-        public static string CurrentlyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
-        public static string DataConfig = Path.Combine(CurrentlyPath, "data");
-        public static string Modfolder = Path.Combine(CurrentlyPath, "mod");
+        public static string CurrentlyPath { get; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
+        public static string DataConfig { get; } = Path.Combine(CurrentlyPath, "data");
+        public static string Modfolder { get; } = Path.Combine(CurrentlyPath, "mod");
 
         // File Config
-        public static string ConfigPath = Path.Combine(DataConfig, "config.json");
+        public static string ConfigPath { get; } = Path.Combine(DataConfig, "config.json");
 
         public string profile_default = "Default";
-        public List<Profile> profile { get; set; } = new List<Profile>();
+        public List<Profile> Profile { get; set; } = new List<Profile>();
 
         public static Config LoadConfig(string load_file = "")
         {
             // Create missing folder
-            Directory.CreateDirectory(Config.DataConfig);
-            Directory.CreateDirectory(Config.Modfolder);
+            Directory.CreateDirectory(DataConfig);
+            Directory.CreateDirectory(Modfolder);
 
-            Config config = new Config();
+            Config config = new();
 
             if (string.IsNullOrEmpty(load_file))
             {
@@ -41,17 +42,17 @@ namespace YuukiPS_Launcher.Json
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error load config: " + ex.Message + ", so make new profile");
+                    Logger.Error("Config", "Error load config: " + ex.Message);
                 }
             }
             else
             {
-                Console.WriteLine("No config file found, so make new profile");
+                Logger.Warning("Config", "No config file found. Creating a new default profile.");
             }
 
-            if (config.profile.Count == 0)
+            if (config.Profile.Count == 0)
             {
-                config.profile.Add(new Profile() { name = "Default" });
+                config.Profile.Add(new Profile() { name = "Default" });
             }
 
             return config;

@@ -27,20 +27,18 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
             int Offset = 0;
             int DataLength;
 
-            List<HexReplaceEntity> UA_list = new List<HexReplaceEntity>();
+            List<HexReplaceEntity> UA_list = new();
 
             while ((DataLength = UA_Original.Length - Offset) > 0)
             {
                 if (DataLength > 8)
                     DataLength = 8;
 
-                HexReplaceEntity hexReplaceEntity = new HexReplaceEntity();
+                HexReplaceEntity hexReplaceEntity = new();
+                Buffer.BlockCopy(UA_Original, Offset, hexReplaceEntity.OldValue, 0, DataLength);
 
-                hexReplaceEntity.oldValue = new byte[8];
-                Buffer.BlockCopy(UA_Original, Offset, hexReplaceEntity.oldValue, 0, DataLength);
-
-                hexReplaceEntity.newValue = new byte[8];
-                Buffer.BlockCopy(UA_key, Offset, hexReplaceEntity.newValue, 0, DataLength);
+                hexReplaceEntity.NewValue = new byte[8];
+                Buffer.BlockCopy(UA_key, Offset, hexReplaceEntity.NewValue, 0, DataLength);
 
                 UA_list.Add(hexReplaceEntity);
                 Offset += DataLength;
