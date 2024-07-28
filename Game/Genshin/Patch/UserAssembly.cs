@@ -18,8 +18,8 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                 return "UserAssembly file not found";
             }
 
-            byte[] UA_Original = Encoding.ASCII.GetBytes(keynopatch);
-            byte[] UA_key = Encoding.ASCII.GetBytes(keypatch);
+            byte[] UAOriginal = Encoding.ASCII.GetBytes(keynopatch);
+            byte[] UAKey = Encoding.ASCII.GetBytes(keypatch);
 
             // Get Byte file original
             byte[] UA = File.ReadAllBytes(original_file);
@@ -29,28 +29,28 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
 
             List<HexReplaceEntity> UA_list = new();
 
-            while ((DataLength = UA_Original.Length - Offset) > 0)
+            while ((DataLength = UAOriginal.Length - Offset) > 0)
             {
                 if (DataLength > 8)
                     DataLength = 8;
 
                 HexReplaceEntity hexReplaceEntity = new();
-                Buffer.BlockCopy(UA_Original, Offset, hexReplaceEntity.OldValue, 0, DataLength);
+                Buffer.BlockCopy(UAOriginal, Offset, hexReplaceEntity.OldValue, 0, DataLength);
 
                 hexReplaceEntity.NewValue = new byte[8];
-                Buffer.BlockCopy(UA_key, Offset, hexReplaceEntity.NewValue, 0, DataLength);
+                Buffer.BlockCopy(UAKey, Offset, hexReplaceEntity.NewValue, 0, DataLength);
 
                 UA_list.Add(hexReplaceEntity);
                 Offset += DataLength;
             }
 
-            byte[] UA_OS_patched = HexUtility.Replace(UA, UA_list);
+            byte[] UAOSPatched = HexUtility.Replace(UA, UA_list);
 
-            if (!HexUtility.EqualsBytes(UA, UA_OS_patched))
+            if (!HexUtility.EqualsBytes(UA, UAOSPatched))
             {
                 try
                 {
-                    File.WriteAllBytes(patch_file, UA_OS_patched);
+                    File.WriteAllBytes(patch_file, UAOSPatched);
                     return "";
                 }
                 catch (IOException e)
@@ -64,7 +64,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
         public static byte[] ToUABytes(string key)
         {
             int count = key.Length + 2;
-            List<byte> uabytes = Encoding.UTF8.GetBytes(key).ToList();
+            List<byte> uaBytes = Encoding.UTF8.GetBytes(key).ToList();
             for (int i = 1; i < 44; i++)
             {
                 if (i <= 29)
@@ -72,7 +72,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                     byte[] k = GetBytesPb(29 - i);
                     for (int j = 0; j < k.Length; j++)
                     {
-                        uabytes.Insert(count - 8 * i, k[k.Length - 1 - j]);
+                        uaBytes.Insert(count - 8 * i, k[k.Length - 1 - j]);
                     }
                 }
                 else
@@ -80,11 +80,11 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                     byte[] k = GetBytesPa(14 - (i - 29));
                     for (int j = 0; j < k.Length; j++)
                     {
-                        uabytes.Insert(count - 8 * i, k[k.Length - 1 - j]);
+                        uaBytes.Insert(count - 8 * i, k[k.Length - 1 - j]);
                     }
                 }
             }
-            return uabytes.ToArray();
+            return uaBytes.ToArray();
         }
 
         public static byte[] GetBytesPa(int count)//0-13

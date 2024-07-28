@@ -7,43 +7,43 @@ namespace YuukiPS_Launcher
 {
     public partial class Download : Form
     {
-        private readonly string SetDownload = "";
-        private readonly string SetFolder = "";
+        private readonly string setDownload = "";
+        private readonly string setFolder = "";
         private DownloadService? dl = null;
 
-        public Download(string url_download = "", string folder_download = "")
+        public Download(string urlDownload = "", string folderDownload = "")
         {
-            SetDownload = url_download;
-            SetFolder = folder_download;
+            setDownload = urlDownload;
+            setFolder = folderDownload;
 
             InitializeComponent();
         }
 
         private void btDownload_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(SetDownload))
+            if (string.IsNullOrEmpty(setDownload))
             {
                 Logger.Error("Download", "Download failed: No URL provided");
                 MessageBox.Show("Download failed because no URL was found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (!Directory.Exists(Path.GetDirectoryName(SetFolder)))
+            if (!Directory.Exists(Path.GetDirectoryName(setFolder)))
             {
-                Logger.Error("Download", $"Download failed: Folder not found or inaccessible - {SetFolder}");
+                Logger.Error("Download", $"Download failed: Folder not found or inaccessible - {setFolder}");
                 MessageBox.Show("Can't save file because the destination folder can't be found or accessed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (File.Exists(SetFolder))
+            if (File.Exists(setFolder))
             {
-                Logger.Info("Download", $"File old found {SetFolder} remove for redownload?");
-                File.Delete(SetFolder);
+                Logger.Info("Download", $"File old found {setFolder} remove for redownload?");
+                File.Delete(setFolder);
             }
 
             btDownload.Enabled = false;
 
-            GetNameDownload.Text = SetDownload;
+            GetNameDownload.Text = setDownload;
 
             if (dl == null)
             {
@@ -60,7 +60,7 @@ namespace YuukiPS_Launcher
                 dl.ChunkDownloadProgressChanged += Dl_ChunkDownloadProgressChanged;
                 try
                 {
-                    dl.DownloadFileTaskAsync(SetDownload, SetFolder);
+                    dl.DownloadFileTaskAsync(setDownload, setFolder);
                 }
                 catch (Exception ek)
                 {
@@ -130,7 +130,7 @@ namespace YuukiPS_Launcher
 
         private void Dl_DownloadStarted(object? sender, DownloadStartedEventArgs e)
         {
-            Logger.Info("Download", $"Starting download - URL: {SetDownload}, Destination: {SetFolder}");
+            Logger.Info("Download", $"Starting download - URL: {setDownload}, Destination: {setFolder}");
         }
 
         private async void BTCancel_Click(object sender, EventArgs e)

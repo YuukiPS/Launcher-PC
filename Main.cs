@@ -7,7 +7,6 @@ using YuukiPS_Launcher.Json.GameClient;
 using YuukiPS_Launcher.Yuuki;
 using YuukiPS_Launcher.Utils;
 using System.Security.Cryptography.X509Certificates;
-using System.IO;
 
 namespace YuukiPS_Launcher
 {
@@ -24,7 +23,7 @@ namespace YuukiPS_Launcher
         public string WatchFile = "";
         public string WatchCheat = "melon123";
         public string HostName = "YuukiPS"; // host name
-        public bool IsGameRun = false;
+        public bool isGameRunning = false;
         public bool DoneCheck = true;
 
         // Config basic game
@@ -36,12 +35,10 @@ namespace YuukiPS_Launcher
         readonly Extra.Discord discord = new();
 
         // Game
-        public Game.Genshin.Settings? settings_genshin = null;
+        public Game.Genshin.Settings? settingsGenshin = null;
 
         // Patch
-        Patch? get_patch = null;
-
-        Logger logger = new();
+        Patch? getPatch = null;
 
         public Main()
         {
@@ -85,23 +82,23 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void btload_Click(object? sender, EventArgs e)
+        private void BTLoadClick(object? sender, EventArgs e)
         {
-            var get_select_profile = GetProfileServer.Text;
-            LoadProfile(get_select_profile);
+            var getSelectProfile = GetProfileServer.Text;
+            LoadProfile(getSelectProfile);
         }
 
-        private void Set_LA_Save_Click(object? sender, EventArgs e)
+        private void SetLASaveClick(object? sender, EventArgs e)
         {
-            var get_select_profile = GetProfileServer.Text;
-            SaveProfile(get_select_profile);
+            var getSelectProfile = GetProfileServer.Text;
+            SaveProfile(getSelectProfile);
         }
 
         private void GetProfileServer_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            var get_select_profile = GetProfileServer.Text;
-            Logger.Info("Profiles", "GetProfileServer_SelectedIndexChanged " + get_select_profile);
-            LoadProfile(get_select_profile);
+            var getSelectProfile = GetProfileServer.Text;
+            Logger.Info("Profiles", "GetProfileServer_SelectedIndexChanged " + getSelectProfile);
+            LoadProfile(getSelectProfile);
         }
 
         private void GetTypeGame_SelectedIndexChanged(object? sender, EventArgs e)
@@ -111,7 +108,7 @@ namespace YuukiPS_Launcher
 
         public void LoadConfig(string LoadBy)
         {
-            ConfigData = Json.Config.LoadConfig();
+            ConfigData = Config.LoadConfig();
 
             Logger.Info("Config", $"Configuration loaded by: {LoadBy}");
 
@@ -141,23 +138,23 @@ namespace YuukiPS_Launcher
             GetProfileServer.SelectedIndexChanged += GetProfileServer_SelectedIndexChanged;
         }
 
-        public void LoadProfile(string LoadProfile = "")
+        public void LoadProfile(string loadProfile = "")
         {
 
-            if (string.IsNullOrEmpty(LoadProfile))
+            if (string.IsNullOrEmpty(loadProfile))
             {
                 Logger.Info("Profiles", "No profile");
                 return;
             }
 
-            Logger.Info("Profiles", "Profile: " + LoadProfile);
+            Logger.Info("Profiles", "Profile: " + loadProfile);
 
             try
             {
-                var tmp_profile = ConfigData.Profile.Find(p => p.name == LoadProfile);
-                if (tmp_profile != null)
+                var tmpProfile = ConfigData.Profile.Find(p => p.name == loadProfile);
+                if (tmpProfile != null)
                 {
-                    DefaultProfile = tmp_profile;
+                    DefaultProfile = tmpProfile;
                 }
                 else
                 {
@@ -180,7 +177,7 @@ namespace YuukiPS_Launcher
             CheckProxyEnable.Checked = DefaultProfile.ServerConfig.proxy.enable;
             GetServerHost.Text = DefaultProfile.ServerConfig.url;
             // Extra
-            Extra_Cheat.Checked = DefaultProfile.GameConfig.extra.Akebi;
+            ExtraCheat.Checked = DefaultProfile.GameConfig.extra.Akebi;
             Enable_RPC.Checked = DefaultProfile.GameConfig.extra.RPC;
 
             // Get Data Game
@@ -196,28 +193,27 @@ namespace YuukiPS_Launcher
         {
             try
             {
-                var tmp_profile = new Profile();
+                var tmpProfile = new Profile();
 
                 // Game
-                tmp_profile.GameConfig.path = Set_LA_GameFolder.Text;
-                tmp_profile.GameConfig.type = (GameType)GetTypeGame.SelectedItem;
-                tmp_profile.GameConfig.wipeLogin = Enable_WipeLoginCache.Checked;
+                tmpProfile.GameConfig.path = Set_LA_GameFolder.Text;
+                tmpProfile.GameConfig.type = (GameType)GetTypeGame.SelectedItem;
+                tmpProfile.GameConfig.wipeLogin = Enable_WipeLoginCache.Checked;
 
                 // Server
-                tmp_profile.ServerConfig.url = GetServerHost.Text;
-                int myInt;
-                bool isValid = int.TryParse(GetProxyPort.Text, out myInt);
+                tmpProfile.ServerConfig.url = GetServerHost.Text;
+                bool isValid = int.TryParse(GetProxyPort.Text, out int myInt);
                 if (isValid)
                 {
-                    tmp_profile.ServerConfig.proxy.port = myInt;
+                    tmpProfile.ServerConfig.proxy.port = myInt;
                 }
 
                 // Extra
-                tmp_profile.GameConfig.extra.Akebi = Extra_Cheat.Checked;
-                tmp_profile.GameConfig.extra.RPC = Enable_RPC.Checked;
+                tmpProfile.GameConfig.extra.Akebi = ExtraCheat.Checked;
+                tmpProfile.GameConfig.extra.RPC = Enable_RPC.Checked;
 
                 // Nama Profile
-                tmp_profile.name = NameSave;
+                tmpProfile.name = NameSave;
 
                 try
                 {
@@ -225,24 +221,24 @@ namespace YuukiPS_Launcher
                     if (indexToUpdate != -1)
                     {
                         Logger.Info("Profiles", $"Updating existing profile: {NameSave}");
-                        ConfigData.Profile[indexToUpdate] = tmp_profile;
+                        ConfigData.Profile[indexToUpdate] = tmpProfile;
                     }
                     else
                     {
                         Logger.Info("Profiles", $"Creating new profile: {NameSave}");
-                        ConfigData.Profile.Add(tmp_profile);
+                        ConfigData.Profile.Add(tmpProfile);
                     }
                 }
                 catch (Exception ex)
                 {
                     Logger.Error("Profiles", $"Failed to save profile '{NameSave}'. Error: {ex.Message}. Reinitializing configuration.");
-                    ConfigData = new Json.Config() { Profile = new List<Profile>() { tmp_profile } };
+                    ConfigData = new Config() { Profile = new List<Profile>() { tmpProfile } };
                 }
 
 
                 ConfigData.profile_default = NameSave;
 
-                File.WriteAllText(Json.Config.ConfigPath, JsonConvert.SerializeObject(ConfigData));
+                File.WriteAllText(Config.ConfigPath, JsonConvert.SerializeObject(ConfigData));
 
                 Logger.Info("Config", "Configuration saved successfully.");
 
@@ -254,21 +250,21 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void btStartOfficialServer_Click(object sender, EventArgs e)
+        private void BTStartOfficialServer_Click(object sender, EventArgs e)
         {
             GetServerHost.Text = "official";
             CheckProxyEnable.Checked = false;
             DoStart();
         }
 
-        private void btStartYuukiServer_Click(object sender, EventArgs e)
+        private void BTStartYuukiServer_Click(object sender, EventArgs e)
         {
             GetServerHost.Text = API.WEB_LINK;
             CheckProxyEnable.Checked = true;
             DoStart();
         }
 
-        private void btStartNormal_Click(object sender, EventArgs e)
+        private void BTStartNormal_Click(object sender, EventArgs e)
         {
             DoStart();
         }
@@ -276,38 +272,38 @@ namespace YuukiPS_Launcher
         public void DoStart()
         {
             // Jika game berjalan...
-            if (IsGameRun)
+            if (isGameRunning)
             {
                 AllStop();
                 return;
             }
 
             // Setup
-            bool isCheat = Extra_Cheat.Checked;
+            bool isCheat = ExtraCheat.Checked;
             bool isProxyNeed = CheckProxyEnable.Checked;
-            bool isSendLog = Enable_SendLog.Checked;
+            bool isSendLog = EnableSendLog.Checked;
 
             GameType selectedGame = (GameType)GetTypeGame.SelectedItem;
 
             // Get Host
-            string set_server_host = GetServerHost.Text;
-            if (string.IsNullOrEmpty(set_server_host))
+            string setServerHost = GetServerHost.Text;
+            if (string.IsNullOrEmpty(setServerHost))
             {
                 MessageBox.Show("Please select a server first, you can click on one in server list");
                 return;
             }
 
             // Get Proxy
-            int set_proxy_port = int.Parse(GetProxyPort.Text);
+            int setProxyPort = int.Parse(GetProxyPort.Text);
 
             // Get Game
-            var cst_gamefile = PathfileGame;
-            if (String.IsNullOrEmpty(cst_gamefile))
+            var cstGameFile = PathfileGame;
+            if (string.IsNullOrEmpty(cstGameFile))
             {
                 MessageBox.Show("No game file config found");
                 return;
             }
-            if (!File.Exists(cst_gamefile))
+            if (!File.Exists(cstGameFile))
             {
                 MessageBox.Show("Please find game install folder!");
                 return;
@@ -316,7 +312,7 @@ namespace YuukiPS_Launcher
             bool patch = true;
 
             // Check progress
-            if (!IsGameRun)
+            if (!isGameRunning)
             {
                 // if game is not running
                 if (progress != null)
@@ -325,15 +321,15 @@ namespace YuukiPS_Launcher
                 }
 
                 // if server is official 
-                if (set_server_host == "official")
+                if (setServerHost == "official")
                 {
                     patch = false;
                 }
                 else
                 {
-                    if (get_patch != null && get_patch.NoSupport != "")
+                    if (getPatch != null && getPatch.NoSupport != "")
                     {
-                        MessageBox.Show(get_patch.NoSupport, "Game version not supported");
+                        MessageBox.Show(getPatch.NoSupport, "Game version not supported");
                         Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
                         return;
                     }
@@ -354,14 +350,14 @@ namespace YuukiPS_Launcher
             if (proxy == null)
             {
                 // skip proxy if official server
-                if (set_server_host != "official")
+                if (setServerHost != "official")
                 {
                     if (isProxyNeed)
                     {
-                        proxy = new Proxy(set_proxy_port, set_server_host, isSendLog);
+                        proxy = new Proxy(setProxyPort, setServerHost, isSendLog);
                         if (!proxy.Start())
                         {
-                            MessageBox.Show($"Unable to start proxy on port {set_proxy_port}. Possible reasons:\n\n" +
+                            MessageBox.Show($"Unable to start proxy on port {setProxyPort}. Possible reasons:\n\n" +
                                             "1. The port is already in use by another application.\n" +
                                             "2. Windows Firewall is blocking access to this port.\n" +
                                             "3. Windows Update may be using ports in this range.\n\n" +
@@ -384,9 +380,9 @@ namespace YuukiPS_Launcher
                         }
                         else
                         {
-                            if (set_server_host.Contains("yuuki.me"))
+                            if (setServerHost.Contains("yuuki.me"))
                             {
-                                if (!API.isYuuki(set_proxy_port))
+                                if (!API.isYuuki(setProxyPort))
                                 {
                                     proxy.Stop();
                                     InstallCert();
@@ -417,21 +413,21 @@ namespace YuukiPS_Launcher
                 Logger.Info("Cheat", "Cheat enabled");
                 try
                 {
-                    var get_file_cheat = API.GetCheat(selectedGame, GameChannel, VersionGame, cst_gamefile);
-                    if (get_file_cheat == null)
+                    var getFileCheat = API.GetCheat(selectedGame, GameChannel, VersionGame, cstGameFile);
+                    if (getFileCheat == null)
                     {
                         MessageBox.Show("No cheats are available for this game version. Please disable the cheat feature in the settings to launch the game.", "Cheat Unavailable", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        Extra_Cheat.Checked = false;
+                        ExtraCheat.Checked = false;
                         return;
                     }
-                    cst_gamefile = get_file_cheat.Launcher;
-                    WatchCheat = Path.GetFileNameWithoutExtension(cst_gamefile);
-                    Logger.Info("Cheat", $"RUN: Monitor {WatchCheat} at {cst_gamefile}");
+                    cstGameFile = getFileCheat.Launcher;
+                    WatchCheat = Path.GetFileNameWithoutExtension(cstGameFile);
+                    Logger.Info("Cheat", $"RUN: Monitor {WatchCheat} at {cstGameFile}");
 
                 }
                 catch (Exception x)
                 {
-                    Console.WriteLine(x);
+                    Logger.Error("Cheat", $"Error: {x.Message}");
                 }
             }
 
@@ -442,10 +438,10 @@ namespace YuukiPS_Launcher
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = cst_gamefile,
+                        FileName = cstGameFile,
                         //UseShellExecute = true,
-                        Arguments = "-server=" + set_server_host, // TODO: custom mod
-                        WorkingDirectory = Path.GetDirectoryName(cst_gamefile),
+                        Arguments = "-server=" + setServerHost, // TODO: custom mod
+                        WorkingDirectory = Path.GetDirectoryName(cstGameFile),
                     }
                 };
                 try
@@ -464,7 +460,7 @@ namespace YuukiPS_Launcher
             }
         }
 
-        public void InstallCert()
+        public static void InstallCert()
         {
             bool installationSucceeded = false;
             while (!installationSucceeded)
@@ -475,7 +471,7 @@ namespace YuukiPS_Launcher
                     X509Certificate2 certificate = new X509Certificate2("rootCert.pfx");
 
                     // Open the Root certificate store for the current user
-                    X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+                    X509Store store = new(StoreName.Root, StoreLocation.CurrentUser);
                     store.Open(OpenFlags.ReadWrite);
 
                     // Add the certificate to the store
@@ -494,18 +490,18 @@ namespace YuukiPS_Launcher
             }
         }
 
-        public bool CheckVersionGame(GameType game_type)
+        public bool CheckVersionGame(GameType gameType)
         {
-            var cst_folder_game = Set_LA_GameFolder.Text;
+            var cstFolderGame = Set_LA_GameFolder.Text;
 
             // If user doesn't have a game config folder, try searching for it automatically
-            if (String.IsNullOrEmpty(cst_folder_game))
+            if (string.IsNullOrEmpty(cstFolderGame))
             {
 
-                var Get_Launcher = GetLauncherPath(game_type);
-                Logger.Info("Launcher", "Folder Launcher: " + (Get_Launcher == "" ? "Not Found" : Get_Launcher));
+                var getLauncher = GetLauncherPath(gameType);
+                Logger.Info("Launcher", "Folder Launcher: " + (getLauncher == "" ? "Not Found" : getLauncher));
 
-                if (string.IsNullOrEmpty(Get_Launcher))
+                if (string.IsNullOrEmpty(getLauncher))
                 {
                     // If there is no launcher
                     Logger.Info("Game", "Please find game install folder!");
@@ -514,34 +510,34 @@ namespace YuukiPS_Launcher
                 else
                 {
                     // If there is no launcher, try searching the game folder
-                    cst_folder_game = GetGamePath(Get_Launcher);
+                    cstFolderGame = GetGamePath(getLauncher);
                 }
             }
 
             // Check one more time
-            if (string.IsNullOrEmpty(cst_folder_game))
+            if (string.IsNullOrEmpty(cstFolderGame))
             {
                 Logger.Info("Game", "Please find game install folder!");
                 return false;
             }
-            if (!Directory.Exists(cst_folder_game))
+            if (!Directory.Exists(cstFolderGame))
             {
                 Logger.Info("Game", "Please find game install folder! (2)"); // TODO
                 return false;
             }
 
-            Logger.Info("Game", "Folder Game: " + cst_folder_game);
+            Logger.Info("Game", "Folder Game: " + cstFolderGame);
 
-            string cn = Path.Combine(cst_folder_game, "YuanShen.exe");
-            string os = Path.Combine(cst_folder_game, "GenshinImpact.exe");
-            if (game_type == GameType.StarRail)
+            string cn = Path.Combine(cstFolderGame, "YuanShen.exe");
+            string os = Path.Combine(cstFolderGame, "GenshinImpact.exe");
+            if (gameType == GameType.StarRail)
             {
-                cn = Path.Combine(cst_folder_game, "StarRail.exe"); // todo
-                os = Path.Combine(cst_folder_game, "StarRail.exe");
+                cn = Path.Combine(cstFolderGame, "StarRail.exe"); // todo
+                os = Path.Combine(cstFolderGame, "StarRail.exe");
             }
 
             // Path
-            if (game_type == GameType.GenshinImpact)
+            if (gameType == GameType.GenshinImpact)
             {
                 // Pilih Channel
                 if (File.Exists(cn))
@@ -561,17 +557,17 @@ namespace YuukiPS_Launcher
                 else
                 {
                     // jika game versi tidak di dukung atau tidak ada file
-                    Logger.Error("Game", $"No game executable found in the specified folder: {cst_folder_game}. Please ensure the game is properly installed.");
+                    Logger.Error("Game", $"No game executable found in the specified folder: {cstFolderGame}. Please ensure the game is properly installed.");
                     return false;
                 }
 
                 // Settings
                 try
                 {
-                    settings_genshin = new Game.Genshin.Settings(GameChannel);
-                    if (settings_genshin != null)
+                    settingsGenshin = new Game.Genshin.Settings(GameChannel);
+                    if (settingsGenshin != null)
                     {
-                        Logger.Info("Game", $"Game Settings - Text Language: {settings_genshin.GetGameLanguage()}, Voice Language: {settings_genshin.GetVoiceLanguageID()}, Server: {settings_genshin.GetRegServerNameID()}");
+                        Logger.Info("Game", $"Game Settings - Text Language: {settingsGenshin.GetGameLanguage()}, Voice Language: {settingsGenshin.GetVoiceLanguageID()}, Server: {settingsGenshin.GetRegServerNameID()}");
                     }
                 }
                 catch (Exception ex)
@@ -589,21 +585,21 @@ namespace YuukiPS_Launcher
             }
 
             // Check MD5 Game
-            string Game_LOC_Original_MD5 = Tool.CalculateMD5(PathfileGame);
+            string gameLOCOriginalMD5 = Tool.CalculateMD5(PathfileGame);
 
             // Check MD5 in Server API
-            get_patch = API.GetMD5Game(Game_LOC_Original_MD5, game_type);
-            if (get_patch == null)
+            getPatch = API.GetMD5Game(gameLOCOriginalMD5, gameType);
+            if (getPatch == null)
             {
-                Logger.Error("Game", $"Unsupported game version detected. MD5: {Game_LOC_Original_MD5}. Please report this to the admin.");
+                Logger.Error("Game", $"Unsupported game version detected. MD5: {gameLOCOriginalMD5}. Please report this to the admin.");
                 return false;
             }
 
-            VersionGame = get_patch.Version;
+            VersionGame = getPatch.Version;
 
             if (VersionGame == "0.0.0")
             {
-                Logger.Error("Game", $"Unsupported game version detected. MD5: {Game_LOC_Original_MD5}.");
+                Logger.Error("Game", $"Unsupported game version detected. MD5: {gameLOCOriginalMD5}.");
 
                 Get_LA_Version.Text = "Version: Unknown";
                 Get_LA_CH.Text = "Channel: Unknown";
@@ -613,42 +609,42 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
-            var get_channel = get_patch.Channel;
+            var get_channel = getPatch.Channel;
 
             // IF ALL OK
-            Set_LA_GameFolder.Text = cst_folder_game;
+            Set_LA_GameFolder.Text = cstFolderGame;
 
             // Set Version
-            Get_LA_Version.Text = "Version: " + get_patch.Version;
+            Get_LA_Version.Text = "Version: " + getPatch.Version;
             Get_LA_CH.Text = "Channel: " + get_channel;
-            Get_LA_REL.Text = "Release: " + get_patch.Release;
+            Get_LA_REL.Text = "Release: " + getPatch.Release;
 
             Logger.Info("Game", $"Game version: {VersionGame}");
             Logger.Info("Game", $"Game executable path: {PathfileGame}");
-            Logger.Info("Game", $"Game executable MD5 hash: {Game_LOC_Original_MD5}");
+            Logger.Info("Game", $"Game executable MD5 hash: {gameLOCOriginalMD5}");
 
-            Get_LA_MD5.Text = "MD5: " + Game_LOC_Original_MD5;
+            Get_LA_MD5.Text = "MD5: " + gameLOCOriginalMD5;
 
             return true;
         }
 
-        public bool PatchGame(bool patchit = true)
+        public bool PatchGame(bool patchIt = true)
         {
             // check folder game (root)
-            var root_folder = Set_LA_GameFolder.Text;
-            if (string.IsNullOrEmpty(root_folder))
+            var rootFolder = Set_LA_GameFolder.Text;
+            if (string.IsNullOrEmpty(rootFolder))
             {
                 Logger.Error("PatchGame", "Game folder path is empty or null");
                 return false;
             }
-            if (!Directory.Exists(root_folder))
+            if (!Directory.Exists(rootFolder))
             {
-                Logger.Error("PatchGame", $"Game folder not found at path: {root_folder}");
+                Logger.Error("PatchGame", $"Game folder not found at path: {rootFolder}");
                 return false;
             }
 
             // check version
-            if (get_patch == null)
+            if (getPatch == null)
             {
                 Logger.Error("PatchGame", "Unable to determine game version. Please click 'Get Key' in the config tab to retrieve version information.");
                 return false;
@@ -659,14 +655,14 @@ namespace YuukiPS_Launcher
                 return false;
             }
 
-            if (patchit)
+            if (patchIt)
             {
                 // for patch
-                if (get_patch.Patched != null && get_patch.Patched.Any())
+                if (getPatch.Patched != null && getPatch.Patched.Any())
                 {
-                    foreach (var data in get_patch.Patched)
+                    foreach (var data in getPatch.Patched)
                     {
-                        var iss = PatchCopy(root_folder, data.File, data.Location, data.MD5, "patch", get_patch.Version);
+                        var iss = PatchCopy(rootFolder, data.File, data.Location, data.MD5, "patch", getPatch.Version);
                         if (!string.IsNullOrEmpty(iss))
                         {
                             Logger.Error("PatchGame", $"Failed to patch file: {data.File}. Error: {iss}");
@@ -683,12 +679,12 @@ namespace YuukiPS_Launcher
             else
             {
                 // for unpatch
-                if (get_patch.Patched != null && get_patch.Patched.Any())
+                if (getPatch.Patched != null && getPatch.Patched.Any())
                 {
-                    foreach (var data in get_patch.Patched)
+                    foreach (var data in getPatch.Patched)
                     {
-                        var iss = PatchCopy(root_folder, data.File, data.Location, data.MD5, "unpatch", get_patch.Version);
-                        if (!String.IsNullOrEmpty(iss))
+                        var iss = PatchCopy(rootFolder, data.File, data.Location, data.MD5, "unpatch", getPatch.Version);
+                        if (!string.IsNullOrEmpty(iss))
                         {
                             Logger.Error("PatchGame", $"Failed to unpatch file: {data.File}. Error: {iss}");
                             return false;
@@ -700,11 +696,11 @@ namespace YuukiPS_Launcher
                 {
                     Logger.Info("PatchGame", "No files needed unpatching");
                 }
-                if (get_patch.Original != null && get_patch.Original.Any())
+                if (getPatch.Original != null && getPatch.Original.Any())
                 {
-                    foreach (var data in get_patch.Original)
+                    foreach (var data in getPatch.Original)
                     {
-                        var iss = PatchCopy(root_folder, data.File, data.Location, data.MD5, "original", get_patch.Version);
+                        var iss = PatchCopy(rootFolder, data.File, data.Location, data.MD5, "original", getPatch.Version);
                         if (!string.IsNullOrEmpty(iss))
                         {
                             Logger.Error("PatchGame", $"Failed to restore original file: {data.File}. Error: {iss}");
@@ -719,20 +715,20 @@ namespace YuukiPS_Launcher
                 }
             }
 
-            Logger.Info("PatchGame", $"Game {(patchit ? "patched" : "unpatched")} successfully");
+            Logger.Info("PatchGame", $"Game {(patchIt ? "patched" : "unpatched")} successfully");
             return true;
         }
 
         private void Set_LA_Select_Click(object sender, EventArgs e)
         {
-            var Folder_Game_Now = SelectGamePath();
-            if (!string.IsNullOrEmpty(Folder_Game_Now))
+            var selectedGameFolder = SelectGamePath();
+            if (!string.IsNullOrEmpty(selectedGameFolder))
             {
-                Set_LA_GameFolder.Text = Folder_Game_Now;
-                Logger.Info("Game Folder", $"Selected game folder: {Folder_Game_Now}");
+                Set_LA_GameFolder.Text = selectedGameFolder;
+                Logger.Info("Game Folder", $"Selected game folder: {selectedGameFolder}");
                 if (!CheckVersionGame(DefaultProfile.GameConfig.type))
                 {
-                    string message = $"The game version in {Folder_Game_Now} may not be supported. Please check the console for more details.";
+                    string message = $"The game version in {selectedGameFolder} may not be supported. Please check the console for more details.";
                     Logger.Warning("Game Version", message);
                     MessageBox.Show(message, "Game Version", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -752,11 +748,11 @@ namespace YuukiPS_Launcher
             }
         }
 
-        public static string PatchCopy(string root_folder, string url_file, string file_name, string file_md5, string iscopy, string version)
+        public static string PatchCopy(string rootFolder, string urlFile, string fileName, string fileMD5, string isCopy, string version)
         {
-            string fileSave = Path.Combine(root_folder, file_name);
+            string fileSave = Path.Combine(rootFolder, fileName);
 
-            if (iscopy == "unpatch")
+            if (isCopy == "unpatch")
             {
                 try
                 {
@@ -774,20 +770,20 @@ namespace YuukiPS_Launcher
             if (File.Exists(fileSave))
             {
                 var md5_file_raw = Tool.CalculateMD5(fileSave);
-                if (md5_file_raw == file_md5)
+                if (md5_file_raw == fileMD5)
                 {
-                    Logger.Info("Patch", $"File '{fileSave}' already exists with matching MD5. No action needed for '{iscopy}' operation.");
+                    Logger.Info("Patch", $"File '{fileSave}' already exists with matching MD5. No action needed for '{isCopy}' operation.");
                     return "";
                 }
             }
 
-            var backupPatch = Path.Combine(Config.Modfolder, "i", version, iscopy, file_name);
+            var backupPatch = Path.Combine(Config.Modfolder, "i", version, isCopy, fileName);
             if (File.Exists(backupPatch))
             {
-                var md5_file_raw = Tool.CalculateMD5(backupPatch);
-                if (md5_file_raw == file_md5)
+                var backupPatchMd5 = Tool.CalculateMD5(backupPatch);
+                if (backupPatchMd5 == fileMD5)
                 {
-                    Logger.Info("Patch", $"Found backup {iscopy} > {backupPatch} > {fileSave}");
+                    Logger.Info("Patch", $"Found backup {isCopy} > {backupPatch} > {fileSave}");
 
                     string saveDir = Path.GetDirectoryName(fileSave) ?? string.Empty;
                     if (!string.IsNullOrEmpty(saveDir) && !Directory.Exists(saveDir))
@@ -803,29 +799,29 @@ namespace YuukiPS_Launcher
                 }
             }
 
-            Logger.Info("Patch", $"Initiating download for {iscopy}: URL: {url_file}, Destination: {fileSave}");
+            Logger.Info("Patch", $"Initiating download for {isCopy}: URL: {urlFile}, Destination: {fileSave}");
 
-            var CEKDL1 = new Download(url_file, fileSave);
+            var CEKDL1 = new Download(urlFile, fileSave);
             if (CEKDL1.ShowDialog() != DialogResult.OK)
             {
-                return $"Error download ${iscopy} file: {url_file} to {fileSave}";
+                return $"Error download ${isCopy} file: {urlFile} to {fileSave}";
             }
             else
             {
                 var md5_file = Tool.CalculateMD5(fileSave);
-                if (md5_file == file_md5)
+                if (md5_file == fileMD5)
                 {
                     string backupDir = Path.GetDirectoryName(backupPatch) ?? string.Empty;
                     if (!string.IsNullOrEmpty(backupDir) && !Directory.Exists(backupDir))
                     {
                         Directory.CreateDirectory(backupDir);
                     }
-                    Logger.Info("Game", $"MD5 Patch File {url_file}: " + md5_file);
+                    Logger.Info("Game", $"MD5 Patch File {urlFile}: " + md5_file);
                     File.Copy(fileSave, backupPatch, overwrite: true);
                 }
                 else
                 {
-                    return $"Error patch file {url_file}, md5 file mismatch {md5_file}";
+                    return $"Error patch file {urlFile}, md5 file mismatch {md5_file}";
                 }
             }
 
@@ -848,11 +844,11 @@ namespace YuukiPS_Launcher
                 string ver = version.ToString();
                 SetVersion.Text = "Version: " + ver;
 
-                var GetDataUpdate = API.GetUpdate();
-                if (GetDataUpdate == null) return;
+                var getDataUpdate = API.GetUpdate();
+                if (getDataUpdate == null) return;
 
-                var name_version = GetDataUpdate.TagName;
-                if (!Version.TryParse(name_version, out var version1) || !Version.TryParse(ver, out var version2))
+                var nameVersion = getDataUpdate.TagName;
+                if (!Version.TryParse(nameVersion, out var version1) || !Version.TryParse(ver, out var version2))
                 {
                     Logger.Error("Update", "Unable to compare version numbers. This might be due to an unexpected version format.");
                     MessageBox.Show("We encountered an issue while checking for updates. The version numbers couldn't be compared correctly.", "Update Check Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -863,16 +859,16 @@ namespace YuukiPS_Launcher
 
                 if (result > 0)
                 {
-                    SetVersion.Text = $"Version: {ver} (New Update: {name_version})";
-                    var tes = MessageBox.Show(GetDataUpdate.Body, $"New Update: {GetDataUpdate.Name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    SetVersion.Text = $"Version: {ver} (New Update: {nameVersion})";
+                    var tes = MessageBox.Show(getDataUpdate.Body, $"New Update: {getDataUpdate.Name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (tes == DialogResult.Yes)
                     {
-                        PerformUpdate(GetDataUpdate.Assets);
+                        PerformUpdate(getDataUpdate.Assets);
                     }
                 }
                 else if (result < 0)
                 {
-                    SetVersion.Text = $"Version: {ver} (latest nightly) (Official: {name_version})";
+                    SetVersion.Text = $"Version: {ver} (latest nightly) (Official: {nameVersion})";
                 }
                 else
                 {
@@ -901,12 +897,12 @@ namespace YuukiPS_Launcher
                     return;
                 }
 
-                var updateZipPath = Path.Combine(Json.Config.CurrentlyPath, "update.zip");
+                var updateZipPath = Path.Combine(Config.CurrentlyPath, "update.zip");
                 var DL1 = new Download(url_dl, updateZipPath);
                 if (DL1.ShowDialog() != DialogResult.OK) return;
 
-                var file_update = Path.Combine(Json.Config.CurrentlyPath, "update.bat");
-                using (var w = new StreamWriter(file_update))
+                var fileUpdate = Path.Combine(Config.CurrentlyPath, "update.bat");
+                using (var w = new StreamWriter(fileUpdate))
                 {
                     w.WriteLine("@echo off");
                     w.WriteLine("Taskkill /IM YuukiPS.exe /F");
@@ -920,7 +916,7 @@ namespace YuukiPS_Launcher
                     w.WriteLine("del Update.bat");
                 }
 
-                Process.Start(file_update);
+                Process.Start(fileUpdate);
             }
             catch (Exception ex)
             {
@@ -937,18 +933,17 @@ namespace YuukiPS_Launcher
             RegistryKey key = Registry.LocalMachine;
             if (key != null)
             {
-                var tes1 = key.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + version.GetStringValue());
-                if (tes1 != null)
+                var subKey = key.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + version.GetStringValue());
+                if (subKey != null)
                 {
-                    var testes1 = tes1.GetValue("InstallPath");
-                    if (testes1 != null)
+                    var installPathValue = subKey.GetValue("InstallPath");
+                    if (installPathValue != null)
                     {
-                        var testestestes1 = testes1.ToString();
-                        if (testestestes1 != null)
+                        var installPathString = installPathValue.ToString();
+                        if (installPathString != null)
                         {
-                            return testestestes1;
+                            return installPathString;
                         }
-
                     }
                 }
             }
@@ -956,42 +951,42 @@ namespace YuukiPS_Launcher
         }
 
         // Check Game Install
-        private static string GetGamePath(String launcherpath = "")
+        private static string GetGamePath(string launcherPath = "")
         {
-            string startpath = "";
+            string startPath = "";
 
-            if (launcherpath == "")
+            if (launcherPath == "")
             {
                 return "";
             }
 
-            string cfgPath = Path.Combine(launcherpath, "config.ini");
-            if (File.Exists(launcherpath) || File.Exists(cfgPath))
+            string cfgPath = Path.Combine(launcherPath, "config.ini");
+            if (File.Exists(launcherPath) || File.Exists(cfgPath))
             {
                 // baca file config
-                using (StreamReader reader = new StreamReader(cfgPath))
+                using StreamReader reader = new(cfgPath);
+                string[] abc = reader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
+                foreach (var item in abc)
                 {
-                    string[] abc = reader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                    foreach (var item in abc)
+                    // cari line install patch
+                    if (item.Contains("game_install_path", StringComparison.CurrentCulture))
                     {
-                        // cari line install patch
-                        if (item.IndexOf("game_install_path") != -1)
-                        {
-                            startpath += item.Substring(item.IndexOf("=") + 1);
-                        }
+                        startPath += item[(item.IndexOf("=") + 1)..];
                     }
                 }
             }
 
-            return startpath;
+            return startPath;
         }
 
         // Pilih Folder
         private static string SelectGamePath()
         {
             string foldPath = "";
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.Description = "Select Game Folder";
+            FolderBrowserDialog dialog = new()
+            {
+                Description = "Select Game Folder"
+            };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 foldPath = dialog.SelectedPath;
@@ -999,26 +994,26 @@ namespace YuukiPS_Launcher
             return foldPath;
         }
 
-        public void IsAccess(bool onoff)
+        public void IsAccess(bool isEnabled)
         {
-            GetTypeGame.Enabled = onoff;
-            btStartOfficialServer.Enabled = onoff;
-            btStartYuukiServer.Enabled = onoff;
-            GetServerHost.Enabled = onoff;
+            GetTypeGame.Enabled = isEnabled;
+            btStartOfficialServer.Enabled = isEnabled;
+            btStartYuukiServer.Enabled = isEnabled;
+            GetServerHost.Enabled = isEnabled;
 
-            grProxy.Enabled = onoff;
-            grExtra.Enabled = onoff;
-            grConfigGameLite.Enabled = onoff;
-            grProfile.Enabled = onoff;
+            grProxy.Enabled = isEnabled;
+            grExtra.Enabled = isEnabled;
+            grConfigGameLite.Enabled = isEnabled;
+            grProfile.Enabled = isEnabled;
         }
 
         private void CheckGameRun_Tick(object sender, EventArgs e)
         {
-            var isrun = Process.GetProcesses().Where(pr => pr.ProcessName == WatchFile || pr.ProcessName == WatchCheat);
-            if (!isrun.Any())
+            var isRunning = Process.GetProcesses().Where(pr => pr.ProcessName == WatchFile || pr.ProcessName == WatchCheat);
+            if (!isRunning.Any())
             {
                 // Jika Game tidak berjalan....
-                IsGameRun = false;
+                isGameRunning = false;
                 btStartNormal.Text = "Launch";
                 IsAccess(true);
                 // AllStop();
@@ -1047,7 +1042,7 @@ namespace YuukiPS_Launcher
             else
             {
                 // jika game jalan
-                IsGameRun = true;
+                isGameRunning = true;
                 btStartNormal.Text = "Stop";
                 DoneCheck = false;
                 IsAccess(false);
@@ -1106,7 +1101,7 @@ namespace YuukiPS_Launcher
                 }
                 progress = null;
             }
-            if (IsGameRun)
+            if (isGameRunning)
             {
                 try
                 {
@@ -1128,36 +1123,36 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void linkDiscord_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkDiscordLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("http://discord.yuuki.me/") { UseShellExecute = true });
         }
 
-        private void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkGithubLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("https://github.com/YuukiPS/") { UseShellExecute = true });
         }
 
-        private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkWebLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
         }
 
-        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        private void MainFormClosing(object sender, FormClosingEventArgs e)
         {
-            if (IsGameRun)
+            if (isGameRunning)
             {
                 MessageBox.Show("Can't close program while game is still running.");
                 e.Cancel = true;
             }
         }
 
-        private void CheckProxyRun_Tick(object sender, EventArgs e)
+        private void CheckProxyRunTick(object sender, EventArgs e)
         {
             CheckProxy(false);
         }
 
-        void CheckProxy(bool force_off = false)
+        void CheckProxy(bool forceDisable = false)
         {
             try
             {
@@ -1181,11 +1176,11 @@ namespace YuukiPS_Launcher
                             // If external is on and proxy app is enabled, make sure external proxy is off
                             if (CheckProxyEnable.Checked)
                             {
-                                force_off = true;
+                                forceDisable = true;
                             }
                         }
 
-                        if (force_off)
+                        if (forceDisable)
                         {
                             registry.SetValue("ProxyEnable", 0);
                         }
@@ -1207,7 +1202,7 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void Server_Config_OpenFolder_Click(object sender, EventArgs e)
+        private void ServerConfigOpenFolderClick(object sender, EventArgs e)
         {
             Process.Start(new ProcessStartInfo()
             {
@@ -1217,12 +1212,12 @@ namespace YuukiPS_Launcher
             });
         }
 
-        private void Server_Start_Click(object sender, EventArgs e)
+        private void ServerStartClick(object sender, EventArgs e)
         {
             Logger.Warning("Server", "Still PR :)");
         }
 
-        private void Server_DL_JAVA_Click(object sender, EventArgs e)
+        private void ServerDLJAVAClick(object sender, EventArgs e)
         {
             var dl_java = Server.DLJava();
             if (!string.IsNullOrEmpty(dl_java))
@@ -1235,7 +1230,7 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void Extra_Enable_RPC_CheckedChanged(object sender, EventArgs e)
+        private void ExtraEnableRPCCheckedChanged(object sender, EventArgs e)
         {
             if (Enable_RPC.Checked)
             {
@@ -1249,12 +1244,12 @@ namespace YuukiPS_Launcher
             }
         }
 
-        private void wipeLoginCacheInfo_Click(object sender, EventArgs e)
+        private void WipeLoginCacheInfoClick(object sender, EventArgs e)
         {
             MessageBox.Show("This deletes the login cache every time the game closes (logs you out).\nThis is useful if you use the guest account on HSR servers, since you don't have to remember to log out.", "Information.", MessageBoxButtons.OK, MessageBoxIcon.Question);
         }
 
-        private void Get_LA_MD5_Click(object sender, EventArgs e)
+        private void GetLAMD5Click(object sender, EventArgs e)
         {
             string md5 = Tool.CalculateMD5(PathfileGame);
             if (string.IsNullOrEmpty(md5))
@@ -1316,11 +1311,6 @@ namespace YuukiPS_Launcher
             };
 
             md5Form.ShowDialog();
-        }
-
-        private void groupBox3_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

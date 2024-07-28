@@ -51,8 +51,8 @@
             label8 = new Label();
             grExtra = new GroupBox();
             Enable_WipeLoginCache = new CheckBox();
-            Enable_SendLog = new CheckBox();
-            Extra_Cheat = new CheckBox();
+            EnableSendLog = new CheckBox();
+            ExtraCheat = new CheckBox();
             Enable_RPC = new CheckBox();
             grProxy = new GroupBox();
             CheckProxyEnable = new CheckBox();
@@ -120,7 +120,7 @@
             btStartNormal.TabIndex = 0;
             btStartNormal.Text = "Launch";
             btStartNormal.UseVisualStyleBackColor = false;
-            btStartNormal.Click += btStartNormal_Click;
+            btStartNormal.Click += BTStartNormal_Click;
             // 
             // GetServerHost
             // 
@@ -259,7 +259,7 @@
             btStartYuukiServer.TabIndex = 20;
             btStartYuukiServer.Text = "YuukiPS";
             btStartYuukiServer.UseVisualStyleBackColor = false;
-            btStartYuukiServer.Click += btStartYuukiServer_Click;
+            btStartYuukiServer.Click += BTStartYuukiServer_Click;
             // 
             // GetTypeGame
             // 
@@ -283,7 +283,7 @@
             btStartOfficialServer.TabIndex = 13;
             btStartOfficialServer.Text = "Official";
             btStartOfficialServer.UseVisualStyleBackColor = false;
-            btStartOfficialServer.Click += btStartOfficialServer_Click;
+            btStartOfficialServer.Click += BTStartOfficialServer_Click;
             // 
             // grProfile
             // 
@@ -321,7 +321,7 @@
             btload.TabIndex = 16;
             btload.Text = "Load";
             btload.UseVisualStyleBackColor = false;
-            btload.Click += btload_Click;
+            btload.Click += BTLoadClick;
             // 
             // btsave
             // 
@@ -335,7 +335,7 @@
             btsave.TabIndex = 2;
             btsave.Text = "Save";
             btsave.UseVisualStyleBackColor = false;
-            btsave.Click += Set_LA_Save_Click;
+            btsave.Click += SetLASaveClick;
             // 
             // label8
             // 
@@ -351,8 +351,8 @@
             // 
             grExtra.BackColor = Color.FromArgb(240, 240, 240);
             grExtra.Controls.Add(Enable_WipeLoginCache);
-            grExtra.Controls.Add(Enable_SendLog);
-            grExtra.Controls.Add(Extra_Cheat);
+            grExtra.Controls.Add(EnableSendLog);
+            grExtra.Controls.Add(ExtraCheat);
             grExtra.Controls.Add(Enable_RPC);
             grExtra.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             grExtra.ForeColor = Color.FromArgb(60, 60, 60);
@@ -376,27 +376,27 @@
             // 
             // Enable_SendLog
             // 
-            Enable_SendLog.AutoSize = true;
-            Enable_SendLog.Checked = true;
-            Enable_SendLog.CheckState = CheckState.Checked;
-            Enable_SendLog.ForeColor = Color.FromArgb(60, 60, 60);
-            Enable_SendLog.Location = new Point(10, 55);
-            Enable_SendLog.Name = "Enable_SendLog";
-            Enable_SendLog.Size = new Size(91, 23);
-            Enable_SendLog.TabIndex = 2;
-            Enable_SendLog.Text = "Send Logs";
-            Enable_SendLog.UseVisualStyleBackColor = true;
+            EnableSendLog.AutoSize = true;
+            EnableSendLog.Checked = true;
+            EnableSendLog.CheckState = CheckState.Checked;
+            EnableSendLog.ForeColor = Color.FromArgb(60, 60, 60);
+            EnableSendLog.Location = new Point(10, 55);
+            EnableSendLog.Name = "Enable_SendLog";
+            EnableSendLog.Size = new Size(91, 23);
+            EnableSendLog.TabIndex = 2;
+            EnableSendLog.Text = "Send Logs";
+            EnableSendLog.UseVisualStyleBackColor = true;
             // 
             // Extra_Cheat
             // 
-            Extra_Cheat.AutoSize = true;
-            Extra_Cheat.ForeColor = Color.FromArgb(60, 60, 60);
-            Extra_Cheat.Location = new Point(10, 30);
-            Extra_Cheat.Name = "Extra_Cheat";
-            Extra_Cheat.Size = new Size(64, 23);
-            Extra_Cheat.TabIndex = 0;
-            Extra_Cheat.Text = "Cheat";
-            Extra_Cheat.UseVisualStyleBackColor = true;
+            ExtraCheat.AutoSize = true;
+            ExtraCheat.ForeColor = Color.FromArgb(60, 60, 60);
+            ExtraCheat.Location = new Point(10, 30);
+            ExtraCheat.Name = "Extra_Cheat";
+            ExtraCheat.Size = new Size(64, 23);
+            ExtraCheat.TabIndex = 0;
+            ExtraCheat.Text = "Cheat";
+            ExtraCheat.UseVisualStyleBackColor = true;
             // 
             // Enable_RPC
             // 
@@ -408,7 +408,7 @@
             Enable_RPC.TabIndex = 1;
             Enable_RPC.Text = "Rich Presence (Discord)";
             Enable_RPC.UseVisualStyleBackColor = true;
-            Enable_RPC.CheckedChanged += Extra_Enable_RPC_CheckedChanged;
+            Enable_RPC.CheckedChanged += ExtraEnableRPCCheckedChanged;
             // 
             // grProxy
             // 
@@ -453,7 +453,6 @@
             groupBox3.TabIndex = 8;
             groupBox3.TabStop = false;
             groupBox3.Text = "Game Info";
-            groupBox3.Enter += groupBox3_Enter;
             // 
             // Get_LA_Version
             // 
@@ -477,7 +476,7 @@
             Get_LA_MD5.Size = new Size(106, 19);
             Get_LA_MD5.TabIndex = 7;
             Get_LA_MD5.Text = "MD5: Unknown";
-            Get_LA_MD5.Click += Get_LA_MD5_Click;
+            Get_LA_MD5.Click += GetLAMD5Click;
             // 
             // Get_LA_CH
             // 
@@ -569,7 +568,7 @@
             Server_DL_JAVA.TabIndex = 0;
             Server_DL_JAVA.Text = "Java";
             Server_DL_JAVA.UseVisualStyleBackColor = true;
-            Server_DL_JAVA.Click += Server_DL_JAVA_Click;
+            Server_DL_JAVA.Click += ServerDLJAVAClick;
             // 
             // groupBox6
             // 
@@ -615,7 +614,7 @@
             Server_Start.TabIndex = 0;
             Server_Start.Text = "Start Server";
             Server_Start.UseVisualStyleBackColor = false;
-            Server_Start.Click += Server_Start_Click;
+            Server_Start.Click += ServerStartClick;
             // 
             // SetVersion
             // 
@@ -802,7 +801,7 @@
             linkDiscord.TabIndex = 13;
             linkDiscord.TabStop = true;
             linkDiscord.Text = "Discord";
-            linkDiscord.LinkClicked += linkDiscord_LinkClicked;
+            linkDiscord.LinkClicked += LinkDiscordLinkClicked;
             // 
             // linkGithub
             // 
@@ -814,7 +813,7 @@
             linkGithub.TabIndex = 14;
             linkGithub.TabStop = true;
             linkGithub.Text = "Github";
-            linkGithub.LinkClicked += linkGithub_LinkClicked;
+            linkGithub.LinkClicked += LinkGithubLinkClicked;
             // 
             // linkWeb
             // 
@@ -826,7 +825,7 @@
             linkWeb.TabIndex = 15;
             linkWeb.TabStop = true;
             linkWeb.Text = "Web";
-            linkWeb.LinkClicked += linkWeb_LinkClicked;
+            linkWeb.LinkClicked += LinkWebLinkClicked;
             // 
             // CheckGameRun
             // 
@@ -838,7 +837,7 @@
             // 
             CheckProxyRun.Enabled = true;
             CheckProxyRun.Interval = 1000;
-            CheckProxyRun.Tick += CheckProxyRun_Tick;
+            CheckProxyRun.Tick += CheckProxyRunTick;
             // 
             // Main
             // 
@@ -853,7 +852,7 @@
             MaximizeBox = false;
             Name = "Main";
             Text = "YuukiPS Launcher";
-            FormClosing += Main_FormClosing;
+            FormClosing += MainFormClosing;
             Load += Main_Load;
             TabMain.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
@@ -900,7 +899,7 @@
         private LinkLabel linkGithub;
         private LinkLabel linkWeb;
         private GroupBox grExtra;
-        private CheckBox Extra_Cheat;
+        private CheckBox ExtraCheat;
         private CheckBox Enable_RPC;
         private TextBox Set_LA_GameFolder;
         private Label label5;
@@ -944,7 +943,7 @@
         private GroupBox groupBox8;
         private GroupBox grConfigGameLite;
         private Button btStartYuukiServer;
-        private CheckBox Enable_SendLog;
+        private CheckBox EnableSendLog;
         private CheckBox Enable_WipeLoginCache;
     }
 }
