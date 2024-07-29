@@ -199,6 +199,7 @@
             grConfigGameLite.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             grConfigGameLite.ForeColor = Color.FromArgb(60, 60, 60);
             grConfigGameLite.Location = new Point(15, 147);
+            grConfigGameLite.MaximumSize = new Size(672, 128);
             grConfigGameLite.Name = "grConfigGameLite";
             grConfigGameLite.Size = new Size(457, 60);
             grConfigGameLite.TabIndex = 19;
@@ -268,6 +269,7 @@
             groupBox8.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             groupBox8.ForeColor = Color.FromArgb(60, 60, 60);
             groupBox8.Location = new Point(15, 15);
+            groupBox8.MaximumSize = new Size(672, 128);
             groupBox8.Name = "groupBox8";
             groupBox8.Size = new Size(457, 128);
             groupBox8.TabIndex = 18;
@@ -335,6 +337,7 @@
             grProfile.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             grProfile.ForeColor = Color.FromArgb(60, 60, 60);
             grProfile.Location = new Point(15, 213);
+            grProfile.MaximumSize = new Size(672, 128);
             grProfile.Name = "grProfile";
             grProfile.Size = new Size(457, 96);
             grProfile.TabIndex = 17;
@@ -582,7 +585,7 @@
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(702, 363);
+            tabPage2.Size = new Size(873, 363);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Server";
             // 
@@ -595,7 +598,7 @@
             tabControl2.Location = new Point(3, 3);
             tabControl2.Name = "tabControl2";
             tabControl2.SelectedIndex = 0;
-            tabControl2.Size = new Size(696, 357);
+            tabControl2.Size = new Size(867, 357);
             tabControl2.TabIndex = 8;
             // 
             // tabPage10
@@ -609,7 +612,7 @@
             tabPage10.Location = new Point(4, 29);
             tabPage10.Name = "tabPage10";
             tabPage10.Padding = new Padding(3);
-            tabPage10.Size = new Size(688, 324);
+            tabPage10.Size = new Size(859, 324);
             tabPage10.TabIndex = 0;
             tabPage10.Text = "Home";
             // 
@@ -623,7 +626,7 @@
             Server_Start.ForeColor = Color.White;
             Server_Start.Location = new Point(3, 150);
             Server_Start.Name = "Server_Start";
-            Server_Start.Size = new Size(682, 40);
+            Server_Start.Size = new Size(853, 40);
             Server_Start.TabIndex = 0;
             Server_Start.Text = "Start Server";
             Server_Start.UseVisualStyleBackColor = false;
@@ -635,7 +638,7 @@
             groupBox5.Controls.Add(Server_DL_GC);
             groupBox5.Controls.Add(comboBox1);
             groupBox5.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            groupBox5.Location = new Point(460, 6);
+            groupBox5.Location = new Point(631, 6);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(222, 138);
             groupBox5.TabIndex = 6;
@@ -676,7 +679,7 @@
             groupBox6.Controls.Add(Server_DL_RES);
             groupBox6.Controls.Add(comboBox2);
             groupBox6.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            groupBox6.Location = new Point(233, 6);
+            groupBox6.Location = new Point(318, 6);
             groupBox6.Name = "groupBox6";
             groupBox6.Size = new Size(221, 138);
             groupBox6.TabIndex = 7;
