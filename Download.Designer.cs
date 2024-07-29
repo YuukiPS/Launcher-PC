@@ -116,7 +116,7 @@
             this.Controls.Add(this.GetNameDownload);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DLBar);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Download";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "YuukiPS Updater";
