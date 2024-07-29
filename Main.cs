@@ -143,11 +143,11 @@ namespace YuukiPS_Launcher
 
             if (string.IsNullOrEmpty(loadProfile))
             {
-                Logger.Info("Profiles", "No profile");
+                Logger.Info("Profiles", "No profile specified. Using default settings.");
                 return;
             }
 
-            Logger.Info("Profiles", "Profile: " + loadProfile);
+            Logger.Info("Profiles", $"Loading profile: '{loadProfile}'");
 
             try
             {
@@ -160,11 +160,11 @@ namespace YuukiPS_Launcher
                 {
                     // use default data
                 }
-                Logger.Info("Profiles", "Server: " + DefaultProfile.ServerConfig.url);
+                Logger.Info("Profiles", $"Server URL: {DefaultProfile.ServerConfig.url}");
             }
             catch (Exception e)
             {
-                Logger.Error("Profiles", "Profile error (" + e.Message + "), use default data");
+                Logger.Error("Profiles", $"Failed to load profile: {e.Message}. Using default data.");
             }
 
             // Data Set
@@ -259,7 +259,7 @@ namespace YuukiPS_Launcher
 
         private void BTStartYuukiServer_Click(object sender, EventArgs e)
         {
-            GetServerHost.Text = API.WEB_LINK;
+            GetServerHost.Text = API.WebLink;
             CheckProxyEnable.Checked = true;
             DoStart();
         }
@@ -330,7 +330,7 @@ namespace YuukiPS_Launcher
                     if (getPatch != null && getPatch.NoSupport != "")
                     {
                         MessageBox.Show(getPatch.NoSupport, "Game version not supported");
-                        Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
+                        Process.Start(new ProcessStartInfo(API.WebLink) { UseShellExecute = true });
                         return;
                     }
                 }
@@ -382,7 +382,7 @@ namespace YuukiPS_Launcher
                         {
                             if (setServerHost.Contains("yuuki.me"))
                             {
-                                if (!API.isYuuki(setProxyPort))
+                                if (!API.IsYuuki(setProxyPort))
                                 {
                                     proxy.Stop();
                                     InstallCert();
@@ -732,7 +732,7 @@ namespace YuukiPS_Launcher
                     Logger.Warning("Game Version", message);
                     MessageBox.Show(message, "Game Version", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    string url = API.WEB_LINK + "/game/" + DefaultProfile.GameConfig.type.SEOUrl();
+                    string url = API.WebLink + "/game/" + DefaultProfile.GameConfig.type.SEOUrl();
                     Logger.Info("Browser", $"Opening URL for game support: {url}");
                     Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
                 }
@@ -1139,7 +1139,7 @@ namespace YuukiPS_Launcher
 
         private void LinkWebLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(API.WEB_LINK) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(API.WebLink) { UseShellExecute = true });
         }
 
         private void MainFormClosing(object sender, FormClosingEventArgs e)

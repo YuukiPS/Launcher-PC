@@ -46,7 +46,7 @@ namespace YuukiPS_Launcher.Game.Genshin.Patch
                         if (find)
                         {
                             Buffer.BlockCopy(rep.NewValue, 0, newByteArray, offset, rep.NewValue.Length);
-                            offset += (rep.NewValue.Length - 1);
+                            offset += rep.NewValue.Length - 1;
                             break;
                         }
                     }

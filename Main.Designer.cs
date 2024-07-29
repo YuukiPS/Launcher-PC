@@ -419,6 +419,7 @@
             // Enable_WipeLoginCache
             // 
             Enable_WipeLoginCache.AutoSize = true;
+            Enable_WipeLoginCache.Cursor = Cursors.Hand;
             Enable_WipeLoginCache.Dock = DockStyle.Top;
             Enable_WipeLoginCache.ForeColor = Color.FromArgb(60, 60, 60);
             Enable_WipeLoginCache.Location = new Point(3, 95);
@@ -433,6 +434,7 @@
             EnableSendLog.AutoSize = true;
             EnableSendLog.Checked = true;
             EnableSendLog.CheckState = CheckState.Checked;
+            EnableSendLog.Cursor = Cursors.Hand;
             EnableSendLog.Dock = DockStyle.Top;
             EnableSendLog.ForeColor = Color.FromArgb(60, 60, 60);
             EnableSendLog.Location = new Point(3, 71);
@@ -445,6 +447,7 @@
             // ExtraCheat
             // 
             ExtraCheat.AutoSize = true;
+            ExtraCheat.Cursor = Cursors.Hand;
             ExtraCheat.Dock = DockStyle.Top;
             ExtraCheat.ForeColor = Color.FromArgb(60, 60, 60);
             ExtraCheat.Location = new Point(3, 47);
@@ -457,6 +460,7 @@
             // Enable_RPC
             // 
             Enable_RPC.AutoSize = true;
+            Enable_RPC.Cursor = Cursors.Hand;
             Enable_RPC.Dock = DockStyle.Top;
             Enable_RPC.ForeColor = Color.FromArgb(60, 60, 60);
             Enable_RPC.Location = new Point(3, 23);
@@ -488,6 +492,7 @@
             CheckProxyEnable.AutoSize = true;
             CheckProxyEnable.Checked = true;
             CheckProxyEnable.CheckState = CheckState.Checked;
+            CheckProxyEnable.Cursor = Cursors.Hand;
             CheckProxyEnable.Dock = DockStyle.Left;
             CheckProxyEnable.ForeColor = Color.FromArgb(60, 60, 60);
             CheckProxyEnable.Location = new Point(3, 21);

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Management;
 using System.Security.Cryptography;
-using YuukiPS_Launcher.Utils;
 
 namespace YuukiPS_Launcher.Yuuki
 {
@@ -78,27 +77,25 @@ namespace YuukiPS_Launcher.Yuuki
             }
         }
 
-        public static void ExecuteCMD(String strCommand)
+        public static void ExecuteCMD(string strCommand)
         {
             try
             {
                 Console.WriteLine(strCommand);
-                ProcessStartInfo? commandInfo = new ProcessStartInfo();
-                commandInfo!.CreateNoWindow = true;
-                commandInfo!.UseShellExecute = false;
-                commandInfo!.RedirectStandardInput = false;
-                commandInfo!.RedirectStandardOutput = false;
-                commandInfo!.FileName = "cmd.exe";
-                commandInfo!.Arguments = strCommand;
+                ProcessStartInfo? commandInfo = new()
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardInput = false,
+                    RedirectStandardOutput = false,
+                    FileName = "cmd.exe",
+                    Arguments = strCommand
+                };
 
                 if (commandInfo != null)
                 {
                     Process? process = Process.Start(commandInfo!);
-                    if (process != null)
-                    {
-                        //process.WaitForExit();
-                        process.Close();
-                    }
+                    process?.Close();
                 }
             }
             catch (Exception)
@@ -143,6 +140,7 @@ namespace YuukiPS_Launcher.Yuuki
                 }
                 catch (Exception)
                 {
+                    Logger("Failed to wipe login data", ConsoleColor.Red);
                 }
             }
         }

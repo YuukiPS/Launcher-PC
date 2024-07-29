@@ -13,7 +13,7 @@ namespace YuukiPS_Launcher.Json
 
         public class Server
         {
-            public string url = API.WEB_LINK;
+            public string url = API.WebLink;
             public Proxy proxy = new();
             public class Proxy
             {
