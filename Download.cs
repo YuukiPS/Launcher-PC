@@ -113,7 +113,7 @@ namespace YuukiPS_Launcher
             }
             else
             {
-                DLBar.Invoke((Action)delegate
+                DLBar.Invoke(delegate
                 {
                     DLBar.Value = (int)e.ProgressPercentage;
                 });
@@ -122,7 +122,7 @@ namespace YuukiPS_Launcher
             string bytesReceived = Tool.CalcMemoryMensurableUnit(e.ReceivedBytesSize);
             string totalBytesToReceive = Tool.CalcMemoryMensurableUnit(e.TotalBytesToReceive);
 
-            GetNumDownload.Invoke((Action)delegate
+            GetNumDownload.Invoke(delegate
             {
                 GetNumDownload.Text = $"{bytesReceived} of {totalBytesToReceive} | {estimateTime} {timeLeftUnit} left | Speed: {Tool.CalcMemoryMensurableUnit(e.BytesPerSecondSpeed)}/s";
             });
