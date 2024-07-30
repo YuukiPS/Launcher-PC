@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-
-namespace YuukiPS_Launcher.Utils
+﻿namespace YuukiPS_Launcher.Utils
 {
     internal class Logger
     {
         public static string logPath = "";
         public static string strMsg = "";
 
-        public void initLogging(string startMsg, string lPath)
+        public static void InitLogging(string startMsg, string lPath)
         {
             logPath = lPath;
             strMsg = startMsg;
@@ -44,7 +35,7 @@ namespace YuukiPS_Launcher.Utils
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(msg + "\n");
 
-            File.AppendAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:INFO] "+msg+"\n");
+            File.AppendAllText(logPath, $"[${DateTime.Now.ToString("hh:mm:ss")}] [${type}:INFO] " + msg + "\n");
         }
 
         public static void Error(string type, string msg)

@@ -10,30 +10,32 @@ namespace YuukiPS_Launcher.Yuuki
 {
     public class Server
     {
-        private static string API_GITHUB_DockerGS = "https://api.github.com/repos/YuukiPS/DockerGS/";
-        private static string API_GITHUB_Grasscutter = "https://api.github.com/repos/Grasscutters/Grasscutter/";
-        private static string API_DL_Grasscutter_Resources = "https://gitlab.com/yukiz/GrasscutterResources/";
+        //private static string API_GITHUB_DockerGS = "https://api.github.com/repos/YuukiPS/DockerGS/";
+        //private static string API_GITHUB_Grasscutter = "https://api.github.com/repos/Grasscutters/Grasscutter/";
+        //private static string API_DL_Grasscutter_Resources = "https://gitlab.com/yukiz/GrasscutterResources/";
 
-        public static string Serverfolder = Path.Combine(Config.CurrentlyPath, "server");
+        public static string Serverfolder { get; } = Path.Combine(Config.CurrentlyPath, "server");
 
-        private static string JAVA_RQS = "17";
-        private static string API_GITHUB_JAVA = "https://api.github.com/repos/adoptium/temurin" + JAVA_RQS + "-binaries/";
-        private static string JAVA_LOCK = "17.0.4.1_1";
-        private static string JAVA_FOLDER = Path.Combine(Serverfolder, "java");
-        private static string GetJavaZip = Path.Combine(JAVA_FOLDER, "java.zip");
+        private static readonly string JavaVersion = "17";
+        private static readonly string GithubApiJava = "https://api.github.com/repos/adoptium/temurin" + JavaVersion + "-binaries/";
+        private static readonly string JavaVersionLock = "17.0.4.1_1";
+        private static readonly string JavaPathFolder = Path.Combine(Serverfolder, "java");
+        private static readonly string JavaPath = Path.Combine(JavaPathFolder, "java.zip");
 
         public static string DLJava()
+
+
         {
-            if (!Directory.Exists(JAVA_FOLDER))
+            if (!Directory.Exists(JavaPathFolder))
             {
-                Logger.Info("Server", "No Java Folder Found so Create a new folder");
-                Directory.CreateDirectory(JAVA_FOLDER);
+                Logger.Info("Server", "Java folder not found. Creating a new folder...");
+                Directory.CreateDirectory(JavaPathFolder);
             }
-            Logger.Info("Settings", "Check Version JAVA");
-            var Javabin = Path.Combine(JAVA_FOLDER, "bin");
+            Logger.Info("Server", "Checking Java version...");
+            var Javabin = Path.Combine(JavaPathFolder, "bin");
             if (CheckJava(Javabin))
             {
-                return "Already latest version";
+                return "Java is already at the latest version.";
             }
 
             var found_zip = false;
@@ -48,18 +50,19 @@ namespace YuukiPS_Launcher.Yuuki
 
             if (!found_zip)
             {
-                Console.WriteLine("Get last Java");
-                var GetJavaInfo = GetJava(JAVA_LOCK);
+                Logger.Info("Server", "Retrieving latest Java information...");
+                var GetJavaInfo = GetJava(JavaVersionLock);
                 if (string.IsNullOrEmpty(GetJavaInfo))
                 {
-                    return "Failed to get java info";
+                    Logger.Error("Server", "Failed to retrieve Java information. Please check your internet connection and try again.");
+                    return "Failed to retrieve Java information. Please check your internet connection and try again.";
                 }
 
-                Console.WriteLine("Download Java");
-                var DL = new Download(GetJavaInfo, GetJavaZip);
+                Logger.Info("Server", "Starting Java download...");
+                var DL = new Download(GetJavaInfo, JavaPath);
                 if (DL.ShowDialog() != DialogResult.OK)
                 {
-                    return "Java download failed";
+                    return "Java download failed. Please check your internet connection and try again. If the problem persists, consider manually downloading Java from the official website.";
                 }
                 else
                 {
@@ -72,33 +75,33 @@ namespace YuukiPS_Launcher.Yuuki
                 // Unzip zip
                 try
                 {
-                    Console.WriteLine("Unzip java");
-                    FastZip fastZip = new FastZip();
+                    Console.WriteLine("Extracting Java files from the downloaded archive...");
+                    FastZip fastZip = new();
                     string? fileFilter = null;
-                    fastZip.ExtractZip(GetJavaZip, JAVA_FOLDER, fileFilter);
+                    fastZip.ExtractZip(JavaPath, JavaPathFolder, fileFilter);
                 }
                 catch (Exception e)
                 {
-                    return "Unzip failed: " + e.ToString();
+                    return $"Failed to unzip Java files: {e.Message}. Please check the downloaded file and try again.";
                 }
 
                 // Move folder version to root java folder
-                var java_folder_version = Path.Combine(JAVA_FOLDER, "jdk-" + JAVA_LOCK.Replace("_", "+"));
+                var java_folder_version = Path.Combine(JavaPathFolder, "jdk-" + JavaVersionLock.Replace("_", "+"));
                 if (Directory.Exists(java_folder_version))
                 {
-                    Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(java_folder_version, JAVA_FOLDER, true);
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(java_folder_version, JavaPathFolder, true);
                     //Tool.ExecuteCMD($"Move {java_folder_version}\\*.* {JAVA_FOLDER}");
-                    Logger.Info("Server", "done...");
+                    Logger.Info("Server", "Java installation completed successfully. Java folder moved to the correct location.");
                 }
                 else
                 {
-                    return "Failed to move java version folder, maybe because the folder doesn't exist or download failed or uznip failed";
+                    return "Failed to move Java version folder. Possible reasons: folder doesn't exist, download failed, or unzip operation failed. Please check the logs for more details.";
                 }
 
                 // Once again make sure version is correct.
                 if (!CheckJava(Javabin))
                 {
-                    return "Hmm still failed to get java";
+                    return "Failed to verify Java installation after download and extraction. Please check your system configuration and try again.";
                 }
             }
 
@@ -116,12 +119,14 @@ namespace YuukiPS_Launcher.Yuuki
 
                 if (procStartInfo != null)
                 {
-                    Process proc = new Process();
-                    proc.StartInfo = procStartInfo!;
+                    Process proc = new()
+                    {
+                        StartInfo = procStartInfo!
+                    };
                     proc.Start();
                     //Console.WriteLine("JAVA Folder: " + p);
                     string? version = proc.StandardError?.ReadLine();
-                    if (version != null && version.Contains(JAVA_RQS))
+                    if (version != null && version.Contains(JavaVersion))
                     {
                         return true;
                     }
@@ -136,7 +141,7 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static string? GetJava(string ver_set = "17.0.4.1_1", string os = "x64_windows")
         {
-            var client = new RestClient(API_GITHUB_JAVA);
+            var client = new RestClient(GithubApiJava);
             var request = new RestRequest("releases");
             var response = client.Execute(request);
 
@@ -153,14 +158,14 @@ namespace YuukiPS_Launcher.Yuuki
                             foreach (var GetVersion in GetData)
                             {
                                 // Get List Asset
-                                var aseet = GetVersion.assets;
+                                var aseet = GetVersion.Assets;
                                 if (aseet != null)
                                 {
                                     foreach (var file in aseet)
                                     {
-                                        if (file.name == "OpenJDK17U-jdk_" + os + "_hotspot_" + ver_set + ".zip")
+                                        if (file.Name == "OpenJDK17U-jdk_" + os + "_hotspot_" + ver_set + ".zip")
                                         {
-                                            return file.browser_download_url;
+                                            return file.BrowserDownloadUrl;
                                         }
                                     }
                                 }
@@ -169,13 +174,13 @@ namespace YuukiPS_Launcher.Yuuki
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error GetJava: ", ex);
+                        Logger.Error("Server", $"Error in GetJava method: {ex.Message}");
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Error GetUpdate2: " + response.StatusCode);
+                Logger.Error("Server", $"Error fetching Java updates: HTTP Status Code {response.StatusCode}");
             }
             return "";
         }

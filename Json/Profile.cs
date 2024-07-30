@@ -13,7 +13,7 @@ namespace YuukiPS_Launcher.Json
 
         public class Server
         {
-            public string url = API.WEB_LINK;
+            public string url = API.WebLink;
             public Proxy proxy = new();
             public class Proxy
             {
@@ -39,8 +39,8 @@ namespace YuukiPS_Launcher.Json
             //public int patch_metode = 1; // 1=NO PATCH, 2=RSA ()this should not be necessary because it is controlled by game server
         }
 
-        public Server server = new();
+        public Server ServerConfig { get; set; } = new();
 
-        public Game game = new();
+        public Game GameConfig { get; set; } = new();
     }
 }

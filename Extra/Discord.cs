@@ -14,8 +14,10 @@ namespace YuukiPS_Launcher.Extra
         {
             if (client == null)
             {
-                client = new DiscordRpcClient(appid);
-                client.Logger = new ConsoleLogger() { Level = LogLevel.None };
+                client = new DiscordRpcClient(appid)
+                {
+                    Logger = new ConsoleLogger() { Level = LogLevel.None }
+                };
                 client.RegisterUriScheme();
 
                 //Subscribe to events
@@ -71,7 +73,7 @@ namespace YuukiPS_Launcher.Extra
                 {
                     Editor.Buttons = new Button[]
                      {
-                       new Button() { Label = "Join", Url = API.WEB_LINK }
+                       new() { Label = "Join", Url = API.WebLink }
                      };
                 }
 

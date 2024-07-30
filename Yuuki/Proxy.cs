@@ -14,14 +14,14 @@ namespace YuukiPS_Launcher.Yuuki
         public ProxyServer? proxyServer = null;
         private ExplicitProxyEndPoint? explicitEndPoint = null;
 
-        private int port;
-        private Uri our_server;
-        private bool sendLog;
+        private readonly int port;
+        private readonly Uri our_server;
+        private readonly bool sendLog;
 
         public Proxy(int port, string host, bool sendLog)
         {
             this.port = port;
-            this.our_server = new Uri(host);
+            our_server = new Uri(host);
             this.sendLog = sendLog;
         }
 
@@ -38,7 +38,7 @@ namespace YuukiPS_Launcher.Yuuki
             catch (Exception ex)
             {
                 Logger.Error("Proxy", "Error Start Proxy: " + ex.Message);
-            }            
+            }
 
             // Get Request Data
             proxyServer.BeforeRequest += OnRequest;
@@ -63,11 +63,11 @@ namespace YuukiPS_Launcher.Yuuki
                 // https://stackoverflow.com/a/69051680/3095372
                 if (ex.InnerException != null)
                 {
-                    Logger.Error("Proxy", "Error Start Proxy: "+ex.InnerException.Message);
+                    Logger.Error("Proxy", "Error Start Proxy: " + ex.InnerException.Message);
                 }
                 else
                 {
-                    Logger.Error("Proxy", "Error Start Proxy: "+ex.Message);
+                    Logger.Error("Proxy", "Error Start Proxy: " + ex.Message);
                 }
                 return false;
             }
@@ -125,20 +125,20 @@ namespace YuukiPS_Launcher.Yuuki
             }
             catch (Exception ex)
             {
-                Logger.Error("Proxy", $"Error Stop Proxy: "+ex);
+                Logger.Error("Proxy", $"Error while unsubscribing events during proxy stop: {ex.Message}");
             }
             finally
             {
                 if (proxyServer != null && proxyServer.ProxyRunning)
                 {
-                    Logger.Warning("Proxy", $"Proxy Stop");
+                    Logger.Info("Proxy", "Stopping proxy server...");
                     proxyServer.Stop();
-                    //UninstallCertificate();
                     proxyServer.Dispose();
+                    Logger.Info("Proxy", "Proxy server stopped and disposed successfully");
                 }
                 else
                 {
-                    Logger.Warning("Proxy", $"Proxy tries to stop but the proxy is not running.");
+                    Logger.Warning("Proxy", "Attempt to stop proxy server, but it was not running");
                 }
             }
         }
@@ -222,12 +222,12 @@ namespace YuukiPS_Launcher.Yuuki
                     Host = our_server.Host,
                     Port = our_server.Port
                 };
-                var newUrl = uriBuilder.Uri;                
+                var newUrl = uriBuilder.Uri;
                 e.HttpClient.Request.Url = newUrl.ToString();
             }
         }
 
-        private bool HostPrivate(string hostname)
+        private static bool HostPrivate(string hostname)
         {
             if (
                 hostname.EndsWith(".zenlesszonezero.com") |
@@ -243,7 +243,7 @@ namespace YuukiPS_Launcher.Yuuki
             return false;
         }
 
-        
+
 
     }
 }

@@ -38,24 +38,27 @@
             // 
             // DLBar
             // 
-            this.DLBar.Location = new System.Drawing.Point(12, 12);
+            this.DLBar.Location = new System.Drawing.Point(20, 70);
             this.DLBar.Name = "DLBar";
-            this.DLBar.Size = new System.Drawing.Size(532, 28);
+            this.DLBar.Size = new System.Drawing.Size(460, 8);
+            this.DLBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.DLBar.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 43);
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label1.Location = new System.Drawing.Point(20, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 15);
+            this.label1.Size = new System.Drawing.Size(200, 25);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Download: ";
+            this.label1.Text = "Updating YuukiPS...";
             // 
             // GetNameDownload
             // 
             this.GetNameDownload.AutoSize = true;
-            this.GetNameDownload.Location = new System.Drawing.Point(75, 43);
+            this.GetNameDownload.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.GetNameDownload.Location = new System.Drawing.Point(20, 50);
             this.GetNameDownload.Name = "GetNameDownload";
             this.GetNameDownload.Size = new System.Drawing.Size(19, 15);
             this.GetNameDownload.TabIndex = 2;
@@ -64,47 +67,59 @@
             // GetNumDownload
             // 
             this.GetNumDownload.AutoSize = true;
-            this.GetNumDownload.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.GetNumDownload.Location = new System.Drawing.Point(12, 87);
+            this.GetNumDownload.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.GetNumDownload.Location = new System.Drawing.Point(20, 85);
             this.GetNumDownload.Name = "GetNumDownload";
-            this.GetNumDownload.Size = new System.Drawing.Size(16, 20);
+            this.GetNumDownload.Size = new System.Drawing.Size(16, 15);
             this.GetNumDownload.TabIndex = 3;
             this.GetNumDownload.Text = "?";
             // 
             // btDownload
             // 
-            this.btDownload.Location = new System.Drawing.Point(12, 61);
+            this.btDownload.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.btDownload.FlatAppearance.BorderSize = 0;
+            this.btDownload.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btDownload.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btDownload.ForeColor = System.Drawing.Color.White;
+            this.btDownload.Location = new System.Drawing.Point(320, 110);
             this.btDownload.Name = "btDownload";
-            this.btDownload.Size = new System.Drawing.Size(75, 23);
+            this.btDownload.Size = new System.Drawing.Size(75, 30);
             this.btDownload.TabIndex = 4;
             this.btDownload.Text = "Start";
-            this.btDownload.UseVisualStyleBackColor = true;
+            this.btDownload.UseVisualStyleBackColor = false;
             this.btDownload.Click += new System.EventHandler(this.btDownload_Click);
             // 
             // btCancel
             // 
-            this.btCancel.Location = new System.Drawing.Point(93, 61);
+            this.btCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btCancel.FlatAppearance.BorderSize = 0;
+            this.btCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btCancel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btCancel.ForeColor = System.Drawing.Color.White;
+            this.btCancel.Location = new System.Drawing.Point(405, 110);
             this.btCancel.Name = "btCancel";
-            this.btCancel.Size = new System.Drawing.Size(75, 23);
+            this.btCancel.Size = new System.Drawing.Size(75, 30);
             this.btCancel.TabIndex = 5;
             this.btCancel.Text = "Cancel";
-            this.btCancel.UseVisualStyleBackColor = true;
-            this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
+            this.btCancel.UseVisualStyleBackColor = false;
+            this.btCancel.Click += new System.EventHandler(this.BTCancel_Click);
             // 
             // Download
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(556, 111);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(500, 160);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btDownload);
             this.Controls.Add(this.GetNumDownload);
             this.Controls.Add(this.GetNameDownload);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.DLBar);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Download";
-            this.Text = "Download";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "YuukiPS Updater";
             this.Load += new System.EventHandler(this.Download_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -29,14 +29,10 @@ namespace YuukiPS_Launcher.Yuuki
         {
             try
             {
-                using (var md5 = MD5.Create())
-                {
-                    using (var stream = File.OpenRead(filename))
-                    {
-                        var hash = md5.ComputeHash(stream);
-                        return BitConverter.ToString(hash).Replace("-", "");
-                    }
-                }
+                using var md5 = MD5.Create();
+                using var stream = File.OpenRead(filename);
+                var hash = md5.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "");
             }
             catch (Exception)
             {
@@ -81,27 +77,25 @@ namespace YuukiPS_Launcher.Yuuki
             }
         }
 
-        public static void ExecuteCMD(String strCommand)
+        public static void ExecuteCMD(string strCommand)
         {
             try
             {
                 Console.WriteLine(strCommand);
-                ProcessStartInfo? commandInfo = new ProcessStartInfo();
-                commandInfo!.CreateNoWindow = true;
-                commandInfo!.UseShellExecute = false;
-                commandInfo!.RedirectStandardInput = false;
-                commandInfo!.RedirectStandardOutput = false;
-                commandInfo!.FileName = "cmd.exe";
-                commandInfo!.Arguments = strCommand;
+                ProcessStartInfo? commandInfo = new()
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardInput = false,
+                    RedirectStandardOutput = false,
+                    FileName = "cmd.exe",
+                    Arguments = strCommand
+                };
 
                 if (commandInfo != null)
                 {
                     Process? process = Process.Start(commandInfo!);
-                    if (process != null)
-                    {
-                        //process.WaitForExit();
-                        process.Close();
-                    }
+                    process?.Close();
                 }
             }
             catch (Exception)
@@ -117,40 +111,36 @@ namespace YuukiPS_Launcher.Yuuki
             Console.ResetColor();
         }
 
-        public static void WipeLogin(GameType game)
+        public static void WipeLogin(Json.GameType game)
         {
             string keyName = "Software\\miHoYo"; // default value to not delete PC system. learned this the hard way!!
             string subKeyName = "Genshin Impact";
 
-            if (game == GameType.GenshinImpact)
+            if (game == Json.GameType.GenshinImpact)
             {
                 keyName = "Software\\miHoYo";
                 subKeyName = "Genshin Impact";
             }
-            else if (game == GameType.StarRail)
+            else if (game == Json.GameType.StarRail)
             {
                 keyName = "Software\\Cognosphere";
                 subKeyName = "Star Rail";
             }
 
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName, true))
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(keyName, true);
+            if (key == null)
             {
-                if (key == null)
+                return;
+            }
+            else
+            {
+                try
                 {
-                    //Logger.Warning("Login", subKeyName + " doesn't exist.");
-                    return;
+                    key.DeleteSubKeyTree(subKeyName);
                 }
-                else
+                catch (Exception)
                 {
-                    try
-                    {
-                        key.DeleteSubKeyTree(subKeyName);
-                    }
-                    catch (Exception ex)
-                    {
-                        //Logger.Warning("Login", subKeyName + " doesn't exist.");
-                    }
-                    //Logger.Info("Login", "Wiped login cache!");
+                    Logger("Failed to wipe login data", ConsoleColor.Red);
                 }
             }
         }
