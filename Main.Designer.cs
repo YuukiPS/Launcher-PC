@@ -35,6 +35,9 @@
             GetProxyPort = new TextBox();
             TabMain = new TabControl();
             tabPage1 = new TabPage();
+            grLog = new GroupBox();
+            EnableShowLog = new CheckBox();
+            EnableSendLog = new CheckBox();
             grConfigGameLite = new GroupBox();
             Set_LA_Select = new Button();
             Set_LA_GameFolder = new TextBox();
@@ -51,7 +54,6 @@
             label8 = new Label();
             grExtra = new GroupBox();
             Enable_WipeLoginCache = new CheckBox();
-            EnableSendLog = new CheckBox();
             ExtraCheat = new CheckBox();
             Enable_RPC = new CheckBox();
             grProxy = new GroupBox();
@@ -93,6 +95,7 @@
             CheckProxyRun = new System.Windows.Forms.Timer(components);
             TabMain.SuspendLayout();
             tabPage1.SuspendLayout();
+            grLog.SuspendLayout();
             grConfigGameLite.SuspendLayout();
             groupBox8.SuspendLayout();
             grProfile.SuspendLayout();
@@ -143,7 +146,7 @@
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             label2.ForeColor = Color.FromArgb(60, 60, 60);
-            label2.Location = new Point(270, 22);
+            label2.Location = new Point(131, 22);
             label2.Name = "label2";
             label2.Size = new Size(38, 20);
             label2.TabIndex = 4;
@@ -155,7 +158,7 @@
             GetProxyPort.BackColor = Color.FromArgb(240, 240, 240);
             GetProxyPort.BorderStyle = BorderStyle.None;
             GetProxyPort.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            GetProxyPort.Location = new Point(315, 22);
+            GetProxyPort.Location = new Point(176, 22);
             GetProxyPort.Name = "GetProxyPort";
             GetProxyPort.Size = new Size(55, 20);
             GetProxyPort.TabIndex = 5;
@@ -176,6 +179,7 @@
             // tabPage1
             // 
             tabPage1.BackColor = Color.FromArgb(245, 245, 245);
+            tabPage1.Controls.Add(grLog);
             tabPage1.Controls.Add(grConfigGameLite);
             tabPage1.Controls.Add(stIsRunProxy);
             tabPage1.Controls.Add(groupBox8);
@@ -189,6 +193,43 @@
             tabPage1.Size = new Size(702, 363);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Connect";
+            // 
+            // grLog
+            // 
+            grLog.Controls.Add(EnableShowLog);
+            grLog.Controls.Add(EnableSendLog);
+            grLog.Location = new Point(557, 145);
+            grLog.Name = "grLog";
+            grLog.Size = new Size(133, 51);
+            grLog.TabIndex = 20;
+            grLog.TabStop = false;
+            grLog.Text = "Log";
+            // 
+            // EnableShowLog
+            // 
+            EnableShowLog.AutoSize = true;
+            EnableShowLog.Dock = DockStyle.Right;
+            EnableShowLog.Location = new Point(66, 23);
+            EnableShowLog.Name = "EnableShowLog";
+            EnableShowLog.Size = new Size(64, 25);
+            EnableShowLog.TabIndex = 4;
+            EnableShowLog.Text = "Show";
+            EnableShowLog.UseVisualStyleBackColor = true;
+            // 
+            // EnableSendLog
+            // 
+            EnableSendLog.AutoSize = true;
+            EnableSendLog.Checked = true;
+            EnableSendLog.CheckState = CheckState.Checked;
+            EnableSendLog.Cursor = Cursors.Hand;
+            EnableSendLog.Dock = DockStyle.Left;
+            EnableSendLog.ForeColor = Color.FromArgb(60, 60, 60);
+            EnableSendLog.Location = new Point(3, 23);
+            EnableSendLog.Name = "EnableSendLog";
+            EnableSendLog.Size = new Size(61, 25);
+            EnableSendLog.TabIndex = 3;
+            EnableSendLog.Text = "Send";
+            EnableSendLog.UseVisualStyleBackColor = true;
             // 
             // grConfigGameLite
             // 
@@ -261,6 +302,7 @@
             // 
             groupBox8.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBox8.BackColor = Color.Transparent;
+            groupBox8.Controls.Add(Enable_WipeLoginCache);
             groupBox8.Controls.Add(btStartYuukiServer);
             groupBox8.Controls.Add(GetServerHost);
             groupBox8.Controls.Add(btStartNormal);
@@ -406,15 +448,13 @@
             // 
             grExtra.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             grExtra.BackColor = SystemColors.ButtonFace;
-            grExtra.Controls.Add(Enable_WipeLoginCache);
-            grExtra.Controls.Add(EnableSendLog);
             grExtra.Controls.Add(ExtraCheat);
             grExtra.Controls.Add(Enable_RPC);
             grExtra.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
             grExtra.ForeColor = Color.FromArgb(60, 60, 60);
-            grExtra.Location = new Point(477, 149);
+            grExtra.Location = new Point(476, 199);
             grExtra.Name = "grExtra";
-            grExtra.Size = new Size(217, 122);
+            grExtra.Size = new Size(217, 76);
             grExtra.TabIndex = 12;
             grExtra.TabStop = false;
             grExtra.Text = "Extra";
@@ -423,29 +463,13 @@
             // 
             Enable_WipeLoginCache.AutoSize = true;
             Enable_WipeLoginCache.Cursor = Cursors.Hand;
-            Enable_WipeLoginCache.Dock = DockStyle.Top;
             Enable_WipeLoginCache.ForeColor = Color.FromArgb(60, 60, 60);
-            Enable_WipeLoginCache.Location = new Point(3, 95);
+            Enable_WipeLoginCache.Location = new Point(10, 102);
             Enable_WipeLoginCache.Name = "Enable_WipeLoginCache";
-            Enable_WipeLoginCache.Size = new Size(211, 24);
+            Enable_WipeLoginCache.Size = new Size(108, 25);
             Enable_WipeLoginCache.TabIndex = 20;
             Enable_WipeLoginCache.Text = "Wipe Login";
             Enable_WipeLoginCache.UseVisualStyleBackColor = true;
-            // 
-            // EnableSendLog
-            // 
-            EnableSendLog.AutoSize = true;
-            EnableSendLog.Checked = true;
-            EnableSendLog.CheckState = CheckState.Checked;
-            EnableSendLog.Cursor = Cursors.Hand;
-            EnableSendLog.Dock = DockStyle.Top;
-            EnableSendLog.ForeColor = Color.FromArgb(60, 60, 60);
-            EnableSendLog.Location = new Point(3, 71);
-            EnableSendLog.Name = "EnableSendLog";
-            EnableSendLog.Size = new Size(211, 24);
-            EnableSendLog.TabIndex = 2;
-            EnableSendLog.Text = "Send Logs";
-            EnableSendLog.UseVisualStyleBackColor = true;
             // 
             // ExtraCheat
             // 
@@ -483,9 +507,9 @@
             grProxy.Controls.Add(label2);
             grProxy.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             grProxy.ForeColor = Color.FromArgb(60, 60, 60);
-            grProxy.Location = new Point(477, 274);
+            grProxy.Location = new Point(477, 145);
             grProxy.Name = "grProxy";
-            grProxy.Size = new Size(217, 51);
+            grProxy.Size = new Size(78, 51);
             grProxy.TabIndex = 11;
             grProxy.TabStop = false;
             grProxy.Text = "Proxy";
@@ -585,7 +609,7 @@
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(873, 363);
+            tabPage2.Size = new Size(702, 363);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Server";
             // 
@@ -598,7 +622,7 @@
             tabControl2.Location = new Point(3, 3);
             tabControl2.Name = "tabControl2";
             tabControl2.SelectedIndex = 0;
-            tabControl2.Size = new Size(867, 357);
+            tabControl2.Size = new Size(696, 357);
             tabControl2.TabIndex = 8;
             // 
             // tabPage10
@@ -612,7 +636,7 @@
             tabPage10.Location = new Point(4, 29);
             tabPage10.Name = "tabPage10";
             tabPage10.Padding = new Padding(3);
-            tabPage10.Size = new Size(859, 324);
+            tabPage10.Size = new Size(688, 324);
             tabPage10.TabIndex = 0;
             tabPage10.Text = "Home";
             // 
@@ -626,7 +650,7 @@
             Server_Start.ForeColor = Color.White;
             Server_Start.Location = new Point(3, 150);
             Server_Start.Name = "Server_Start";
-            Server_Start.Size = new Size(853, 40);
+            Server_Start.Size = new Size(682, 40);
             Server_Start.TabIndex = 0;
             Server_Start.Text = "Start Server";
             Server_Start.UseVisualStyleBackColor = false;
@@ -638,7 +662,7 @@
             groupBox5.Controls.Add(Server_DL_GC);
             groupBox5.Controls.Add(comboBox1);
             groupBox5.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            groupBox5.Location = new Point(631, 6);
+            groupBox5.Location = new Point(460, 6);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(222, 138);
             groupBox5.TabIndex = 6;
@@ -679,7 +703,7 @@
             groupBox6.Controls.Add(Server_DL_RES);
             groupBox6.Controls.Add(comboBox2);
             groupBox6.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            groupBox6.Location = new Point(318, 6);
+            groupBox6.Location = new Point(233, 6);
             groupBox6.Name = "groupBox6";
             groupBox6.Size = new Size(221, 138);
             groupBox6.TabIndex = 7;
@@ -952,6 +976,8 @@
             TabMain.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            grLog.ResumeLayout(false);
+            grLog.PerformLayout();
             grConfigGameLite.ResumeLayout(false);
             grConfigGameLite.PerformLayout();
             groupBox8.ResumeLayout(false);
@@ -1027,7 +1053,6 @@
         private GroupBox groupBox8;
         private GroupBox grConfigGameLite;
         private Button btStartYuukiServer;
-        private CheckBox EnableSendLog;
         private CheckBox Enable_WipeLoginCache;
         private TabPage tabPage10;
         private GroupBox groupBox5;
@@ -1040,5 +1065,8 @@
         private Button Server_DL_DB;
         private Button Server_DL_JAVA;
         private Button Server_Start;
+        private GroupBox grLog;
+        private CheckBox EnableShowLog;
+        private CheckBox EnableSendLog;
     }
 }

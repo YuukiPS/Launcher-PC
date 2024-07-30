@@ -9,7 +9,13 @@ namespace YuukiPS_Launcher.Json
         GenshinImpact = 1,
 
         [StringValue("Star Rail")]
-        StarRail = 2
+        StarRail = 2,
+
+        [StringValue("Zenless Zone Zero")]
+        ZenlessZoneZero = 3,
+
+        [StringValue("Wuthering Waves")]
+        WutheringWaves = 4
     }
 
     [AttributeUsage(AttributeTargets.Field)]

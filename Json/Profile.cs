@@ -35,8 +35,6 @@ namespace YuukiPS_Launcher.Json
                 public bool Akebi = false;
                 public bool RPC = false;
             }
-
-            //public int patch_metode = 1; // 1=NO PATCH, 2=RSA ()this should not be necessary because it is controlled by game server
         }
 
         public Server ServerConfig { get; set; } = new();

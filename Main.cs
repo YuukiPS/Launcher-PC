@@ -282,6 +282,7 @@ namespace YuukiPS_Launcher
             bool isCheat = ExtraCheat.Checked;
             bool isProxyNeed = CheckProxyEnable.Checked;
             bool isSendLog = EnableSendLog.Checked;
+            bool isShowLog = EnableShowLog.Checked;
 
             GameType selectedGame = (GameType)GetTypeGame.SelectedItem;
 
@@ -354,7 +355,7 @@ namespace YuukiPS_Launcher
                 {
                     if (isProxyNeed)
                     {
-                        proxy = new Proxy(setProxyPort, setServerHost, isSendLog);
+                        proxy = new Proxy(setProxyPort, setServerHost, isSendLog, isShowLog);
                         if (!proxy.Start())
                         {
                             MessageBox.Show($"Unable to start proxy on port {setProxyPort}. Possible reasons:\n\n" +

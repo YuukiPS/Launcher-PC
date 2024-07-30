@@ -16,13 +16,16 @@ namespace YuukiPS_Launcher.Yuuki
 
         private readonly int port;
         private readonly Uri our_server;
-        private readonly bool sendLog;
 
-        public Proxy(int port, string host, bool sendLog)
+        private readonly bool sendLog;
+        private readonly bool showLog;
+
+        public Proxy(int port, string host, bool sendLog, bool showLog)
         {
             this.port = port;
             our_server = new Uri(host);
             this.sendLog = sendLog;
+            this.showLog = showLog;
         }
 
         public bool Start()
@@ -100,9 +103,15 @@ namespace YuukiPS_Launcher.Yuuki
         }
         private async Task OnResponse(object sender, SessionEventArgs e)
         {
+            string hostname = e.HttpClient.Request.RequestUri.Host;
             string url = e.HttpClient.Request.Url;
-            var bodyString = await e.GetResponseBodyAsString();
-            Logger.Info("Proxy", $"Response: {url}\nBody: {bodyString}");
+
+            if (HostPrivate(hostname) && this.showLog)
+            {
+                var bodyString = await e.GetResponseBodyAsString();
+                Logger.Info("Proxy", $"Response: {url}\nBody: {bodyString}");
+            }
+
         }
 
         public void Stop()
@@ -155,16 +164,8 @@ namespace YuukiPS_Launcher.Yuuki
 
         private async Task OnBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
-            // Do not decrypt SSL if not required domain/host
-            string hostname = e.HttpClient.Request.RequestUri.Host;
-            if (HostPrivate(hostname) || hostname.EndsWith(our_server.Host))
-            {
-                e.DecryptSsl = true;
-            }
-            else
-            {
-                e.DecryptSsl = false;
-            }
+            // All domains must be decrypt ssl
+            e.DecryptSsl = true;
             await Task.CompletedTask;
         }
 
@@ -173,32 +174,48 @@ namespace YuukiPS_Launcher.Yuuki
             string hostname = e.HttpClient.Request.RequestUri.Host;
             string url = e.HttpClient.Request.Url;
 
-            // Stop send log
-            if (
-                url.Contains("/apm/dataUpload") || // SR
-                url.Contains("/crash/dataUpload") || // GI
+            if (HostPrivate(hostname))
+            {
+                // log useless
+                if (
                 url.Contains("/sdk/dataUpload") || // GI Any
                 url.Contains("/h5/dataUpload") || // Hoyolab
                 url.Contains("/h5/upload") || // Hoyolab 2
                 url.Contains("/common/h5log/log") || // Hoyolab 3
-                url.Contains("8888/log") // GI
+                url.Contains("8888/log") || // GI
+                url.Contains("sentry_key") // CL
+            )
+            {
+                e.Ok("{ code: 0 }");
+                return;
+            }
+
+            // good log
+            if (
+                url.Contains("/apm/dataUpload") || // SR
+                url.Contains("/crash/dataUpload") // GI
             )
             {
                 if (!sendLog)
                 {
-                    Logger.Info("Proxy", $"Request Block: {url}");
                     e.Ok("{ code: 0 }");
                     return;
                 }
             }
 
+            // Ignore this URL
+            if (
+                url.Contains("/client/") || // Download Game
+                url.Contains("/ptolemaios_api/") ||
+                url.Contains("/hyp/")
+            )
+            {
+                return;
+            }
+
             var method = e.HttpClient.Request.Method.ToUpper();
             if ((method == "POST" || method == "PUT" || method == "PATCH"))
             {
-                // Get/Set request body bytes
-                //byte[] bodyBytes = await e.GetRequestBody();
-                //e.SetRequestBody(bodyBytes);
-
                 // Get/Set request body as string
                 string bodyString = await e.GetRequestBodyAsString();
                 e.SetRequestBodyString(bodyString);
@@ -206,24 +223,23 @@ namespace YuukiPS_Launcher.Yuuki
                 // store request, so that you can find it from response handler 
                 e.UserData = e.HttpClient.Request;
 
-                Logger.Info("Proxy", $"Request: {url}\nBody: {bodyString}");
-            }
-            else
-            {
-                Logger.Info("Proxy", $"Request: {url} | Method: {method}");
+                if(this.showLog) Logger.Info("Proxy", $"Request: {url}\nBody: {bodyString}");
+            } else {
+                if (this.showLog) Logger.Info("Proxy", $"Request: {url} | Method: {method}");
             }
 
-            // Set url private server
-            if (HostPrivate(hostname))
-            {
-                UriBuilder uriBuilder = new UriBuilder(url)
-                {
-                    Scheme = our_server.Scheme,
-                    Host = our_server.Host,
-                    Port = our_server.Port
-                };
-                var newUrl = uriBuilder.Uri;
-                e.HttpClient.Request.Url = newUrl.ToString();
+            // Set url private server            
+            UriBuilder uriBuilder = new UriBuilder(url)
+             {
+              Scheme = our_server.Scheme,
+              Host = our_server.Host,
+              Port = our_server.Port
+             };
+             var newUrl = uriBuilder.Uri;
+             e.HttpClient.Request.Url = newUrl.ToString();
+
+            } else {
+                // Ignore
             }
         }
 

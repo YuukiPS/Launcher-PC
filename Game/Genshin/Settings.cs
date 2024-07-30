@@ -73,9 +73,9 @@ namespace YuukiPS_Launcher.Game.Genshin
         public enum ServerRegionID
         {
             os_usa = 0,
-            // os_euro = 1,
-            // os_asia = 2,
-            // os_cht = 3
+            os_euro = 1,
+            os_asia = 2,
+            os_cht = 3
         }
 
         public class GeneralDataProp
