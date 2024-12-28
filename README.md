@@ -6,23 +6,16 @@ A simple Launcher that run several anime games.
 ### Features
 
 * Automatic game detection (if you have an official launcher)
-* Download Metadata based on current game version or by select folder (UserAssembly soon).
-* Verify Game Data and Patches based on MD5 matched from server check api.
-* Direct Patches (offline mode) using a key that supports Metadata & UserAssembly.
+* Download patch & Verify game data based on current game in PS version use md5 with api server check (YuukiPS only)
+* Support multi profile game.
 * Auto rollback to original version so you can play official version without renaming it again.
-* Local proxy support so no need extra.
-* Server list support.
-* Support for creating a localhost server with a simple click, including adding to the server list for public servers (PR)
-* [Akebi-GC](https://github.com/Akebi-Group/Akebi-GC) supported with auto update.
+* Local proxy support, so no need extra proxy like fiddler.
+* Cheat/mods free [from third parties if any] supported with auto update.(TODO: need fix api)
 * Auto update.
-* More coming soon (PR)
 
 ### Installation
 
 For Nightly Releases [Download here](https://github.com/YuukiPS/Launcher-PC/releases)
-
-Required
- * [.NET 6.0 Runtime (Desktop)](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime)
 
 ### Screenshot
 

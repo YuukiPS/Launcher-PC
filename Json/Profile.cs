@@ -32,7 +32,7 @@ namespace YuukiPS_Launcher.Json
 
             public class Extra
             {
-                public bool Akebi = false;
+                public bool Cheat = false;
                 public bool RPC = false;
             }
         }

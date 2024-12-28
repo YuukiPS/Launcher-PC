@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-       dotnet-version: 7.0.x
+       dotnet-version: 9.0.x
 
     - name: Publish App
       run: dotnet publish -r win-x64  -p:PublishSingleFile=true --self-contained true -c Release
@@ -34,7 +34,7 @@ jobs:
     - name: Get Zip Release
       uses: thedoctor0/zip-release@main
       with:
-        path: './bin/Release/net7.0-windows/win-x64/publish/*' 
+        path: './bin/Release/net9.0-windows/win-x64/publish/*' 
         type: 'zip'
         filename: 'YuukiPS.zip'
         exclusions: '*.git*'
