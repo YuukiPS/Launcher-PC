@@ -12,8 +12,8 @@
     
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest> 
     
-    <AssemblyVersion>2024.12.28.1417</AssemblyVersion>    
-    <FileVersion>2024.12.28.1417</FileVersion>
+    <AssemblyVersion>2024.12.28.1422</AssemblyVersion>    
+    <FileVersion>2024.12.28.1422</FileVersion>
     
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>YuukiPS</AssemblyName>
@@ -90,12 +90,6 @@
 
   <ItemGroup>
     <None Include=".github\workflows\dotnet.yml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="MetadataConverter">
-      <HintPath>lib\MetadataConverter.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
