@@ -18,10 +18,14 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static Patch? GetMD5Game(string md5, GameType typeGame)
         {
-            var url = "/json/" + typeGame.SEOUrl() + "/version/patch/v2/" + md5.ToUpper() + ".json";
+            var url = "/json/" + typeGame.SEOUrl() + "/version/patch/v2/" + md5.ToUpper() + ".json?time=" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
 
             var client = new RestClient(WebLink);
             var request = new RestRequest(url);
+
+            request.AddHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            request.AddHeader("Pragma", "no-cache");
+            request.AddHeader("Expires", "0");
 
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -57,6 +61,11 @@ namespace YuukiPS_Launcher.Yuuki
             };
             var client = new RestClient(options);
             var request = new RestRequest("api");
+
+            request.AddHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            request.AddHeader("Pragma", "no-cache");
+            request.AddHeader("Expires", "0");
+
             var response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
