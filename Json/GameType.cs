@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace YuukiPS_Launcher.Json
@@ -50,7 +52,26 @@ namespace YuukiPS_Launcher.Json
         public static string SEOUrl(this GameType gameType)
         {
             string gameTypeName = gameType.ToString();
-            string kebabCase = Regex.Replace(gameTypeName, "([a-z])([A-Z])", "$1-$2").ToLower();
+
+            // Normalize to remove accents and special characters
+            string normalizedString = gameTypeName.Normalize(NormalizationForm.FormD);
+            string cleanedString = new string(normalizedString
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            // Convert to kebab case
+            string kebabCase = Regex.Replace(cleanedString, "([a-z])([A-Z])", "$1-$2").ToLower();
+
+            // Replace common problematic characters for SEO-friendly URLs
+            kebabCase = kebabCase
+                .Replace("ı", "i")  // Fix Turkish 'ı' to 'i'
+                .Replace("ş", "s")  // Fix Turkish 'ş' to 's'
+                .Replace("ç", "c")  // Fix Turkish 'ç' to 'c'
+                .Replace("ü", "u")  // Fix German 'ü' to 'u'
+                .Replace("ö", "o")  // Fix German 'ö' to 'o'
+                .Replace("ä", "a")  // Fix German 'ä' to 'a'
+                .Replace("é", "e"); // Replace French 'é' to 'e'
+
             return kebabCase;
         }
     }

@@ -18,6 +18,29 @@ namespace YuukiPS_Launcher.Yuuki
 
         public static Patch? GetMD5Game(string md5, GameType typeGame)
         {
+            // Define the path to the local file
+            var localFilePath = Path.Combine(Json.Config.DataConfig, "md5", $"{typeGame.SEOUrl()}", $"{md5.ToUpper()}.json");
+
+            // Check if the local file exists
+            if (File.Exists(localFilePath))
+            {
+                try
+                {
+                    // Log loading the local file
+                    Logger.Info("API", $"Loading patch data from local file: {localFilePath}");
+
+                    // Read the patch data from the local file
+                    var fileContent = File.ReadAllText(localFilePath);
+                    var patch = JsonConvert.DeserializeObject<Patch>(fileContent);
+                    return patch;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("API", $"Error reading local patch file: {ex.Message} > {localFilePath}");
+                }
+            }
+
+            // If the local file is not found, proceed with the API request
             var url = "/json/" + typeGame.SEOUrl() + "/version/patch/v2/" + md5.ToUpper() + ".json?time=" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
 
             var client = new RestClient(WebLink);
@@ -36,6 +59,17 @@ namespace YuukiPS_Launcher.Yuuki
                     if (isContent != null)
                     {
                         var patch = JsonConvert.DeserializeObject<Patch>(isContent);
+
+                        // Save the patch data to the local file if the API response is valid
+                        var saveMd5 = Path.Combine(Json.Config.DataConfig, "md5", $"{typeGame.SEOUrl()}");
+                        Directory.CreateDirectory(saveMd5);
+
+                        // Log saving the file
+                        Logger.Info("API", $"Saving patch data to local file: {localFilePath}");
+
+                        // Save the response content to a local file
+                        File.WriteAllText(localFilePath, isContent);
+
                         return patch;
                     }
                 }
@@ -49,6 +83,7 @@ namespace YuukiPS_Launcher.Yuuki
             {
                 Logger.Error("API", $"Failed to download patch data. Status code: {response.StatusCode}. URL: {url}.");
             }
+
             return null;
         }
 
@@ -117,7 +152,7 @@ namespace YuukiPS_Launcher.Yuuki
             }
             else
             {
-                Logger.Error("API", $"Failed to fetch update information. Status code: {response.StatusCode}");
+                Logger.Error("API", $"Failed to fetch update information. Status code: {response.StatusCode} > {response.Content}");
             }
             return null;
         }

@@ -853,7 +853,6 @@ namespace YuukiPS_Launcher
                     return;
                 }
 
-
                 string ver = version.ToString();
                 versionLauncher = "Version: " + ver;
                 Text = "YuukiPS Launcher " + versionLauncher;
